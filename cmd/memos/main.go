@@ -94,11 +94,11 @@ var (
 func init() {
 	viper.SetDefault("demo", false)
 	viper.SetDefault("driver", "sqlite")
-	viper.SetDefault("port", 8081)
+	viper.SetDefault("port", 13388)
 
 	rootCmd.PersistentFlags().Bool("demo", false, "enable demo mode")
 	rootCmd.PersistentFlags().String("addr", "", "address of server")
-	rootCmd.PersistentFlags().Int("port", 8081, "port of server")
+	rootCmd.PersistentFlags().Int("port", 13388, "port of server")
 	rootCmd.PersistentFlags().String("unix-sock", "", "path to the unix socket, overrides --addr and --port")
 	rootCmd.PersistentFlags().String("data", "", "data directory")
 	rootCmd.PersistentFlags().String("driver", "sqlite", "database driver")
