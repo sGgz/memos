@@ -63,7 +63,7 @@ CREATE TABLE `attachment` (
   `size` INT NOT NULL DEFAULT '0',
   `memo_id` INT DEFAULT NULL,
   `storage_type` VARCHAR(256) NOT NULL DEFAULT '',
-  `reference` TEXT NOT NULL DEFAULT (''),
+  `reference` TEXT NOT NULL,
   `payload` TEXT NOT NULL
 );
 
