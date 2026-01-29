@@ -16,18 +16,22 @@ interface SectionHeaderProps {
 
 const SectionHeader = ({ icon: Icon, title, count, tabs }: SectionHeaderProps) => {
   return (
-    <div className="flex items-center gap-1.5 px-2 py-1 border-b border-border bg-muted/30">
-      <Icon className="w-3.5 h-3.5 text-muted-foreground" />
+    <div className="flex items-center gap-2 px-3 py-2 border-b border-white/10 bg-white/5 backdrop-blur-3xl">
+      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center text-primary shadow-[0_10px_25px_rgba(4,8,20,0.35)]">
+        <Icon className="w-3.5 h-3.5" />
+      </div>
 
       {tabs && tabs.length > 1 ? (
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-1">
           {tabs.map((tab, idx) => (
             <div key={tab.id} className="flex items-center gap-0.5">
               <button
                 onClick={tab.onClick}
                 className={cn(
-                  "text-xs px-0 py-0 transition-colors",
-                  tab.active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                  "text-[0.65rem] uppercase tracking-[0.35em] transition-colors px-2 py-1 rounded-full border border-transparent",
+                  tab.active
+                    ? "text-foreground border-primary/40 bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground hover:border-white/20",
                 )}
               >
                 {tab.label} ({tab.count})
@@ -37,9 +41,10 @@ const SectionHeader = ({ icon: Icon, title, count, tabs }: SectionHeaderProps) =
           ))}
         </div>
       ) : (
-        <span className="text-xs text-foreground">
-          {title} ({count})
-        </span>
+        <div className="flex flex-col">
+          <span className="text-[0.65rem] uppercase tracking-[0.35em] text-muted-foreground">{title}</span>
+          <span className="text-sm text-foreground font-semibold">{count}</span>
+        </div>
       )}
     </div>
   );

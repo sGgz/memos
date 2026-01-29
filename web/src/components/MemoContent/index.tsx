@@ -35,11 +35,11 @@ const MemoContent = (props: MemoContentProps) => {
   const compactLabel = useCompactLabel(showCompactMode, t as (key: string) => string);
 
   return (
-    <div className={`w-full flex flex-col justify-start items-start text-foreground ${className || ""}`}>
+    <div className={`w-full flex flex-col justify-start items-start text-foreground font-light tracking-wide ${className || ""}`}>
       <div
         ref={memoContentContainerRef}
         className={cn(
-          "relative w-full max-w-full wrap-break-word text-base leading-6",
+          "relative w-full max-w-full wrap-break-word text-[1.05rem] leading-7 tracking-[0.01em] text-foreground/90",
           "[&>*:last-child]:mb-0",
           showCompactMode === "ALL" && "overflow-hidden",
           contentClassName,

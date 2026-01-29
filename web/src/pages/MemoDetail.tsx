@@ -86,7 +86,7 @@ const MemoDetail = () => {
           )}
           <MemoView
             key={`${memo.name}-${memo.displayTime}`}
-            className="shadow hover:shadow-md transition-all"
+            className="!shadow-[0_45px_95px_rgba(4,6,18,0.65)] !border-white/15"
             memo={memo}
             compact={false}
             parentPage={locationState?.from}
@@ -126,6 +126,7 @@ const MemoDetail = () => {
                   {comments.map((comment) => (
                     <MemoView
                       key={`${comment.name}-${comment.displayTime}`}
+                      className="!shadow-[0_35px_80px_rgba(6,8,20,0.55)] !border-white/10"
                       memo={comment}
                       parentPage={locationState?.from}
                       showCreator

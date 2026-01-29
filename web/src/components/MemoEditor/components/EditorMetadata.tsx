@@ -5,7 +5,7 @@ import AttachmentList from "./AttachmentList";
 import LocationDisplay from "./LocationDisplay";
 import RelationList from "./RelationList";
 
-export const EditorMetadata: FC<EditorMetadataProps> = ({ memoName }) => {
+const EditorMetadata: FC<EditorMetadataProps> = ({ memoName }) => {
   const { state, actions, dispatch } = useEditorContext();
 
   return (
@@ -29,3 +29,5 @@ export const EditorMetadata: FC<EditorMetadataProps> = ({ memoName }) => {
     </div>
   );
 };
+
+export default EditorMetadata;

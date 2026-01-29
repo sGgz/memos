@@ -51,7 +51,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
         )}
       </div>
 
-      <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
+      <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground/80">
         {currentUser && !isArchived && (
           <ReactionSelector
             className={cn("border-none w-auto h-auto", reactionSelectorOpen && "block!", "block sm:hidden sm:group-hover:block")}
@@ -119,13 +119,17 @@ interface CreatorDisplayProps {
 }
 
 const CreatorDisplay: React.FC<CreatorDisplayProps> = ({ creator, displayTime, onGotoDetail }) => (
-  <div className="w-full flex flex-row justify-start items-center">
-    <Link className="w-auto hover:opacity-80 rounded-md transition-colors" to={`/u/${encodeURIComponent(creator.username)}`} viewTransition>
-      <UserAvatar className="mr-2 shrink-0" avatarUrl={creator.avatarUrl} />
+  <div className="w-full flex flex-row justify-start items-center gap-3">
+    <Link
+      className="w-auto hover:opacity-95 rounded-full transition-all duration-300 border border-[rgba(72,113,78,0.2)] hover:border-primary/40 shadow-[0_12px_28px_rgba(60,88,70,0.35)]"
+      to={`/u/${encodeURIComponent(creator.username)}`}
+      viewTransition
+    >
+      <UserAvatar className="mr-0 shrink-0 ring-2 ring-primary/15" avatarUrl={creator.avatarUrl} />
     </Link>
     <div className="w-full flex flex-col justify-center items-start">
       <Link
-        className="block leading-tight hover:opacity-80 rounded-md transition-colors truncate text-muted-foreground"
+        className="block leading-tight text-sm font-semibold tracking-wide text-foreground hover:text-primary transition-colors truncate"
         to={`/u/${encodeURIComponent(creator.username)}`}
         viewTransition
       >
@@ -133,7 +137,7 @@ const CreatorDisplay: React.FC<CreatorDisplayProps> = ({ creator, displayTime, o
       </Link>
       <button
         type="button"
-        className="w-auto -mt-0.5 text-xs leading-tight text-muted-foreground select-none cursor-pointer hover:opacity-80 transition-colors text-left"
+        className="w-auto mt-0.5 text-[0.7rem] uppercase tracking-[0.4em] text-muted-foreground/80 select-none cursor-pointer hover:text-primary transition-colors text-left"
         onClick={onGotoDetail}
       >
         {displayTime}
@@ -150,7 +154,7 @@ interface TimeDisplayProps {
 const TimeDisplay: React.FC<TimeDisplayProps> = ({ displayTime, onGotoDetail }) => (
   <button
     type="button"
-    className="w-full text-sm leading-tight text-muted-foreground select-none cursor-pointer hover:text-foreground transition-colors text-left"
+    className="w-full text-xs uppercase tracking-[0.4em] text-muted-foreground/80 select-none cursor-pointer hover:text-primary transition-colors text-left"
     onClick={onGotoDetail}
   >
     {displayTime}

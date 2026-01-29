@@ -41,7 +41,12 @@ function RelationList({ relations, currentMemoName, parentPage, className }: Rel
   const activeRelations = isReferencing ? referencingRelations : referencedRelations;
 
   return (
-    <div className={cn("w-full rounded-lg border border-border bg-muted/20 overflow-hidden", className)}>
+    <div
+      className={cn(
+        "w-full rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-transparent to-white/5 overflow-hidden shadow-[0_25px_60px_rgba(2,6,18,0.45)]",
+        className,
+      )}
+    >
       <SectionHeader
         icon={icon}
         title={isReferencing ? t("common.referencing") : t("common.referenced-by")}
@@ -68,7 +73,7 @@ function RelationList({ relations, currentMemoName, parentPage, className }: Rel
         }
       />
 
-      <div className="p-1.5 flex flex-col gap-0">
+      <div className="p-3 flex flex-col gap-2">
         {activeRelations.map((relation) => (
           <RelationCard
             key={isReferencing ? relation.relatedMemo!.name : relation.memo!.name}

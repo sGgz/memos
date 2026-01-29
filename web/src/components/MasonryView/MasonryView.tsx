@@ -22,9 +22,13 @@ const MasonryView = ({ memoList, renderer, prefixElement, listMode = false }: Ma
   return (
     <div
       ref={containerRef}
-      className={cn("w-full grid gap-2")}
+      className={cn(
+        "w-full grid gap-4 lg:gap-6 relative",
+        "before:absolute before:inset-0 before:bg-gradient-to-b before:from-white/5 before:via-transparent before:to-white/5 before:opacity-40 before:pointer-events-none",
+        "after:absolute after:inset-0 after:bg-[radial-gradient(circle_at_top,rgba(156,132,255,0.12),transparent_45%)] after:pointer-events-none",
+      )}
       style={{
-        gridTemplateColumns: `repeat(${columns}, 1fr)`,
+        gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
       }}
     >
       {Array.from({ length: columns }).map((_, columnIndex) => (

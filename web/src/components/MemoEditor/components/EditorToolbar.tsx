@@ -27,7 +27,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
   };
 
   return (
-    <div className="w-full flex flex-row justify-between items-center mb-2">
+    <div className="w-full flex flex-col gap-3 lg:flex-row lg:justify-between lg:items-center mb-2">
       <div className="flex flex-row justify-start items-center">
         <InsertMenu
           isUploading={state.ui.isLoading.uploading}
@@ -38,17 +38,27 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
         />
       </div>
 
-      <div className="flex flex-row justify-end items-center gap-2">
+      <div className="flex flex-row justify-end items-center gap-3">
         <VisibilitySelector value={state.metadata.visibility} onChange={handleVisibilityChange} />
 
         {onCancel && (
-          <Button variant="ghost" onClick={onCancel} disabled={isSaving}>
+          <Button
+            variant="ghost"
+            onClick={onCancel}
+            disabled={isSaving}
+            className="rounded-full border border-white/20 hover:border-primary/40"
+          >
             {t("common.cancel")}
           </Button>
         )}
 
-        <Button onClick={onSave} disabled={!valid || isSaving}>
-          {isSaving ? t("editor.saving") : t("editor.save")}
+        <Button
+          onClick={onSave}
+          disabled={!valid || isSaving}
+          className="relative overflow-hidden rounded-full px-6 font-semibold tracking-[0.3em]"
+        >
+          <span className="relative z-10">{isSaving ? t("editor.saving") : t("editor.save")}</span>
+          <span className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary opacity-80 blur" />
         </Button>
       </div>
     </div>

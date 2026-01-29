@@ -15,17 +15,17 @@ const RelationCard = ({ memo, parentPage, className }: RelationCardProps) => {
   return (
     <Link
       className={cn(
-        "flex items-center gap-1 px-1 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent/20 transition-colors group",
+        "flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-muted-foreground/80 hover:text-foreground hover:bg-white/5 border border-white/5 hover:border-primary/40 transition-all group shadow-[0_10px_25px_rgba(4,8,20,0.35)]",
         className,
       )}
       to={`/${memo.name}`}
       viewTransition
       state={{ from: parentPage }}
     >
-      <span className="text-[8px] font-mono px-1 py-0.5 rounded border border-border bg-muted/40 group-hover:bg-accent/30 transition-colors shrink-0">
+      <span className="text-[0.6rem] font-mono px-2 py-0.5 rounded-full border border-white/10 bg-white/5 group-hover:text-primary group-hover:border-primary/50 transition-colors shrink-0 tracking-[0.3em]">
         {memoId.slice(0, 6)}
       </span>
-      <span className="truncate">{memo.snippet}</span>
+      <span className="truncate text-sm">{memo.snippet}</span>
     </Link>
   );
 };

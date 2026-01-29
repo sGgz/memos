@@ -5,10 +5,10 @@ interface SkeletonProps {
   count?: number;
 }
 
-const skeletonBase = "bg-muted/70 rounded animate-pulse";
+const skeletonBase = "bg-gradient-to-r from-white/5 via-white/10 to-white/5 rounded-full animate-pulse";
 
 const MemoCardSkeleton = ({ showCreator, index }: { showCreator?: boolean; index: number }) => (
-  <div className="relative flex flex-col bg-card w-full px-4 py-3 mb-2 gap-2 rounded-lg border border-border">
+  <div className="relative flex flex-col bg-gradient-to-br from-card/80 via-card/60 to-card/80 w-full px-5 py-4 mb-4 gap-3 rounded-2xl border border-white/5 shadow-[0_30px_60px_rgba(2,4,14,0.45)] backdrop-blur-xl">
     <div className="w-full flex justify-between items-center gap-2">
       <div className="grow flex items-center max-w-[calc(100%-8rem)]">
         {showCreator ? (
@@ -24,11 +24,11 @@ const MemoCardSkeleton = ({ showCreator, index }: { showCreator?: boolean; index
         )}
       </div>
       <div className="flex gap-2">
-        <div className={cn("w-4 h-4", skeletonBase)} />
-        <div className={cn("w-4 h-4", skeletonBase)} />
+        <div className={cn("w-6 h-6", skeletonBase)} />
+        <div className={cn("w-6 h-6", skeletonBase)} />
       </div>
     </div>
-    <div className="space-y-2">
+    <div className="space-y-3">
       <div className={cn("h-4", skeletonBase, index % 3 === 0 ? "w-full" : index % 3 === 1 ? "w-4/5" : "w-5/6")} />
       <div className={cn("h-4", skeletonBase, index % 2 === 0 ? "w-3/4" : "w-4/5")} />
       {index % 2 === 0 && <div className={cn("h-4 w-2/3", skeletonBase)} />}

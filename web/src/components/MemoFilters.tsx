@@ -75,7 +75,7 @@ const MemoFilters = () => {
   }
 
   return (
-    <div className="w-full mb-2 flex flex-row justify-start items-center flex-wrap gap-2">
+    <div className="w-full mb-4 flex flex-row justify-start items-center flex-wrap gap-2.5">
       {filters.map((filter) => {
         const config = FILTER_CONFIGS[filter.factor];
         const Icon = config?.icon;
@@ -83,13 +83,13 @@ const MemoFilters = () => {
         return (
           <div
             key={getMemoFilterKey(filter)}
-            className="group inline-flex items-center gap-1.5 h-7 px-2.5 bg-accent/50 hover:bg-accent border border-border/50 rounded-full text-sm transition-all duration-200 hover:shadow-sm"
+            className="group inline-flex items-center gap-2 h-8 px-3 bg-gradient-to-r from-secondary/80 via-secondary/50 to-secondary/80 border border-white/10 rounded-full text-xs uppercase tracking-[0.18em] text-muted-foreground transition-all duration-300 hover:border-primary/40 hover:text-foreground hover:shadow-[0_10px_30px_rgba(4,10,30,0.45)]"
           >
-            {Icon && <Icon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
-            <span className="text-foreground/80 font-medium max-w-32 truncate">{getFilterDisplayText(filter)}</span>
+            {Icon && <Icon className="w-3.5 h-3.5 text-primary/70 group-hover:text-primary shrink-0 transition-colors" />}
+            <span className="font-semibold max-w-32 truncate">{getFilterDisplayText(filter)}</span>
             <button
               onClick={() => handleRemoveFilter(filter)}
-              className="ml-0.5 -mr-1 p-0.5 text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors"
+              className="ml-0.5 -mr-1 p-0.5 rounded-full text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all"
               aria-label="Remove filter"
             >
               <XIcon className="w-3 h-3" />

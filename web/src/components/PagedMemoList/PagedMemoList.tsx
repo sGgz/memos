@@ -149,7 +149,7 @@ const PagedMemoList = (props: Props) => {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const children = (
-    <div className="flex flex-col justify-start items-start w-full max-w-full">
+    <div className="flex flex-col justify-start items-stretch w-full max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
       {/* Show skeleton loader during initial load */}
       {isLoading ? (
         <Skeleton showCreator={props.showCreator} count={4} />
@@ -176,12 +176,12 @@ const PagedMemoList = (props: Props) => {
           {!isFetchingNextPage && (
             <>
               {!hasNextPage && sortedMemoList.length === 0 ? (
-                <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
+                <div className="w-full mt-16 mb-12 flex flex-col justify-center items-center italic text-center space-y-4">
                   <Empty />
-                  <p className="mt-2 text-muted-foreground">{t("message.no-data")}</p>
+                  <p className="text-muted-foreground">{t("message.no-data")}</p>
                 </div>
               ) : (
-                <div className="w-full opacity-70 flex flex-row justify-center items-center my-4">
+                <div className="w-full flex flex-row justify-center items-center my-8">
                   <BackToTop />
                 </div>
               )}
@@ -222,9 +222,14 @@ const BackToTop = () => {
   }
 
   return (
-    <Button variant="ghost" onClick={scrollToTop}>
+    <Button
+      variant="ghost"
+      onClick={scrollToTop}
+      className="group relative inline-flex items-center gap-3 px-6 py-3 border border-white/10 rounded-full text-xs uppercase tracking-[0.4em] text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all shadow-[0_15px_35px_rgba(2,5,18,0.45)]"
+    >
       {t("router.back-to-top")}
-      <ArrowUpIcon className="ml-1 w-4 h-auto" />
+      <ArrowUpIcon className="ml-1 w-4 h-auto group-hover:translate-y-[-2px] transition-all" />
+      <span className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/30 via-accent/30 to-primary/30 opacity-0 group-hover:opacity-100 blur-xl transition-all -z-10" />
     </Button>
   );
 };

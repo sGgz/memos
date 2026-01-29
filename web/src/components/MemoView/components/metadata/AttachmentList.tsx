@@ -1,5 +1,6 @@
-import { FileIcon, PaperclipIcon } from "lucide-react";
-import { useState } from "react";
+import { FileIcon, GripHorizontalIcon, PaperclipIcon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useSwipeable } from "react-swipeable";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
@@ -80,6 +81,46 @@ const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; o
   </div>
 );
 
+const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const total = attachments.length;
+
+  const handlers = useSwipeable({
+    onSwipedLeft: () => setActiveIndex((prev) => Math.min(prev + 1, total - 1)),
+    onSwipedRight: () => setActiveIndex((prev) => Math.max(prev - 1, 0)),
+    trackMouse: true,
+    preventScrollOnSwipe: true,
+  });
+
+  const translateX = useMemo(() => `translateX(-${activeIndex * 100}%)`, [activeIndex]);
+
+  return (
+    <div className="relative w-full">
+      <div {...handlers} className="overflow-hidden rounded-2xl border border-border bg-white/70">
+        <div className="flex transition-transform duration-300 ease-in-out" style={{ transform: translateX }}>
+          {attachments.map((attachment) => (
+            <div
+              key={attachment.name}
+              className="min-w-full aspect-[4/3] relative cursor-pointer"
+              onClick={() => onImageClick(getAttachmentUrl(attachment))}
+            >
+              <AttachmentCard attachment={attachment} className="rounded-none w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
+      </div>
+      {total > 1 && (
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-black/30 px-3 py-1 text-xs text-white">
+          <GripHorizontalIcon className="w-3 h-3 text-white/70" />
+          <span>
+            {activeIndex + 1}/{total}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const DocsList = ({ attachments }: { attachments: Attachment[] }) => (
   <div className="flex flex-col gap-0.5">
     {attachments.map((attachment) => (
@@ -99,6 +140,8 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
   });
 
   const { media: mediaItems, docs: docItems } = separateMediaAndDocs(attachments);
+  const imageOnlyMedia = mediaItems.filter((item) => getAttachmentType(item) === "image/*");
+  const allImages = imageOnlyMedia.length === mediaItems.length && mediaItems.length > 0;
 
   if (attachments.length === 0) {
     return null;
@@ -118,7 +161,8 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
         <SectionHeader icon={PaperclipIcon} title="Attachments" count={attachments.length} />
 
         <div className="p-2 flex flex-col gap-1">
-          {mediaItems.length > 0 && <MediaGrid attachments={mediaItems} onImageClick={handleImageClick} />}
+          {mediaItems.length > 0 && !allImages && <MediaGrid attachments={mediaItems} onImageClick={handleImageClick} />}
+          {allImages && <ImageCarousel attachments={imageOnlyMedia} onImageClick={handleImageClick} />}
 
           {mediaItems.length > 0 && docItems.length > 0 && <div className="border-t mt-1 border-border opacity-60" />}
 

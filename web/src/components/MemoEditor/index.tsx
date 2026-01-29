@@ -23,7 +23,7 @@ const MemoEditor = (props: MemoEditorProps) => {
   return (
     <EditorProvider>
       <MemoEditorImpl
-        className={className}
+        className={cn("memo-editor-shell", className)}
         cacheKey={cacheKey}
         memoName={memoName}
         parentMemoName={parentMemoName}
@@ -132,7 +132,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       */}
       <div
         className={cn(
-          "group relative w-full flex flex-col justify-between items-start bg-card px-4 pt-3 pb-1 rounded-lg border border-border gap-2",
+          "memo-editor-container group relative w-full flex flex-col justify-between items-start bg-card/90 px-5 pt-4 pb-3 rounded-2xl border border-white/10 gap-3 shadow-[0_40px_90px_rgba(3,5,15,0.55)] backdrop-blur-3xl transition-all duration-500 hover:border-primary/40 hover:-translate-y-0.5",
           FOCUS_MODE_STYLES.transition,
           state.ui.isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
           className,
