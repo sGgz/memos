@@ -6,7 +6,7 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import { isSuperUser } from "@/utils/user";
 import MemoEditor from "../MemoEditor";
 import PreviewImageDialog from "../PreviewImageDialog";
-import { MemoBody, MemoHeader } from "./components";
+import { MemoBody, MemoHeader, MemoInlineComments } from "./components";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
 import { useImagePreview, useMemoActions, useMemoHandlers, useNsfwContent } from "./hooks";
 import { MemoViewContext } from "./MemoViewContext";
@@ -85,6 +85,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
           onContentDoubleClick={handleMemoContentDoubleClick}
           onToggleNsfwVisibility={toggleNsfwVisibility}
         />
+        <MemoInlineComments memoName={memoData.name} parentPage={parentPage} />
 
         <PreviewImageDialog
           open={previewState.open}
