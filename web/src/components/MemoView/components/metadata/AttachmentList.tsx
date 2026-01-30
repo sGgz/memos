@@ -1,6 +1,5 @@
 import { FileIcon, GripHorizontalIcon, PaperclipIcon } from "lucide-react";
 import { useRef, useState } from "react";
-import { useSwipeable } from "react-swipeable";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
@@ -86,36 +85,9 @@ const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[
   const scrollRef = useRef<HTMLDivElement>(null);
   const total = attachments.length;
 
-  const scrollToIndex = (nextIndex: number) => {
-    const container = scrollRef.current;
-    if (!container) {
-      return;
-    }
-    container.scrollTo({ left: nextIndex * container.clientWidth, behavior: "smooth" });
-  };
-
-  const handlers = useSwipeable({
-    onSwipedLeft: () =>
-      setActiveIndex((prev) => {
-        const next = Math.min(prev + 1, total - 1);
-        scrollToIndex(next);
-        return next;
-      }),
-    onSwipedRight: () =>
-      setActiveIndex((prev) => {
-        const next = Math.max(prev - 1, 0);
-        scrollToIndex(next);
-        return next;
-      }),
-    trackMouse: true,
-    preventScrollOnSwipe: false,
-    delta: 8,
-  });
-
   return (
     <div className="relative w-full">
       <div
-        {...handlers}
         ref={scrollRef}
         className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar border-0 bg-transparent touch-pan-x rounded-2xl"
         onWheel={(event) => {
