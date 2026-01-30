@@ -37,9 +37,9 @@ const RootLayout = () => {
       {sm && (
         <div
           className={cn(
-            "group flex flex-col justify-start items-start fixed top-0 left-0 select-none h-full bg-sidebar",
+            "group flex flex-col justify-start items-start fixed top-0 left-0 select-none h-full bg-sidebar/95",
             "w-16 px-2",
-            "border-r border-border",
+            "border-r border-sidebar-border shadow-[inset_-1px_0_0_rgba(255,255,255,0.6),0_18px_40px_rgba(31,70,45,0.12)]",
           )}
         >
           <Navigation className="py-4 md:pt-6" collapsed={true} />

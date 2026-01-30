@@ -83,11 +83,11 @@ const Navigation = (props: Props) => {
           <NavLink
             className={({ isActive }) =>
               cn(
-                "px-2 py-2 rounded-2xl border flex flex-row items-center text-lg text-sidebar-foreground transition-colors",
+                "px-2 py-2 rounded-2xl border flex flex-row items-center text-lg text-sidebar-foreground transition-all",
                 collapsed ? "" : "w-full px-4",
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground border-sidebar-accent-border drop-shadow"
-                  : "border-transparent hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:border-sidebar-accent-border opacity-80",
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground border-sidebar-border shadow-[0_18px_38px_rgba(36,72,47,0.25)]"
+                  : "border-transparent hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground hover:border-sidebar-border/60 opacity-80",
               )
             }
             key={navLink.id}

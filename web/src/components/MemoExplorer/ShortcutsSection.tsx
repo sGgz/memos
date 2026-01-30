@@ -75,7 +75,7 @@ function ShortcutsSection() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1">
+      <div className="w-full flex flex-col justify-start items-start gap-1.5 rounded-2xl border border-sidebar-border/80 bg-white/70 px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
         {shortcuts.map((shortcut) => {
           const shortcutId = getShortcutId(shortcut.name);
           const maybeEmoji = shortcut.title.split(" ")[0];
@@ -85,7 +85,7 @@ function ShortcutsSection() {
           return (
             <div
               key={shortcutId}
-              className="shrink-0 w-full text-sm rounded-md leading-6 flex flex-row justify-between items-center select-none gap-2 text-muted-foreground"
+              className="shrink-0 w-full text-sm rounded-lg leading-6 flex flex-row justify-between items-center select-none gap-2 text-muted-foreground hover:bg-accent/40 px-2 py-1.5 transition-colors"
             >
               <span
                 className={cn("truncate cursor-pointer text-muted-foreground", selected && "text-primary font-medium")}

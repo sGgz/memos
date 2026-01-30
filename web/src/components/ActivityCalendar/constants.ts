@@ -14,11 +14,11 @@ export const INTENSITY_THRESHOLDS = {
 } as const;
 
 export const CELL_STYLES = {
-  HIGH: "bg-primary text-primary-foreground shadow-sm",
-  MEDIUM: "bg-primary/80 text-primary-foreground shadow-sm",
-  LOW: "bg-primary/60 text-primary-foreground shadow-sm",
-  MINIMAL: "bg-primary/40 text-foreground",
-  EMPTY: "bg-secondary/30 text-muted-foreground hover:bg-secondary/50",
+  HIGH: "bg-primary text-primary-foreground shadow-[0_8px_18px_rgba(55,110,78,0.25)]",
+  MEDIUM: "bg-primary/85 text-primary-foreground shadow-[0_6px_14px_rgba(55,110,78,0.2)]",
+  LOW: "bg-primary/65 text-primary-foreground shadow-[0_4px_10px_rgba(55,110,78,0.16)]",
+  MINIMAL: "bg-primary/35 text-foreground",
+  EMPTY: "bg-secondary/40 text-muted-foreground hover:bg-secondary/60",
 } as const;
 
 export const SMALL_CELL_SIZE = {

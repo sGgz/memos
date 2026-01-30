@@ -165,7 +165,7 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
   return (
     <>
       <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
-        <SectionHeader icon={PaperclipIcon} title="Attachments" count={attachments.length} hideIcon hideCount />
+        <SectionHeader icon={PaperclipIcon} title="附件" count={attachments.length} hideIcon hideCount />
 
         <div className="p-2 flex flex-col gap-1">
           {mediaItems.length > 0 && !allImages && <MediaGrid attachments={mediaItems} onImageClick={handleImageClick} />}

@@ -21,7 +21,7 @@ const StatisticsView = (props: Props) => {
   }, [activityStats]);
 
   return (
-    <div className="group w-full mt-2 flex flex-col text-muted-foreground animate-fade-in">
+    <div className="group w-full mt-2 flex flex-col text-muted-foreground animate-fade-in rounded-2xl border border-sidebar-border/80 bg-white/70 px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
       <MonthNavigator visibleMonth={visibleMonthString} onMonthChange={setVisibleMonthString} activityStats={activityStats} />
 
       <div className="w-full animate-scale-in">

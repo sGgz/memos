@@ -25,7 +25,10 @@ const NavigationDrawer = () => {
           <span className="font-bold text-lg leading-10 text-ellipsis overflow-hidden text-foreground">{title}</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-80 max-w-full overflow-auto px-2 bg-background">
+      <SheetContent
+        side="left"
+        className="w-80 max-w-full overflow-auto px-2 bg-sidebar/95 backdrop-blur-md border-r border-sidebar-border"
+      >
         <SheetHeader>
           <SheetTitle />
         </SheetHeader>

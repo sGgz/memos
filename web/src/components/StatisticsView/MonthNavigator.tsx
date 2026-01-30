@@ -34,7 +34,7 @@ export const MonthNavigator = ({ visibleMonth, onMonthChange, activityStats }: M
     <div className="w-full mb-2 flex flex-row justify-between items-center gap-1">
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <button className="px-2 py-1 -ml-2 rounded-md hover:bg-secondary/50 text-sm text-foreground font-semibold transition-colors flex items-center gap-1 select-none group">
+          <button className="px-2 py-1 -ml-2 rounded-full hover:bg-secondary/60 text-sm text-foreground font-semibold transition-colors flex items-center gap-1 select-none group">
             {currentMonth.toLocaleString(i18n.language, { year: "numeric", month: "long" })}
             <ChevronDownIcon className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
           </button>

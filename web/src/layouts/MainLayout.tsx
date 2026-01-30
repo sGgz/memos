@@ -75,7 +75,13 @@ const MainLayout = () => {
         </MobileHeader>
       )}
       {md && (
-        <div className={cn("fixed top-0 left-16 shrink-0 h-svh transition-all", "border-r border-border", lg ? "w-72" : "w-56")}>
+        <div
+          className={cn(
+            "fixed top-0 left-16 shrink-0 h-svh transition-all bg-sidebar/95 backdrop-blur-sm",
+            "border-r border-sidebar-border shadow-[inset_-1px_0_0_rgba(255,255,255,0.6),0_18px_40px_rgba(31,70,45,0.12)]",
+            lg ? "w-72" : "w-56",
+          )}
+        >
           <MemoExplorer className={cn("px-3 py-6")} context={context} statisticsData={statistics} tagCount={tags} />
         </div>
       )}

@@ -70,7 +70,7 @@ const MemoExplorer = (props: Props) => {
   return (
     <aside
       className={cn(
-        "relative w-full h-full overflow-auto flex flex-col justify-start items-start bg-background text-sidebar-foreground",
+        "relative w-full h-full overflow-auto flex flex-col justify-start items-start bg-sidebar/95 text-sidebar-foreground",
         className,
       )}
     >

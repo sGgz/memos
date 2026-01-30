@@ -62,16 +62,16 @@ const TagsSection = (props: Props) => {
         treeMode ? (
           <TagTree tagAmounts={tags} expandSubTags={!!treeAutoExpand} />
         ) : (
-          <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1.5">
+          <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1.5 rounded-2xl border border-sidebar-border/80 bg-white/70 px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
             {tags.map(([tag, amount]) => {
               const isActive = getFiltersByFactor("tagSearch").some((filter: MemoFilter) => filter.value === tag);
               return (
                 <div
                   key={tag}
                   className={cn(
-                    "shrink-0 w-auto max-w-full text-sm rounded-md leading-6 flex flex-row justify-start items-center select-none cursor-pointer transition-colors",
-                    "hover:opacity-80",
-                    isActive ? "text-primary" : "text-muted-foreground",
+                    "shrink-0 w-auto max-w-full text-sm rounded-full leading-6 flex flex-row justify-start items-center select-none cursor-pointer transition-all border border-transparent px-2.5 py-0.5",
+                    "hover:opacity-100 hover:bg-accent/40 hover:border-accent/60",
+                    isActive ? "text-primary border-primary/40 bg-primary/10" : "text-muted-foreground",
                   )}
                   onClick={() => handleTagClick(tag)}
                 >

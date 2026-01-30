@@ -51,6 +51,8 @@ function RelationList({ relations, currentMemoName, parentPage, className }: Rel
         icon={icon}
         title={isReferencing ? t("common.referencing") : t("common.referenced-by")}
         count={activeRelations.length}
+        hideIcon
+        hideCount
         tabs={
           hasBothTabs
             ? [
