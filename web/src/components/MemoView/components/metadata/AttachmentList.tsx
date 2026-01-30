@@ -97,14 +97,14 @@ const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[
     <div className="relative w-full">
       <div
         {...handlers}
-        className="overflow-hidden rounded-2xl border border-transparent bg-transparent"
+        className="overflow-hidden rounded-2xl border-0 bg-transparent"
         onScroll={(event) => {
           const target = event.currentTarget;
           const nextIndex = Math.round(target.scrollLeft / target.clientWidth);
           setActiveIndex(Math.min(Math.max(nextIndex, 0), total - 1));
         }}
       >
-        <div className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar">
+        <div className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar border-0 outline-none ring-0">
           {attachments.map((attachment) => (
             <div
               key={attachment.name}
@@ -164,7 +164,7 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
 
   return (
     <>
-      <div className="w-full rounded-lg border border-transparent bg-transparent overflow-hidden">
+      <div className="w-full rounded-lg border-0 bg-transparent overflow-hidden">
         <SectionHeader icon={PaperclipIcon} title="附件" count={attachments.length} hideIcon hideCount hideBorder />
 
         <div className="p-2 flex flex-col gap-1">
