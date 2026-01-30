@@ -1,5 +1,5 @@
 import { FileIcon, GripHorizontalIcon, PaperclipIcon } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
@@ -83,38 +83,65 @@ const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; o
 
 const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const total = attachments.length;
 
+  const scrollToIndex = (nextIndex: number) => {
+    const container = scrollRef.current;
+    if (!container) {
+      return;
+    }
+    container.scrollTo({ left: nextIndex * container.clientWidth, behavior: "smooth" });
+  };
+
   const handlers = useSwipeable({
-    onSwipedLeft: () => setActiveIndex((prev) => Math.min(prev + 1, total - 1)),
-    onSwipedRight: () => setActiveIndex((prev) => Math.max(prev - 1, 0)),
+    onSwipedLeft: () =>
+      setActiveIndex((prev) => {
+        const next = Math.min(prev + 1, total - 1);
+        scrollToIndex(next);
+        return next;
+      }),
+    onSwipedRight: () =>
+      setActiveIndex((prev) => {
+        const next = Math.max(prev - 1, 0);
+        scrollToIndex(next);
+        return next;
+      }),
     trackMouse: true,
-    preventScrollOnSwipe: true,
-    delta: 12,
+    preventScrollOnSwipe: false,
+    delta: 8,
   });
 
   return (
     <div className="relative w-full">
       <div
         {...handlers}
-        className="overflow-hidden rounded-2xl border-0 bg-transparent"
+        ref={scrollRef}
+        className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar border-0 bg-transparent touch-pan-x rounded-2xl"
+        onWheel={(event) => {
+          const target = event.currentTarget;
+          const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+          if (delta === 0) {
+            return;
+          }
+          event.preventDefault();
+          target.scrollLeft += delta;
+        }}
         onScroll={(event) => {
           const target = event.currentTarget;
           const nextIndex = Math.round(target.scrollLeft / target.clientWidth);
           setActiveIndex(Math.min(Math.max(nextIndex, 0), total - 1));
         }}
       >
-        <div className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar border-0 outline-none ring-0">
-          {attachments.map((attachment) => (
-            <div
-              key={attachment.name}
-              className="min-w-full snap-center aspect-[4/3] relative cursor-pointer flex items-center justify-center bg-card/80"
-              onClick={() => onImageClick(getAttachmentUrl(attachment))}
-            >
-              <AttachmentCard attachment={attachment} className="rounded-none w-full h-full object-contain" />
-            </div>
-          ))}
-        </div>
+        {attachments.map((attachment) => (
+          <div
+            key={attachment.name}
+            className="min-w-full snap-center aspect-[4/3] relative cursor-pointer flex items-center justify-center bg-card/80"
+            onClick={() => onImageClick(getAttachmentUrl(attachment))}
+          >
+            <AttachmentCard attachment={attachment} className="rounded-none w-full h-full object-contain" />
+          </div>
+        ))}
       </div>
       {total > 1 && (
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-foreground/20 px-3 py-1 text-xs text-foreground">
