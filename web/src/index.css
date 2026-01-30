@@ -46,6 +46,16 @@
     z-index: -1;
   }
 
+  .no-scrollbar::-webkit-scrollbar {
+    height: 0;
+    width: 0;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
   html[data-theme="default-dark"] body {
     background-image:
       radial-gradient(circle at 18% 20%, rgba(88, 168, 122, 0.18), transparent 42%),

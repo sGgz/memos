@@ -24,7 +24,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact, onContentClick, onContentD
       >
         <MemoContent
           key={`${memo.name}-${memo.updateTime}`}
-          className="memo-content-block w-full rounded-[24px] bg-gradient-to-br from-card/90 via-card/85 to-card/75 px-1 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
+          className="memo-content-block w-full rounded-[24px] bg-gradient-to-br from-card/90 via-card/85 to-card/75 px-1 pt-2 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
           content={memo.content}
           onClick={onContentClick}
           onDoubleClick={onContentDoubleClick}

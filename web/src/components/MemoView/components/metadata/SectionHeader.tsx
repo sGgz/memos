@@ -7,6 +7,7 @@ interface SectionHeaderProps {
   count: number;
   hideIcon?: boolean;
   hideCount?: boolean;
+  hideBorder?: boolean;
   tabs?: Array<{
     id: string;
     label: string;
@@ -16,9 +17,14 @@ interface SectionHeaderProps {
   }>;
 }
 
-const SectionHeader = ({ icon: Icon, title, count, tabs, hideIcon = false, hideCount = false }: SectionHeaderProps) => {
+const SectionHeader = ({ icon: Icon, title, count, tabs, hideIcon = false, hideCount = false, hideBorder = false }: SectionHeaderProps) => {
   return (
-    <div className="flex items-center gap-2 px-3 py-2 border-b border-border/60 bg-card/40 backdrop-blur-3xl">
+    <div
+      className={cn(
+        "flex items-center gap-2 px-3 py-2 bg-card/40 backdrop-blur-3xl",
+        hideBorder ? "border-none" : "border-b border-border/60",
+      )}
+    >
       {!hideIcon && (
         <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center text-primary shadow-[0_10px_25px_rgba(0,0,0,0.2)]">
           <Icon className="w-3.5 h-3.5" />

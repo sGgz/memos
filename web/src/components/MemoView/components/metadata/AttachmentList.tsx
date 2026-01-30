@@ -97,14 +97,14 @@ const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[
     <div className="relative w-full">
       <div
         {...handlers}
-        className="overflow-hidden rounded-2xl border border-border bg-card/70"
+        className="overflow-hidden rounded-2xl border border-transparent bg-transparent"
         onScroll={(event) => {
           const target = event.currentTarget;
           const nextIndex = Math.round(target.scrollLeft / target.clientWidth);
           setActiveIndex(Math.min(Math.max(nextIndex, 0), total - 1));
         }}
       >
-        <div className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth">
+        <div className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar">
           {attachments.map((attachment) => (
             <div
               key={attachment.name}
@@ -164,8 +164,8 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
 
   return (
     <>
-      <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
-        <SectionHeader icon={PaperclipIcon} title="附件" count={attachments.length} hideIcon hideCount />
+      <div className="w-full rounded-lg border border-transparent bg-transparent overflow-hidden">
+        <SectionHeader icon={PaperclipIcon} title="附件" count={attachments.length} hideIcon hideCount hideBorder />
 
         <div className="p-2 flex flex-col gap-1">
           {mediaItems.length > 0 && !allImages && <MediaGrid attachments={mediaItems} onImageClick={handleImageClick} />}
