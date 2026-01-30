@@ -34,6 +34,7 @@ const Explore = () => {
       orderBy={orderBy}
       filter={memoFilter}
       showCreator
+      showMemoEditor
     />
   );
 };

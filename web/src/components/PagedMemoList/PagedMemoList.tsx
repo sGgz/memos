@@ -28,6 +28,7 @@ interface Props {
   pageSize?: number;
   showCreator?: boolean;
   enabled?: boolean;
+  showMemoEditor?: boolean;
 }
 
 function useAutoFetchWhenNotScrollable({
@@ -86,8 +87,8 @@ const PagedMemoList = (props: Props) => {
   const { layout } = useView();
   const queryClient = useQueryClient();
 
-  // Show memo editor only on the root route
-  const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
+  // Show memo editor only on the root route by default
+  const showMemoEditor = props.showMemoEditor ?? Boolean(matchPath(Routes.ROOT, window.location.pathname));
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteMemos(
     {

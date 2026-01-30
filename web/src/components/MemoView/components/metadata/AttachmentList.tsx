@@ -89,15 +89,17 @@ const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[
     <div className="relative w-full">
       <div
         ref={scrollRef}
-        className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar border-0 bg-transparent touch-pan-x rounded-2xl"
+        className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar border-0 bg-transparent touch-auto rounded-2xl"
         onWheel={(event) => {
+          if (Math.abs(event.deltaX) < Math.abs(event.deltaY)) {
+            return;
+          }
           const target = event.currentTarget;
-          const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-          if (delta === 0) {
+          if (event.deltaX === 0) {
             return;
           }
           event.preventDefault();
-          target.scrollLeft += delta;
+          target.scrollLeft += event.deltaX;
         }}
         onScroll={(event) => {
           const target = event.currentTarget;
