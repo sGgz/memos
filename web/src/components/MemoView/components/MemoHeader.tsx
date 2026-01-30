@@ -137,7 +137,7 @@ const CreatorDisplay: React.FC<CreatorDisplayProps> = ({ creator, displayTime, o
       </Link>
       <button
         type="button"
-        className="w-auto mt-0.5 text-[0.7rem] uppercase tracking-[0.4em] text-muted-foreground/80 select-none cursor-pointer hover:text-primary transition-colors text-left"
+        className="w-auto mt-0.5 text-[0.7rem] uppercase tracking-[0.2em] text-muted-foreground/80 select-none cursor-pointer hover:text-primary transition-colors text-left whitespace-nowrap"
         onClick={onGotoDetail}
       >
         {displayTime}
@@ -154,7 +154,7 @@ interface TimeDisplayProps {
 const TimeDisplay: React.FC<TimeDisplayProps> = ({ displayTime, onGotoDetail }) => (
   <button
     type="button"
-    className="w-full text-xs uppercase tracking-[0.4em] text-muted-foreground/80 select-none cursor-pointer hover:text-primary transition-colors text-left"
+    className="w-full text-xs uppercase tracking-[0.2em] text-muted-foreground/80 select-none cursor-pointer hover:text-primary transition-colors text-left whitespace-nowrap"
     onClick={onGotoDetail}
   >
     {displayTime}
