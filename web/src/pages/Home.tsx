@@ -22,15 +22,13 @@ const Home = () => {
   });
 
   return (
-    <div className="w-full min-h-full bg-background text-foreground">
-      <PagedMemoList
-        renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />}
-        listSort={listSort}
-        orderBy={orderBy}
-        filter={memoFilter}
-        enabled={isInitialized && !!user} // Wait for contexts to stabilize before fetching
-      />
-    </div>
+    <PagedMemoList
+      renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />}
+      listSort={listSort}
+      orderBy={orderBy}
+      filter={memoFilter}
+      enabled={isInitialized && !!user} // Wait for contexts to stabilize before fetching
+    />
   );
 };
 

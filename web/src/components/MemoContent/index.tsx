@@ -105,7 +105,7 @@ const MemoContent = (props: MemoContentProps) => {
         {showCompactMode === "ALL" && (
           <div
             className={cn(
-              "absolute inset-x-0 bottom-0 pointer-events-none",
+              "absolute inset-x-0 bottom-0 pointer-events-none opacity-0",
               COMPACT_MODE_CONFIG.gradientHeight,
               "bg-linear-to-t from-background from-0% via-background/60 via-40% to-transparent to-100%",
             )}
