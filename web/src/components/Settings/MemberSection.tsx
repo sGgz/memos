@@ -13,6 +13,7 @@ import { useDeleteUser, useListUsers } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { User, User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import ChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import CreateUserDialog from "../CreateUserDialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import SettingSection from "./SettingSection";
@@ -25,7 +26,9 @@ const MemberSection = () => {
   const deleteUserMutation = useDeleteUser();
   const createDialog = useDialog();
   const editDialog = useDialog();
+  const passwordDialog = useDialog();
   const [editingUser, setEditingUser] = useState<User | undefined>();
+  const [passwordTarget, setPasswordTarget] = useState<User | undefined>();
   const sortedUsers = sortBy(users, "id");
   const [archiveTarget, setArchiveTarget] = useState<User | undefined>(undefined);
   const [deleteTarget, setDeleteTarget] = useState<User | undefined>(undefined);
@@ -46,6 +49,18 @@ const MemberSection = () => {
   const handleEditUser = (user: User) => {
     setEditingUser(user);
     editDialog.open();
+  };
+
+  const handleChangePasswordClick = (user: User) => {
+    setPasswordTarget(user);
+    passwordDialog.open();
+  };
+
+  const handlePasswordDialogChange = (open: boolean) => {
+    passwordDialog.setOpen(open);
+    if (!open) {
+      setPasswordTarget(undefined);
+    }
   };
 
   const handleArchiveUserClick = async (user: User) => {
@@ -146,9 +161,14 @@ const MemberSection = () => {
                   <DropdownMenuContent align="end" sideOffset={2}>
                     <DropdownMenuItem onClick={() => handleEditUser(user)}>{t("common.update")}</DropdownMenuItem>
                     {user.state === State.NORMAL ? (
-                      <DropdownMenuItem onClick={() => handleArchiveUserClick(user)}>
-                        {t("setting.member-section.archive-member")}
-                      </DropdownMenuItem>
+                      <>
+                        <DropdownMenuItem onClick={() => handleChangePasswordClick(user)}>
+                          {t("setting.account-section.change-password")}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleArchiveUserClick(user)}>
+                          {t("setting.member-section.archive-member")}
+                        </DropdownMenuItem>
+                      </>
                     ) : (
                       <>
                         <DropdownMenuItem onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</DropdownMenuItem>
@@ -172,6 +192,14 @@ const MemberSection = () => {
 
       {/* Edit User Dialog */}
       <CreateUserDialog open={editDialog.isOpen} onOpenChange={editDialog.setOpen} user={editingUser} onSuccess={refetchUsers} />
+
+      {/* Change Password Dialog */}
+      <ChangeMemberPasswordDialog
+        open={passwordDialog.isOpen}
+        onOpenChange={handlePasswordDialogChange}
+        user={passwordTarget}
+        onSuccess={refetchUsers}
+      />
 
       <ConfirmDialog
         open={!!archiveTarget}
