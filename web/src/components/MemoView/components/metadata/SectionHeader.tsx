@@ -5,6 +5,8 @@ interface SectionHeaderProps {
   icon: LucideIcon;
   title: string;
   count: number;
+  hideIcon?: boolean;
+  hideCount?: boolean;
   tabs?: Array<{
     id: string;
     label: string;
@@ -14,12 +16,14 @@ interface SectionHeaderProps {
   }>;
 }
 
-const SectionHeader = ({ icon: Icon, title, count, tabs }: SectionHeaderProps) => {
+const SectionHeader = ({ icon: Icon, title, count, tabs, hideIcon = false, hideCount = false }: SectionHeaderProps) => {
   return (
     <div className="flex items-center gap-2 px-3 py-2 border-b border-white/10 bg-white/5 backdrop-blur-3xl">
-      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center text-primary shadow-[0_10px_25px_rgba(4,8,20,0.35)]">
-        <Icon className="w-3.5 h-3.5" />
-      </div>
+      {!hideIcon && (
+        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center text-primary shadow-[0_10px_25px_rgba(4,8,20,0.35)]">
+          <Icon className="w-3.5 h-3.5" />
+        </div>
+      )}
 
       {tabs && tabs.length > 1 ? (
         <div className="flex items-center gap-1">
@@ -43,7 +47,7 @@ const SectionHeader = ({ icon: Icon, title, count, tabs }: SectionHeaderProps) =
       ) : (
         <div className="flex flex-col">
           <span className="text-[0.65rem] uppercase tracking-[0.35em] text-muted-foreground">{title}</span>
-          <span className="text-sm text-foreground font-semibold">{count}</span>
+          {!hideCount && <span className="text-sm text-foreground font-semibold">{count}</span>}
         </div>
       )}
     </div>

@@ -17,9 +17,9 @@
     color: var(--foreground);
     min-height: 100vh;
     background-image:
-      radial-gradient(circle at 10% 15%, rgba(167, 215, 194, 0.8), transparent 45%),
-      radial-gradient(circle at 70% 0%, rgba(255, 255, 255, 0.9), transparent 55%),
-      radial-gradient(circle at 40% 75%, rgba(219, 240, 210, 0.9), transparent 45%),
+      radial-gradient(circle at 12% 18%, rgba(140, 199, 168, 0.55), transparent 45%),
+      radial-gradient(circle at 78% 8%, rgba(255, 255, 255, 0.85), transparent 55%),
+      radial-gradient(circle at 45% 78%, rgba(202, 226, 192, 0.8), transparent 45%),
       linear-gradient(135deg, #eef7ed 0%, #f9f6ef 45%, #f4f7f0 100%);
     background-attachment: fixed;
     letter-spacing: var(--tracking-normal);

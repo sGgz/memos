@@ -1,16 +1,16 @@
 :root {
   --background: #f4f7f0;
-  --foreground: #1f2a16;
+  --foreground: #121b12;
   --card: rgba(255, 255, 250, 0.95);
-  --card-foreground: #1f2a16;
+  --card-foreground: #121b12;
   --popover: #ffffff;
-  --popover-foreground: #1f2a16;
+  --popover-foreground: #121b12;
   --primary: #5d9c6f;
   --primary-foreground: #f8fff5;
   --secondary: #ddecd5;
   --secondary-foreground: #233a26;
   --muted: rgba(46, 85, 53, 0.08);
-  --muted-foreground: rgba(41, 66, 47, 0.7);
+  --muted-foreground: rgba(25, 40, 30, 0.78);
   --accent: #a5d5ba;
   --accent-foreground: #15301a;
   --destructive: #e76161;

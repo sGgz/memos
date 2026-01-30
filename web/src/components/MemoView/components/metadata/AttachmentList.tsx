@@ -1,5 +1,5 @@
 import { FileIcon, GripHorizontalIcon, PaperclipIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
@@ -90,21 +90,28 @@ const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[
     onSwipedRight: () => setActiveIndex((prev) => Math.max(prev - 1, 0)),
     trackMouse: true,
     preventScrollOnSwipe: true,
+    delta: 12,
   });
-
-  const translateX = useMemo(() => `translateX(-${activeIndex * 100}%)`, [activeIndex]);
 
   return (
     <div className="relative w-full">
-      <div {...handlers} className="overflow-hidden rounded-2xl border border-border bg-white/70">
-        <div className="flex transition-transform duration-300 ease-in-out" style={{ transform: translateX }}>
+      <div
+        {...handlers}
+        className="overflow-hidden rounded-2xl border border-border bg-white/70"
+        onScroll={(event) => {
+          const target = event.currentTarget;
+          const nextIndex = Math.round(target.scrollLeft / target.clientWidth);
+          setActiveIndex(Math.min(Math.max(nextIndex, 0), total - 1));
+        }}
+      >
+        <div className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth">
           {attachments.map((attachment) => (
             <div
               key={attachment.name}
-              className="min-w-full aspect-[4/3] relative cursor-pointer"
+              className="min-w-full snap-center aspect-[4/3] relative cursor-pointer flex items-center justify-center bg-white/80"
               onClick={() => onImageClick(getAttachmentUrl(attachment))}
             >
-              <AttachmentCard attachment={attachment} className="rounded-none w-full h-full object-cover" />
+              <AttachmentCard attachment={attachment} className="rounded-none w-full h-full object-contain" />
             </div>
           ))}
         </div>
@@ -158,7 +165,7 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
   return (
     <>
       <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
-        <SectionHeader icon={PaperclipIcon} title="Attachments" count={attachments.length} />
+        <SectionHeader icon={PaperclipIcon} title="Attachments" count={attachments.length} hideIcon hideCount />
 
         <div className="p-2 flex flex-col gap-1">
           {mediaItems.length > 0 && !allImages && <MediaGrid attachments={mediaItems} onImageClick={handleImageClick} />}
