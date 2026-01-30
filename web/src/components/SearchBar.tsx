@@ -37,7 +37,7 @@ const SearchBar = () => {
       <SearchIcon className="absolute left-2 w-4 h-auto opacity-40 text-sidebar-foreground" />
       <input
         className={cn(
-          "w-full text-sidebar-foreground leading-6 bg-white/70 border border-sidebar-border text-sm rounded-xl p-1 pl-8 outline-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]",
+          "w-full text-sidebar-foreground leading-6 bg-card/70 border border-sidebar-border text-sm rounded-xl p-1 pl-8 outline-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]",
         )}
         placeholder={t("memo.search-placeholder")}
         value={queryText}

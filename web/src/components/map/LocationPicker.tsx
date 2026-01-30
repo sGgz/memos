@@ -68,10 +68,9 @@ const GlassButton = ({ icon, onClick, ariaLabel, title }: GlassButtonProps) => {
       className={cn(
         "h-8 w-8 flex items-center justify-center rounded-lg",
         "cursor-pointer transition-all duration-200",
-        "bg-white/80 backdrop-blur-md border border-white/30 shadow-lg",
-        "hover:bg-white/90 hover:scale-105 active:scale-95",
-        "dark:bg-black/80 dark:border-white/10 dark:hover:bg-black/90",
-        "focus:outline-none focus:ring-2 focus:ring-blue-500",
+        "bg-card/80 backdrop-blur-md border border-border/60 shadow-lg",
+        "hover:bg-card/90 hover:scale-105 active:scale-95",
+        "focus:outline-none focus:ring-2 focus:ring-ring/60",
       )}
     >
       {icon}

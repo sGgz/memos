@@ -83,7 +83,7 @@ const MemoFilters = () => {
         return (
           <div
             key={getMemoFilterKey(filter)}
-            className="group inline-flex items-center gap-2 h-8 px-3 bg-gradient-to-r from-secondary/80 via-secondary/50 to-secondary/80 border border-white/10 rounded-full text-xs uppercase tracking-[0.18em] text-muted-foreground transition-all duration-300 hover:border-primary/40 hover:text-foreground hover:shadow-[0_10px_30px_rgba(4,10,30,0.45)]"
+            className="group inline-flex items-center gap-2 h-8 px-3 bg-gradient-to-r from-secondary/80 via-secondary/50 to-secondary/80 border border-border/60 rounded-full text-xs uppercase tracking-[0.18em] text-muted-foreground transition-all duration-300 hover:border-primary/40 hover:text-foreground hover:shadow-[0_10px_30px_rgba(0,0,0,0.2)]"
           >
             {Icon && <Icon className="w-3.5 h-3.5 text-primary/70 group-hover:text-primary shrink-0 transition-colors" />}
             <span className="font-semibold max-w-32 truncate">{getFilterDisplayText(filter)}</span>

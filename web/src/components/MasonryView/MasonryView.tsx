@@ -24,8 +24,8 @@ const MasonryView = ({ memoList, renderer, prefixElement, listMode = false }: Ma
       ref={containerRef}
       className={cn(
         "w-full grid gap-4 lg:gap-6 relative",
-        "before:absolute before:inset-0 before:bg-gradient-to-b before:from-white/5 before:via-transparent before:to-white/5 before:opacity-40 before:pointer-events-none",
-        "after:absolute after:inset-0 after:bg-[radial-gradient(circle_at_top,rgba(156,132,255,0.12),transparent_45%)] after:pointer-events-none",
+        "before:absolute before:inset-0 before:bg-gradient-to-b before:from-card/10 before:via-transparent before:to-card/10 before:opacity-40 before:pointer-events-none",
+        "after:absolute after:inset-0 after:bg-[radial-gradient(circle_at_top,rgba(118,168,138,0.18),transparent_45%)] after:pointer-events-none",
       )}
       style={{
         gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,

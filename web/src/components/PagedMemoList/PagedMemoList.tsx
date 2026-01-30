@@ -225,7 +225,7 @@ const BackToTop = () => {
     <Button
       variant="ghost"
       onClick={scrollToTop}
-      className="group relative inline-flex items-center gap-3 px-6 py-3 border border-white/10 rounded-full text-xs uppercase tracking-[0.4em] text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all shadow-[0_15px_35px_rgba(2,5,18,0.45)]"
+      className="group relative inline-flex items-center gap-3 px-6 py-3 border border-border/60 rounded-full text-xs uppercase tracking-[0.4em] text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all shadow-[0_15px_35px_rgba(0,0,0,0.2)]"
     >
       {t("router.back-to-top")}
       <ArrowUpIcon className="ml-1 w-4 h-auto group-hover:translate-y-[-2px] transition-all" />

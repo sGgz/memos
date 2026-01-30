@@ -62,7 +62,7 @@ const TagsSection = (props: Props) => {
         treeMode ? (
           <TagTree tagAmounts={tags} expandSubTags={!!treeAutoExpand} />
         ) : (
-          <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1.5 rounded-2xl border border-sidebar-border/80 bg-white/70 px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+          <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1.5 rounded-2xl border border-sidebar-border/80 bg-card/70 px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
             {tags.map(([tag, amount]) => {
               const isActive = getFiltersByFactor("tagSearch").some((filter: MemoFilter) => filter.value === tag);
               return (

@@ -132,7 +132,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       */}
       <div
         className={cn(
-          "memo-editor-container group relative w-full flex flex-col justify-between items-start bg-card/90 px-5 pt-4 pb-3 rounded-2xl border border-white/10 gap-3 shadow-[0_40px_90px_rgba(3,5,15,0.55)] backdrop-blur-3xl transition-all duration-500 hover:border-primary/40 hover:-translate-y-0.5",
+          "memo-editor-container group relative w-full flex flex-col justify-between items-start bg-card/90 px-5 pt-4 pb-3 rounded-2xl border border-border/60 gap-3 shadow-[0_40px_90px_rgba(0,0,0,0.22)] backdrop-blur-3xl transition-all duration-500 hover:border-primary/40 hover:-translate-y-0.5",
           FOCUS_MODE_STYLES.transition,
           state.ui.isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
           className,

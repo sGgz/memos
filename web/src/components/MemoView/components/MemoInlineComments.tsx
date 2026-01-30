@@ -42,7 +42,7 @@ const MemoInlineComments = ({ memoName, parentPage }: MemoInlineCommentsProps) =
 
   return (
     <section
-      className={cn("mt-4 w-full rounded-2xl border border-border/60 bg-white/70 px-3 py-2 shadow-[inset_0_1px_0_rgba(15,102,64,0.08)]")}
+      className={cn("mt-4 w-full rounded-2xl border border-border/60 bg-card/70 px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]")}
     >
       <div className="flex items-center justify-between gap-2">
         <button
@@ -82,7 +82,7 @@ const MemoInlineComments = ({ memoName, parentPage }: MemoInlineCommentsProps) =
         {(expanded ? comments : comments.slice(0, 3)).map((comment) => (
           <MemoView
             key={`${comment.name}-${comment.updateTime}`}
-            className="!border-transparent !bg-gradient-to-br !from-white !to-white/90 !shadow-[0_18px_40px_rgba(14,62,42,0.1)]"
+            className="!border-transparent !bg-gradient-to-br !from-card/90 !to-card/75 !shadow-[0_18px_40px_rgba(0,0,0,0.12)]"
             memo={comment}
             compact
             parentPage={parentPage}

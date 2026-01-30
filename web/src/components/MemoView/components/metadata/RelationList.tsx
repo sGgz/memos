@@ -43,7 +43,7 @@ function RelationList({ relations, currentMemoName, parentPage, className }: Rel
   return (
     <div
       className={cn(
-        "w-full rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-transparent to-white/5 overflow-hidden shadow-[0_25px_60px_rgba(2,6,18,0.45)]",
+        "w-full rounded-2xl border border-border/60 bg-gradient-to-br from-card/50 via-transparent to-card/40 overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.2)]",
         className,
       )}
     >

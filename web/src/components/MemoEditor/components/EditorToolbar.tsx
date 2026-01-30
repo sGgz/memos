@@ -46,7 +46,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
             variant="ghost"
             onClick={onCancel}
             disabled={isSaving}
-            className="rounded-full border border-white/20 hover:border-primary/40"
+            className="rounded-full border border-border/60 hover:border-primary/40"
           >
             {t("common.cancel")}
           </Button>

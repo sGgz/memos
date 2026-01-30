@@ -18,9 +18,9 @@ interface SectionHeaderProps {
 
 const SectionHeader = ({ icon: Icon, title, count, tabs, hideIcon = false, hideCount = false }: SectionHeaderProps) => {
   return (
-    <div className="flex items-center gap-2 px-3 py-2 border-b border-white/10 bg-white/5 backdrop-blur-3xl">
+    <div className="flex items-center gap-2 px-3 py-2 border-b border-border/60 bg-card/40 backdrop-blur-3xl">
       {!hideIcon && (
-        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center text-primary shadow-[0_10px_25px_rgba(4,8,20,0.35)]">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center text-primary shadow-[0_10px_25px_rgba(0,0,0,0.2)]">
           <Icon className="w-3.5 h-3.5" />
         </div>
       )}
@@ -35,7 +35,7 @@ const SectionHeader = ({ icon: Icon, title, count, tabs, hideIcon = false, hideC
                   "text-[0.65rem] uppercase tracking-[0.35em] transition-colors px-2 py-1 rounded-full border border-transparent",
                   tab.active
                     ? "text-foreground border-primary/40 bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:border-white/20",
+                    : "text-muted-foreground hover:text-foreground hover:border-border/60",
                 )}
               >
                 {tab.label} ({tab.count})

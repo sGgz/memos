@@ -67,9 +67,9 @@ const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; o
         <div className="w-full h-full relative">
           <AttachmentCard attachment={attachment} className="rounded-none" />
           {getAttachmentType(attachment) === "video/*" && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-              <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center">
-                <svg className="w-5 h-5 text-black fill-current ml-0.5" viewBox="0 0 24 24">
+            <div className="absolute inset-0 flex items-center justify-center bg-foreground/20 group-hover:bg-foreground/30 transition-colors">
+              <div className="w-8 h-8 rounded-full bg-background/80 flex items-center justify-center">
+                <svg className="w-5 h-5 text-foreground fill-current ml-0.5" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
@@ -97,7 +97,7 @@ const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[
     <div className="relative w-full">
       <div
         {...handlers}
-        className="overflow-hidden rounded-2xl border border-border bg-white/70"
+        className="overflow-hidden rounded-2xl border border-border bg-card/70"
         onScroll={(event) => {
           const target = event.currentTarget;
           const nextIndex = Math.round(target.scrollLeft / target.clientWidth);
@@ -108,7 +108,7 @@ const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[
           {attachments.map((attachment) => (
             <div
               key={attachment.name}
-              className="min-w-full snap-center aspect-[4/3] relative cursor-pointer flex items-center justify-center bg-white/80"
+              className="min-w-full snap-center aspect-[4/3] relative cursor-pointer flex items-center justify-center bg-card/80"
               onClick={() => onImageClick(getAttachmentUrl(attachment))}
             >
               <AttachmentCard attachment={attachment} className="rounded-none w-full h-full object-contain" />
@@ -117,8 +117,8 @@ const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[
         </div>
       </div>
       {total > 1 && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-black/30 px-3 py-1 text-xs text-white">
-          <GripHorizontalIcon className="w-3 h-3 text-white/70" />
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-foreground/20 px-3 py-1 text-xs text-foreground">
+          <GripHorizontalIcon className="w-3 h-3 text-foreground/70" />
           <span>
             {activeIndex + 1}/{total}
           </span>
