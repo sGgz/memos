@@ -111,6 +111,48 @@ func (s *ConnectServiceHandler) DeleteUser(ctx context.Context, req *connect.Req
 	return connect.NewResponse(resp), nil
 }
 
+// TodoService
+
+func (s *ConnectServiceHandler) CreateTodo(ctx context.Context, req *connect.Request[v1pb.CreateTodoRequest]) (*connect.Response[v1pb.Todo], error) {
+	resp, err := s.APIV1Service.CreateTodo(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListTodos(ctx context.Context, req *connect.Request[v1pb.ListTodosRequest]) (*connect.Response[v1pb.ListTodosResponse], error) {
+	resp, err := s.APIV1Service.ListTodos(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) GetTodo(ctx context.Context, req *connect.Request[v1pb.GetTodoRequest]) (*connect.Response[v1pb.Todo], error) {
+	resp, err := s.APIV1Service.GetTodo(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) UpdateTodo(ctx context.Context, req *connect.Request[v1pb.UpdateTodoRequest]) (*connect.Response[v1pb.Todo], error) {
+	resp, err := s.APIV1Service.UpdateTodo(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) DeleteTodo(ctx context.Context, req *connect.Request[v1pb.DeleteTodoRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteTodo(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 func (s *ConnectServiceHandler) ListAllUserStats(ctx context.Context, req *connect.Request[v1pb.ListAllUserStatsRequest]) (*connect.Response[v1pb.ListAllUserStatsResponse], error) {
 	resp, err := s.APIV1Service.ListAllUserStats(ctx, req.Msg)
 	if err != nil {

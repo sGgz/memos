@@ -183,6 +183,7 @@ type UserNotification_Type int32
 const (
 	UserNotification_TYPE_UNSPECIFIED UserNotification_Type = 0
 	UserNotification_MEMO_COMMENT     UserNotification_Type = 1
+	UserNotification_TODO_REMINDER    UserNotification_Type = 2
 )
 
 // Enum value maps for UserNotification_Type.
@@ -190,10 +191,12 @@ var (
 	UserNotification_Type_name = map[int32]string{
 		0: "TYPE_UNSPECIFIED",
 		1: "MEMO_COMMENT",
+		2: "TODO_REMINDER",
 	}
 	UserNotification_Type_value = map[string]int32{
 		"TYPE_UNSPECIFIED": 0,
 		"MEMO_COMMENT":     1,
+		"TODO_REMINDER":    2,
 	}
 )
 
@@ -509,7 +512,6 @@ type GetUserRequest struct {
 	// Supports both numeric IDs and username strings:
 	//   - users/{id}       (e.g., users/101)
 	//   - users/{username} (e.g., users/steven)
-	//
 	// Format: users/{id_or_username}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The fields to return in the response.
@@ -2023,7 +2025,10 @@ type UserNotification struct {
 	// The type of the notification.
 	Type UserNotification_Type `protobuf:"varint,5,opt,name=type,proto3,enum=memos.api.v1.UserNotification_Type" json:"type,omitempty"`
 	// The activity ID associated with this notification.
-	ActivityId    *int32 `protobuf:"varint,6,opt,name=activity_id,json=activityId,proto3,oneof" json:"activity_id,omitempty"`
+	ActivityId *int32 `protobuf:"varint,6,opt,name=activity_id,json=activityId,proto3,oneof" json:"activity_id,omitempty"`
+	// The resource name of the related todo.
+	// Format: todos/{todo}
+	TodoName      *string `protobuf:"bytes,7,opt,name=todo_name,json=todoName,proto3,oneof" json:"todo_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2098,6 +2103,13 @@ func (x *UserNotification) GetActivityId() int32 {
 		return *x.ActivityId
 	}
 	return 0
+}
+
+func (x *UserNotification) GetTodoName() string {
+	if x != nil && x.TodoName != nil {
+		return *x.TodoName
+	}
+	return ""
 }
 
 type ListUserNotificationsRequest struct {
@@ -2668,7 +2680,7 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"3\n" +
 	"\x18DeleteUserWebhookRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"\xbe\x04\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"\x86\x05\n" +
 	"\x10UserNotification\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x121\n" +
 	"\x06sender\x18\x02 \x01(\tB\x19\xe0A\x03\xfaA\x13\n" +
@@ -2678,17 +2690,21 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"createTime\x12<\n" +
 	"\x04type\x18\x05 \x01(\x0e2#.memos.api.v1.UserNotification.TypeB\x03\xe0A\x03R\x04type\x12)\n" +
 	"\vactivity_id\x18\x06 \x01(\x05B\x03\xe0A\x01H\x00R\n" +
-	"activityId\x88\x01\x01\":\n" +
+	"activityId\x88\x01\x01\x12%\n" +
+	"\ttodo_name\x18\a \x01(\tB\x03\xe0A\x01H\x01R\btodoName\x88\x01\x01\":\n" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06UNREAD\x10\x01\x12\f\n" +
-	"\bARCHIVED\x10\x02\".\n" +
+	"\bARCHIVED\x10\x02\"A\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
-	"\fMEMO_COMMENT\x10\x01:p\xeaAm\n" +
+	"\fMEMO_COMMENT\x10\x01\x12\x11\n" +
+	"\rTODO_REMINDER\x10\x02:p\xeaAm\n" +
 	"\x1dmemos.api.v1/UserNotification\x12)users/{user}/notifications/{notification}\x1a\x04name*\rnotifications2\fnotificationB\x0e\n" +
-	"\f_activity_id\"\xb4\x01\n" +
+	"\f_activity_idB\f\n" +
+	"\n" +
+	"_todo_name\"\xb4\x01\n" +
 	"\x1cListUserNotificationsRequest\x121\n" +
 	"\x06parent\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
 	"\x11memos.api.v1/UserR\x06parent\x12 \n" +

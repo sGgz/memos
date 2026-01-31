@@ -13,6 +13,8 @@ import {
   InstanceSetting_MemoRelatedSettingSchema,
   InstanceSetting_StorageSetting,
   InstanceSetting_StorageSettingSchema,
+  InstanceSetting_TodoSetting,
+  InstanceSetting_TodoSettingSchema,
 } from "@/types/proto/api/v1/instance_service_pb";
 
 const instanceSettingNamePrefix = "instance/settings/";
@@ -32,6 +34,7 @@ interface InstanceState {
 interface InstanceContextValue extends InstanceState {
   generalSetting: InstanceSetting_GeneralSetting;
   memoRelatedSetting: InstanceSetting_MemoRelatedSetting;
+  todoSetting: InstanceSetting_TodoSetting;
   storageSetting: InstanceSetting_StorageSetting;
   initialize: () => Promise<void>;
   fetchSetting: (key: InstanceSetting_Key) => Promise<void>;
@@ -65,6 +68,14 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     return create(InstanceSetting_MemoRelatedSettingSchema, {});
   }, [state.settings]);
 
+  const todoSetting = useMemo((): InstanceSetting_TodoSetting => {
+    const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}TODO`);
+    if (setting?.value.case === "todoSetting") {
+      return setting.value.value;
+    }
+    return create(InstanceSetting_TodoSettingSchema, {});
+  }, [state.settings]);
+
   const storageSetting = useMemo((): InstanceSetting_StorageSetting => {
     const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}STORAGE`);
     if (setting?.value.case === "storageSetting") {
@@ -78,9 +89,10 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     try {
       const profile = await instanceServiceClient.getInstanceProfile({});
 
-      const [generalSetting, memoRelatedSettingResponse] = await Promise.all([
+      const [generalSetting, memoRelatedSettingResponse, todoSettingResponse] = await Promise.all([
         instanceServiceClient.getInstanceSetting({ name: buildInstanceSettingName(InstanceSetting_Key.GENERAL) }),
         instanceServiceClient.getInstanceSetting({ name: buildInstanceSettingName(InstanceSetting_Key.MEMO_RELATED) }),
+        instanceServiceClient.getInstanceSetting({ name: buildInstanceSettingName(InstanceSetting_Key.TODO) }),
       ]);
 
       // Update global config for non-React code (like connect.ts interceptors)
@@ -94,7 +106,7 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
 
       setState({
         profile,
-        settings: [generalSetting, memoRelatedSettingResponse],
+        settings: [generalSetting, memoRelatedSettingResponse, todoSettingResponse],
         isInitialized: true,
         isLoading: false,
       });
@@ -132,12 +144,13 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       ...state,
       generalSetting,
       memoRelatedSetting,
+      todoSetting,
       storageSetting,
       initialize,
       fetchSetting,
       updateSetting,
     }),
-    [state, generalSetting, memoRelatedSetting, storageSetting, initialize, fetchSetting, updateSetting],
+    [state, generalSetting, memoRelatedSetting, todoSetting, storageSetting, initialize, fetchSetting, updateSetting],
   );
 
   return <InstanceContext.Provider value={value}>{children}</InstanceContext.Provider>;

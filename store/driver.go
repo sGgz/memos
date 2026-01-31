@@ -29,6 +29,13 @@ type Driver interface {
 	UpdateMemo(ctx context.Context, update *UpdateMemo) error
 	DeleteMemo(ctx context.Context, delete *DeleteMemo) error
 
+	// Todo model related methods.
+	CreateTodo(ctx context.Context, create *Todo) (*Todo, error)
+	ListTodos(ctx context.Context, find *FindTodo) ([]*Todo, error)
+	GetTodo(ctx context.Context, find *FindTodo) (*Todo, error)
+	UpdateTodo(ctx context.Context, update *UpdateTodo) error
+	DeleteTodo(ctx context.Context, delete *DeleteTodo) error
+
 	// MemoRelation model related methods.
 	UpsertMemoRelation(ctx context.Context, create *MemoRelation) (*MemoRelation, error)
 	ListMemoRelations(ctx context.Context, find *FindMemoRelation) ([]*MemoRelation, error)

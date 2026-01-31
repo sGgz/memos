@@ -27,6 +27,8 @@ const (
 	InboxMessage_TYPE_UNSPECIFIED InboxMessage_Type = 0
 	// Memo comment notification.
 	InboxMessage_MEMO_COMMENT InboxMessage_Type = 1
+	// Todo reminder notification.
+	InboxMessage_TODO_REMINDER InboxMessage_Type = 2
 )
 
 // Enum value maps for InboxMessage_Type.
@@ -34,10 +36,12 @@ var (
 	InboxMessage_Type_name = map[int32]string{
 		0: "TYPE_UNSPECIFIED",
 		1: "MEMO_COMMENT",
+		2: "TODO_REMINDER",
 	}
 	InboxMessage_Type_value = map[string]int32{
 		"TYPE_UNSPECIFIED": 0,
 		"MEMO_COMMENT":     1,
+		"TODO_REMINDER":    2,
 	}
 )
 
@@ -73,7 +77,9 @@ type InboxMessage struct {
 	// The type of the inbox message.
 	Type InboxMessage_Type `protobuf:"varint,1,opt,name=type,proto3,enum=memos.store.InboxMessage_Type" json:"type,omitempty"`
 	// The system-generated unique ID of related activity.
-	ActivityId    *int32 `protobuf:"varint,2,opt,name=activity_id,json=activityId,proto3,oneof" json:"activity_id,omitempty"`
+	ActivityId *int32 `protobuf:"varint,2,opt,name=activity_id,json=activityId,proto3,oneof" json:"activity_id,omitempty"`
+	// The UID of the related todo for reminder notifications.
+	TodoUid       *string `protobuf:"bytes,3,opt,name=todo_uid,json=todoUid,proto3,oneof" json:"todo_uid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -122,19 +128,29 @@ func (x *InboxMessage) GetActivityId() int32 {
 	return 0
 }
 
+func (x *InboxMessage) GetTodoUid() string {
+	if x != nil && x.TodoUid != nil {
+		return *x.TodoUid
+	}
+	return ""
+}
+
 var File_store_inbox_proto protoreflect.FileDescriptor
 
 const file_store_inbox_proto_rawDesc = "" +
 	"\n" +
-	"\x11store/inbox.proto\x12\vmemos.store\"\xa8\x01\n" +
+	"\x11store/inbox.proto\x12\vmemos.store\"\xe8\x01\n" +
 	"\fInboxMessage\x122\n" +
 	"\x04type\x18\x01 \x01(\x0e2\x1e.memos.store.InboxMessage.TypeR\x04type\x12$\n" +
 	"\vactivity_id\x18\x02 \x01(\x05H\x00R\n" +
-	"activityId\x88\x01\x01\".\n" +
+	"activityId\x88\x01\x01\x12\x1e\n" +
+	"\btodo_uid\x18\x03 \x01(\tH\x01R\atodoUid\x88\x01\x01\"A\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
-	"\fMEMO_COMMENT\x10\x01B\x0e\n" +
-	"\f_activity_idB\x95\x01\n" +
+	"\fMEMO_COMMENT\x10\x01\x12\x11\n" +
+	"\rTODO_REMINDER\x10\x02B\x0e\n" +
+	"\f_activity_idB\v\n" +
+	"\t_todo_uidB\x95\x01\n" +
 	"\x0fcom.memos.storeB\n" +
 	"InboxProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
 

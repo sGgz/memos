@@ -1,0 +1,174 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "api/v1/common.proto";
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v1";
+
+service TodoService {
+  // CreateTodo creates a new todo.
+  rpc CreateTodo(CreateTodoRequest) returns (Todo) {
+    option (google.api.http) = {
+      post: "/api/v1/todos"
+      body: "todo"
+    };
+    option (google.api.method_signature) = "todo";
+  }
+
+  // ListTodos lists todos with pagination and filter.
+  rpc ListTodos(ListTodosRequest) returns (ListTodosResponse) {
+    option (google.api.http) = {get: "/api/v1/todos"};
+  }
+
+  // GetTodo gets a todo by name.
+  rpc GetTodo(GetTodoRequest) returns (Todo) {
+    option (google.api.http) = {get: "/api/v1/{name=todos/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // UpdateTodo updates a todo.
+  rpc UpdateTodo(UpdateTodoRequest) returns (Todo) {
+    option (google.api.http) = {
+      patch: "/api/v1/{todo.name=todos/*}"
+      body: "todo"
+    };
+    option (google.api.method_signature) = "todo,update_mask";
+  }
+
+  // DeleteTodo deletes a todo.
+  rpc DeleteTodo(DeleteTodoRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=todos/*}"};
+    option (google.api.method_signature) = "name";
+  }
+}
+
+message Todo {
+  option (google.api.resource) = {
+    type: "memos.api.v1/Todo"
+    pattern: "todos/{todo}"
+    name_field: "name"
+    singular: "todo"
+    plural: "todos"
+  };
+
+  // The resource name of the todo.
+  // Format: todos/{todo}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The name of the creator.
+  // Format: users/{user}
+  string creator = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The creation timestamp.
+  google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The last update timestamp.
+  google.protobuf.Timestamp update_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Required. The title of the todo.
+  string title = 5 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The description of the todo.
+  string description = 6 [(google.api.field_behavior) = OPTIONAL];
+
+  // Required. The due time of the todo.
+  google.protobuf.Timestamp due_time = 7 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The priority of the todo.
+  Priority priority = 8 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The status of the todo.
+  Status status = 9 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The payload of the todo.
+  Payload payload = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  enum Priority {
+    PRIORITY_UNSPECIFIED = 0;
+    LOW = 1;
+    MEDIUM = 2;
+    HIGH = 3;
+  }
+
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    NORMAL = 1;
+    DONE = 2;
+  }
+
+  // Payload stores reminder metadata for todos.
+  message Payload {
+    // reminder_day_offsets stores the reminder offsets already sent for this todo.
+    repeated int32 reminder_day_offsets = 1;
+  }
+}
+
+message CreateTodoRequest {
+  // Required. The todo to create.
+  Todo todo = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The todo ID to use for this todo.
+  // If empty, a unique ID will be generated.
+  string todo_id = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ListTodosRequest {
+  // Optional. The maximum number of todos to return.
+  // The service may return fewer than this value.
+  // If unspecified, at most 50 todos will be returned.
+  // The maximum value is 1000; values above 1000 will be coerced to 1000.
+  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token, received from a previous `ListTodos` call.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Filter to apply to the list results.
+  // Filter is a CEL expression to filter todos.
+  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. If true, show completed todos in the response.
+  bool show_completed = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ListTodosResponse {
+  // The list of todos.
+  repeated Todo todos = 1;
+
+  // A token that can be sent as `page_token` to retrieve the next page.
+  string next_page_token = 2;
+}
+
+message GetTodoRequest {
+  // Required. The resource name of the todo.
+  // Format: todos/{todo}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Todo"}
+  ];
+}
+
+message UpdateTodoRequest {
+  // Required. The todo to update.
+  // The `name` field is required.
+  Todo todo = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The list of fields to update.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message DeleteTodoRequest {
+  // Required. The resource name of the todo to delete.
+  // Format: todos/{todo}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Todo"}
+  ];
+}

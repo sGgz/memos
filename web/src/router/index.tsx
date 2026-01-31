@@ -17,6 +17,7 @@ const Attachments = lazy(() => import("@/pages/Attachments"));
 const Setting = lazy(() => import("@/pages/Setting"));
 const SignIn = lazy(() => import("@/pages/SignIn"));
 const SignUp = lazy(() => import("@/pages/SignUp"));
+const Todos = lazy(() => import("@/pages/Todos"));
 const UserProfile = lazy(() => import("@/pages/UserProfile"));
 
 import { ROUTES } from "./routes";
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
           { path: Routes.ATTACHMENTS, element: <Attachments /> },
           { path: Routes.INBOX, element: <Inboxes /> },
           { path: Routes.SETTING, element: <Setting /> },
+          { path: Routes.TODOS, element: <Todos /> },
           { path: "memos/:uid", element: <MemoDetail /> },
           { path: "403", element: <PermissionDenied /> },
           { path: "404", element: <NotFound /> },

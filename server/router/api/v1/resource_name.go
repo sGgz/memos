@@ -19,6 +19,7 @@ const (
 	IdentityProviderNamePrefix = "identity-providers/"
 	ActivityNamePrefix         = "activities/"
 	WebhookNamePrefix          = "webhooks/"
+	TodoNamePrefix             = "todos/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.
@@ -103,6 +104,16 @@ func ExtractAttachmentUIDFromName(name string) (string, error) {
 	}
 	id := tokens[0]
 	return id, nil
+}
+
+// ExtractTodoUIDFromName returns the todo UID from a resource name.
+// e.g., "todos/uuid" -> "uuid".
+func ExtractTodoUIDFromName(name string) (string, error) {
+	tokens, err := GetNameParentTokens(name, TodoNamePrefix)
+	if err != nil {
+		return "", err
+	}
+	return tokens[0], nil
 }
 
 // ExtractMemoReactionIDFromName returns the memo UID and reaction ID from a resource name.

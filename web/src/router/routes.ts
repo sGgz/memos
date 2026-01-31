@@ -4,6 +4,7 @@ export const ROUTES = {
   INBOX: "/inbox",
   ARCHIVED: "/archived",
   SETTING: "/setting",
+  TODOS: "/todos",
   EXPLORE: "/explore",
   AUTH: "/auth",
 } as const;

@@ -21,6 +21,7 @@ import (
 	"github.com/usememos/memos/server/router/frontend"
 	"github.com/usememos/memos/server/router/rss"
 	"github.com/usememos/memos/server/runner/s3presign"
+	"github.com/usememos/memos/server/runner/todoreminder"
 	"github.com/usememos/memos/store"
 )
 
@@ -140,9 +141,11 @@ func (s *Server) StartBackgroundRunners(ctx context.Context) {
 	// Create a separate context for each background runner
 	// This allows us to control cancellation for each runner independently
 	s3Context, s3Cancel := context.WithCancel(ctx)
+	todoContext, todoCancel := context.WithCancel(ctx)
 
 	// Store the cancel function so we can properly shut down runners
 	s.runnerCancelFuncs = append(s.runnerCancelFuncs, s3Cancel)
+	s.runnerCancelFuncs = append(s.runnerCancelFuncs, todoCancel)
 
 	// Create and start S3 presign runner
 	s3presignRunner := s3presign.NewRunner(s.Store)
@@ -152,6 +155,14 @@ func (s *Server) StartBackgroundRunners(ctx context.Context) {
 	go func() {
 		s3presignRunner.Run(s3Context)
 		slog.Info("s3presign runner stopped")
+	}()
+
+	// Create and start todo reminder runner
+	todoReminderRunner := todoreminder.NewRunner(s.Store)
+	todoReminderRunner.RunOnce(ctx)
+	go func() {
+		todoReminderRunner.Run(todoContext)
+		slog.Info("todo reminder runner stopped")
 	}()
 
 	// Log the number of goroutines running

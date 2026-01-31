@@ -61,6 +61,7 @@
     "mark": "引用",
     "memo": "笔记",
     "memos": "笔记",
+    "todo": "代办",
     "name": "名称",
     "new": "新建",
     "nickname": "昵称",
@@ -133,7 +134,8 @@
     "has-task-list": "有待办"
   },
   "inbox": {
-    "memo-comment": "{{user}} 评论了您的“{{memo}}”。",
+    "memo-comment": "评论了您的笔记",
+    "todo-reminder": "代办提醒：{{title}}",
     "failed-to-load": "加载失败",
     "unread": "未读",
     "no-unread": "无未读通知",
@@ -208,6 +210,73 @@
     "succeed-copy-link": "复制链接到剪贴板成功。",
     "update-succeed": "更新成功",
     "user-not-found": "未找到该用户"
+  },
+  "todo": {
+    "title": "代办",
+    "count": "{{count}} 条",
+    "empty": "暂无代办",
+    "unknown-time": "未设置时间",
+    "overdue": "已逾期",
+    "due-today": "今天截止",
+    "due-in-days": "还有 {{count}} 天",
+    "due-in-hours": "还有 {{count}} 小时",
+    "due-in-minutes": "还有 {{count}} 分钟",
+    "overdue-by-days": "逾期 {{count}} 天",
+    "overdue-by-hours": "逾期 {{count}} 小时",
+    "overdue-by-minutes": "逾期 {{count}} 分钟",
+    "toggle": "切换完成状态",
+    "filters": {
+      "hide-completed": "隐藏已完成",
+      "show-completed": "显示已完成"
+    },
+    "create": {
+      "title": "新增代办",
+      "subtitle": "写下需要完成的事项并设置提醒时间。",
+      "submit": "添加代办"
+    },
+    "sections": {
+      "overdue": "已逾期",
+      "overdue-subtitle": "已超过截止时间的代办",
+      "today": "今天",
+      "today-subtitle": "今天需要完成的代办",
+      "upcoming": "即将到期",
+      "upcoming-subtitle": "未来几天内的代办",
+      "completed": "已完成",
+      "completed-subtitle": "已完成的代办"
+    },
+    "fields": {
+      "title": "标题",
+      "description": "备注",
+      "due-time": "截止时间",
+      "priority": "优先级"
+    },
+    "placeholders": {
+      "title": "例如：准备周会资料",
+      "description": "补充说明（可选）"
+    },
+    "priority": {
+      "low": "低",
+      "medium": "中",
+      "high": "高"
+    },
+    "messages": {
+      "fill-required": "请填写标题和截止时间。",
+      "invalid-date": "请输入有效的时间。",
+      "created": "代办已创建",
+      "updated": "代办已更新"
+    },
+    "settings": {
+      "title": "代办提醒",
+      "description": "设置距离截止时间的提醒天数，多个天数用逗号分隔。",
+      "placeholder": "例如：1,3",
+      "invalid": "请输入有效的提醒天数。",
+      "saved": "代办提醒设置已更新"
+    },
+    "notification": {
+      "title": "代办提醒",
+      "due": "截止：{{time}}",
+      "due-relative": "截止：{{time}}（{{relative}}）"
+    }
   },
   "reference": {
     "add-references": "添加引用",

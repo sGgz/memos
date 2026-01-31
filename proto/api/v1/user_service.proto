@@ -628,6 +628,9 @@ message UserNotification {
 
   // The activity ID associated with this notification.
   optional int32 activity_id = 6 [(google.api.field_behavior) = OPTIONAL];
+  // The resource name of the related todo.
+  // Format: todos/{todo}
+  optional string todo_name = 7 [(google.api.field_behavior) = OPTIONAL];
 
   enum Status {
     STATUS_UNSPECIFIED = 0;
@@ -638,6 +641,7 @@ message UserNotification {
   enum Type {
     TYPE_UNSPECIFIED = 0;
     MEMO_COMMENT = 1;
+    TODO_REMINDER = 2;
   }
 }
 

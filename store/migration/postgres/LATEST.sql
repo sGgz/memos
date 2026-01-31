@@ -105,3 +105,18 @@ CREATE TABLE reaction (
   reaction_type TEXT NOT NULL,
   UNIQUE(creator_id, content_id, reaction_type)
 );
+
+-- todo
+CREATE TABLE todo (
+  id SERIAL PRIMARY KEY,
+  uid TEXT NOT NULL UNIQUE,
+  creator_id INTEGER NOT NULL,
+  created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+  updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+  title TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  due_time BIGINT NOT NULL,
+  priority TEXT NOT NULL DEFAULT 'LOW',
+  status TEXT NOT NULL DEFAULT 'NORMAL',
+  payload TEXT NOT NULL DEFAULT '{}'
+);

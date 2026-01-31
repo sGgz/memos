@@ -37,6 +37,8 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 		valueBytes, err = protojson.Marshal(upsert.GetStorageSetting())
 	} else if upsert.Key == storepb.InstanceSettingKey_MEMO_RELATED {
 		valueBytes, err = protojson.Marshal(upsert.GetMemoRelatedSetting())
+	} else if upsert.Key == storepb.InstanceSettingKey_TODO {
+		valueBytes, err = protojson.Marshal(upsert.GetTodoSetting())
 	} else {
 		return nil, errors.Errorf("unsupported instance setting key: %v", upsert.Key)
 	}
@@ -143,6 +145,9 @@ const DefaultContentLengthLimit = 8 * 1024
 // DefaultReactions is the default reactions for memo related setting.
 var DefaultReactions = []string{"👍", "👎", "❤️", "🎉", "😄", "😕", "😢", "😡"}
 
+// DefaultTodoReminderDayOffsets is the default reminder offsets in days.
+var DefaultTodoReminderDayOffsets = []int32{1}
+
 func (s *Store) GetInstanceMemoRelatedSetting(ctx context.Context) (*storepb.InstanceMemoRelatedSetting, error) {
 	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{
 		Name: storepb.InstanceSettingKey_MEMO_RELATED.String(),
@@ -166,6 +171,28 @@ func (s *Store) GetInstanceMemoRelatedSetting(ctx context.Context) (*storepb.Ins
 		Value: &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: instanceMemoRelatedSetting},
 	})
 	return instanceMemoRelatedSetting, nil
+}
+
+func (s *Store) GetInstanceTodoSetting(ctx context.Context) (*storepb.InstanceTodoSetting, error) {
+	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{
+		Name: storepb.InstanceSettingKey_TODO.String(),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get instance todo setting")
+	}
+
+	instanceTodoSetting := &storepb.InstanceTodoSetting{}
+	if instanceSetting != nil {
+		instanceTodoSetting = instanceSetting.GetTodoSetting()
+	}
+	if len(instanceTodoSetting.ReminderDayOffsets) == 0 {
+		instanceTodoSetting.ReminderDayOffsets = append(instanceTodoSetting.ReminderDayOffsets, DefaultTodoReminderDayOffsets...)
+	}
+	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_TODO.String(), &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_TODO,
+		Value: &storepb.InstanceSetting_TodoSetting{TodoSetting: instanceTodoSetting},
+	})
+	return instanceTodoSetting, nil
 }
 
 const (
@@ -231,6 +258,12 @@ func convertInstanceSettingFromRaw(instanceSettingRaw *InstanceSetting) (*storep
 			return nil, err
 		}
 		instanceSetting.Value = &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: memoRelatedSetting}
+	case storepb.InstanceSettingKey_TODO.String():
+		todoSetting := &storepb.InstanceTodoSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), todoSetting); err != nil {
+			return nil, err
+		}
+		instanceSetting.Value = &storepb.InstanceSetting_TodoSetting{TodoSetting: todoSetting}
 	default:
 		// Skip unsupported instance setting key.
 		return nil, nil

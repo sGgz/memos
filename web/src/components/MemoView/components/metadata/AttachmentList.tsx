@@ -83,13 +83,61 @@ const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; o
 const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const touchStartRef = useRef<{ x: number; y: number; scrollLeft: number } | null>(null);
+  const isDraggingRef = useRef(false);
+  const suppressClickRef = useRef(false);
   const total = attachments.length;
 
   return (
     <div className="relative w-full">
       <div
         ref={scrollRef}
-        className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar border-0 bg-transparent touch-auto rounded-2xl"
+        className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar border-0 bg-transparent touch-pan-y rounded-2xl"
+        onTouchStart={(event) => {
+          const touch = event.touches[0];
+          if (!touch) {
+            return;
+          }
+          touchStartRef.current = {
+            x: touch.clientX,
+            y: touch.clientY,
+            scrollLeft: event.currentTarget.scrollLeft,
+          };
+          isDraggingRef.current = false;
+          suppressClickRef.current = false;
+        }}
+        onTouchMove={(event) => {
+          const start = touchStartRef.current;
+          const touch = event.touches[0];
+          if (!start || !touch) {
+            return;
+          }
+          const dx = touch.clientX - start.x;
+          const dy = touch.clientY - start.y;
+          if (!isDraggingRef.current) {
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 6) {
+              isDraggingRef.current = true;
+              suppressClickRef.current = true;
+            } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 6) {
+              return;
+            } else {
+              return;
+            }
+          }
+          if (isDraggingRef.current) {
+            event.preventDefault();
+            event.currentTarget.scrollLeft = start.scrollLeft - dx;
+          }
+        }}
+        onTouchEnd={() => {
+          touchStartRef.current = null;
+          isDraggingRef.current = false;
+          if (suppressClickRef.current) {
+            window.setTimeout(() => {
+              suppressClickRef.current = false;
+            }, 0);
+          }
+        }}
         onWheel={(event) => {
           if (Math.abs(event.deltaX) < Math.abs(event.deltaY)) {
             return;
@@ -111,7 +159,12 @@ const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[
           <div
             key={attachment.name}
             className="min-w-full snap-center aspect-[4/3] relative cursor-pointer flex items-center justify-center bg-card/80"
-            onClick={() => onImageClick(getAttachmentUrl(attachment))}
+            onClick={() => {
+              if (suppressClickRef.current) {
+                return;
+              }
+              onImageClick(getAttachmentUrl(attachment));
+            }}
           >
             <AttachmentCard attachment={attachment} className="rounded-none w-full h-full object-contain" />
           </div>

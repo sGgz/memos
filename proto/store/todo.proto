@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package memos.store;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/store";
+
+enum TodoPriority {
+  TODO_PRIORITY_UNSPECIFIED = 0;
+  LOW = 1;
+  MEDIUM = 2;
+  HIGH = 3;
+}
+
+enum TodoStatus {
+  TODO_STATUS_UNSPECIFIED = 0;
+  NORMAL = 1;
+  DONE = 2;
+}
+
+// TodoPayload stores reminder metadata for todos.
+message TodoPayload {
+  // reminder_day_offsets stores the reminder offsets already sent for this todo.
+  repeated int32 reminder_day_offsets = 1;
+}
+
+message Todo {
+  int32 id = 1;
+  string uid = 2;
+  int32 creator_id = 3;
+  int64 created_ts = 4;
+  int64 updated_ts = 5;
+  string title = 6;
+  string description = 7;
+  google.protobuf.Timestamp due_time = 8;
+  TodoPriority priority = 9;
+  TodoStatus status = 10;
+  TodoPayload payload = 11;
+}

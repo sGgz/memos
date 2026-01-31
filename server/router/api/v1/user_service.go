@@ -1253,11 +1253,8 @@ func (s *APIV1Service) ListUserNotifications(ctx context.Context, request *v1pb.
 	}
 
 	// Fetch inbox items from storage
-	// Filter at database level to only include MEMO_COMMENT notifications (ignore legacy VERSION_UPDATE entries)
-	memoCommentType := storepb.InboxMessage_MEMO_COMMENT
 	inboxes, err := s.Store.ListInboxes(ctx, &store.FindInbox{
-		ReceiverID:  &userID,
-		MessageType: &memoCommentType,
+		ReceiverID: &userID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list inboxes: %v", err)
@@ -1414,12 +1411,18 @@ func (*APIV1Service) convertInboxToUserNotification(_ context.Context, inbox *st
 		switch inbox.Message.Type {
 		case storepb.InboxMessage_MEMO_COMMENT:
 			notification.Type = v1pb.UserNotification_MEMO_COMMENT
+		case storepb.InboxMessage_TODO_REMINDER:
+			notification.Type = v1pb.UserNotification_TODO_REMINDER
 		default:
 			notification.Type = v1pb.UserNotification_TYPE_UNSPECIFIED
 		}
 
 		if inbox.Message.ActivityId != nil {
 			notification.ActivityId = inbox.Message.ActivityId
+		}
+		if inbox.Message.TodoUid != nil && *inbox.Message.TodoUid != "" {
+			todoName := fmt.Sprintf("%s%s", TodoNamePrefix, *inbox.Message.TodoUid)
+			notification.TodoName = &todoName
 		}
 	}
 

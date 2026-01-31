@@ -1,4 +1,4 @@
-import { CogIcon, DatabaseIcon, KeyIcon, LibraryIcon, LucideIcon, Settings2Icon, UserIcon, UsersIcon } from "lucide-react";
+import { CheckSquareIcon, CogIcon, DatabaseIcon, KeyIcon, LibraryIcon, LucideIcon, Settings2Icon, UserIcon, UsersIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import MobileHeader from "@/components/MobileHeader";
@@ -10,6 +10,7 @@ import PreferencesSection from "@/components/Settings/PreferencesSection";
 import SectionMenuItem from "@/components/Settings/SectionMenuItem";
 import SSOSection from "@/components/Settings/SSOSection";
 import StorageSection from "@/components/Settings/StorageSection";
+import TodoSettings from "@/components/Settings/TodoSettings";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -18,20 +19,21 @@ import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-type SettingSection = "my-account" | "preference" | "member" | "system" | "memo-related" | "storage" | "sso";
+type SettingSection = "my-account" | "preference" | "member" | "system" | "memo-related" | "storage" | "sso" | "todo";
 
 interface State {
   selectedSection: SettingSection;
 }
 
 const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference"];
-const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo-related", "storage", "sso"];
+const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo-related", "todo", "storage", "sso"];
 const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   "my-account": UserIcon,
   preference: CogIcon,
   member: UsersIcon,
   system: Settings2Icon,
   "memo-related": LibraryIcon,
+  todo: CheckSquareIcon,
   storage: DatabaseIcon,
   sso: KeyIcon,
 };
@@ -54,6 +56,29 @@ const Setting = () => {
     }
     return settingList;
   }, [isHost]);
+
+  const getSectionLabel = (section: SettingSection) => {
+    switch (section) {
+      case "my-account":
+        return t("setting.my-account");
+      case "preference":
+        return t("setting.preference");
+      case "member":
+        return t("setting.member");
+      case "system":
+        return t("setting.system");
+      case "memo-related":
+        return t("setting.memo-related");
+      case "todo":
+        return t("todo.title");
+      case "storage":
+        return t("setting.storage");
+      case "sso":
+        return t("setting.sso");
+      default:
+        return "";
+    }
+  };
 
   useEffect(() => {
     let hash = location.hash.slice(1) as SettingSection;
@@ -95,7 +120,7 @@ const Setting = () => {
                 {BASIC_SECTIONS.map((item) => (
                   <SectionMenuItem
                     key={item}
-                    text={t(`setting.${item}`)}
+                    text={getSectionLabel(item)}
                     icon={SECTION_ICON_MAP[item]}
                     isSelected={state.selectedSection === item}
                     onClick={() => handleSectionSelectorItemClick(item)}
@@ -109,7 +134,7 @@ const Setting = () => {
                     {ADMIN_SECTIONS.map((item) => (
                       <SectionMenuItem
                         key={item}
-                        text={t(`setting.${item}`)}
+                        text={getSectionLabel(item)}
                         icon={SECTION_ICON_MAP[item]}
                         isSelected={state.selectedSection === item}
                         onClick={() => handleSectionSelectorItemClick(item)}
@@ -133,7 +158,7 @@ const Setting = () => {
                   <SelectContent>
                     {settingsSectionList.map((settingSection) => (
                       <SelectItem key={settingSection} value={settingSection}>
-                        {t(`setting.${settingSection}`)}
+                        {getSectionLabel(settingSection)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -150,6 +175,8 @@ const Setting = () => {
               <InstanceSection />
             ) : state.selectedSection === "memo-related" ? (
               <MemoRelatedSettings />
+            ) : state.selectedSection === "todo" ? (
+              <TodoSettings />
             ) : state.selectedSection === "storage" ? (
               <StorageSection />
             ) : state.selectedSection === "sso" ? (

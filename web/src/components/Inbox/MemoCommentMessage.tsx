@@ -164,7 +164,7 @@ function MemoCommentMessage({ notification }: Props) {
           <div className="flex items-center justify-between gap-3 mb-1">
             <div className="flex items-center gap-1.5 flex-wrap min-w-0">
               <span className="font-semibold text-sm text-foreground/95">{sender?.displayName || sender?.username}</span>
-              <span className="text-sm text-muted-foreground/80">commented on your memo</span>
+              <span className="text-sm text-muted-foreground/80">{t("inbox.memo-comment")}</span>
               <span className="text-xs text-muted-foreground/60">
                 {notification.createTime &&
                   timestampDate(notification.createTime)?.toLocaleDateString([], { month: "short", day: "numeric" })}{" "}

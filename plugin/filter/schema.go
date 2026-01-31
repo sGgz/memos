@@ -308,6 +308,88 @@ func NewAttachmentSchema() Schema {
 	}
 }
 
+// NewTodoSchema constructs the todo filter schema and CEL environment.
+func NewTodoSchema() Schema {
+	fields := map[string]Field{
+		"title": {
+			Name:             "title",
+			Kind:             FieldKindScalar,
+			Type:             FieldTypeString,
+			Column:           Column{Table: "todo", Name: "title"},
+			SupportsContains: true,
+			Expressions:      map[DialectName]string{},
+		},
+		"description": {
+			Name:             "description",
+			Kind:             FieldKindScalar,
+			Type:             FieldTypeString,
+			Column:           Column{Table: "todo", Name: "description"},
+			SupportsContains: true,
+			Expressions:      map[DialectName]string{},
+		},
+		"creator_id": {
+			Name:        "creator_id",
+			Kind:        FieldKindScalar,
+			Type:        FieldTypeInt,
+			Column:      Column{Table: "todo", Name: "creator_id"},
+			Expressions: map[DialectName]string{},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq:  true,
+				CompareNeq: true,
+			},
+		},
+		"status": {
+			Name:        "status",
+			Kind:        FieldKindScalar,
+			Type:        FieldTypeString,
+			Column:      Column{Table: "todo", Name: "status"},
+			Expressions: map[DialectName]string{},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq:  true,
+				CompareNeq: true,
+			},
+		},
+		"priority": {
+			Name:        "priority",
+			Kind:        FieldKindScalar,
+			Type:        FieldTypeString,
+			Column:      Column{Table: "todo", Name: "priority"},
+			Expressions: map[DialectName]string{},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq:  true,
+				CompareNeq: true,
+			},
+		},
+		"due_time": {
+			Name:   "due_time",
+			Kind:   FieldKindScalar,
+			Type:   FieldTypeTimestamp,
+			Column: Column{Table: "todo", Name: "due_time"},
+			Expressions: map[DialectName]string{
+				DialectMySQL:    "UNIX_TIMESTAMP(%s)",
+				DialectPostgres: "%s",
+				DialectSQLite:   "%s",
+			},
+		},
+	}
+
+	envOptions := []cel.EnvOption{
+		cel.Variable("title", cel.StringType),
+		cel.Variable("description", cel.StringType),
+		cel.Variable("creator_id", cel.IntType),
+		cel.Variable("status", cel.StringType),
+		cel.Variable("priority", cel.StringType),
+		cel.Variable("due_time", cel.IntType),
+		nowFunction,
+	}
+
+	return Schema{
+		Name:       "todo",
+		Fields:     fields,
+		EnvOptions: envOptions,
+	}
+}
+
 // columnExpr returns the field expression for the given dialect, applying
 // any schema-specific overrides (e.g. UNIX timestamp conversions).
 func (f Field) columnExpr(d DialectName) string {
