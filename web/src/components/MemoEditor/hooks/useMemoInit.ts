@@ -13,6 +13,7 @@ export const useMemoInit = (
   username: string,
   autoFocus?: boolean,
   defaultVisibility?: Visibility,
+  initialContent?: string,
 ) => {
   const { actions, dispatch } = useEditorContext();
   const queryClient = useQueryClient();
@@ -45,6 +46,8 @@ export const useMemoInit = (
           const cachedContent = cacheService.load(cacheService.key(username, cacheKey));
           if (cachedContent) {
             dispatch(actions.updateContent(cachedContent));
+          } else if (initialContent) {
+            dispatch(actions.updateContent(initialContent));
           }
           // Apply default visibility for new memos
           if (defaultVisibility !== undefined) {

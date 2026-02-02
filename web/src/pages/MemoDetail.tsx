@@ -1,3 +1,4 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { ConnectError } from "@connectrpc/connect";
 import { ArrowUpLeftFromCircleIcon, MessageCircleIcon } from "lucide-react";
 import { useState } from "react";
@@ -7,13 +8,16 @@ import { MemoDetailSidebar, MemoDetailSidebarDrawer } from "@/components/MemoDet
 import MemoEditor from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
+import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { memoNamePrefix } from "@/helpers/resource-names";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useMemo, useMemoComments } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { useUser } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
+import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoDetail = () => {
@@ -26,6 +30,7 @@ const MemoDetail = () => {
   const uid = params.uid;
   const memoName = `${memoNamePrefix}${uid}`;
   const [showCommentEditor, setShowCommentEditor] = useState(false);
+  const [replyTarget, setReplyTarget] = useState<{ memo: Memo; authorName: string } | null>(null);
 
   // Fetch main memo with React Query
   const { data: memo, error, isLoading } = useMemo(memoName, { enabled: !!memoName });
@@ -48,18 +53,34 @@ const MemoDetail = () => {
   const comments = commentsResponse?.memos || [];
 
   const showCreateCommentButton = currentUser && !showCommentEditor;
+  const sortedComments = [...comments].sort((a, b) => {
+    const aTime = (a.createTime ? timestampDate(a.createTime) : a.displayTime ? timestampDate(a.displayTime) : undefined)?.getTime() ?? 0;
+    const bTime = (b.createTime ? timestampDate(b.createTime) : b.displayTime ? timestampDate(b.displayTime) : undefined)?.getTime() ?? 0;
+    return aTime - bTime;
+  });
+  const currentUserName = currentUser?.displayName || currentUser?.username || t("common.user");
+  const replyPrefix = replyTarget ? `${currentUserName}回复${replyTarget.authorName}：` : undefined;
 
   if (isLoading || !memo) {
     return null;
   }
 
   const handleShowCommentEditor = () => {
+    setReplyTarget(null);
     setShowCommentEditor(true);
   };
 
   const handleCommentCreated = async (_memoCommentName: string) => {
     // React Query will auto-refetch due to invalidation in the mutation
     setShowCommentEditor(false);
+    setReplyTarget(null);
+  };
+  const handleReply = (memo: Memo, authorName: string) => {
+    if (!currentUser) {
+      return;
+    }
+    setReplyTarget({ memo, authorName });
+    setShowCommentEditor(true);
   };
 
   return (
@@ -94,6 +115,7 @@ const MemoDetail = () => {
             showVisibility
             showPinned
             showNsfwContent
+            showComments={false}
           />
           <div className="pt-8 pb-16 w-full">
             <h2 id="comments" className="sr-only">
@@ -114,16 +136,11 @@ const MemoDetail = () => {
                       </Button>
                     )}
                   </div>
-                  {comments.map((comment) => (
-                    <MemoView
-                      key={`${comment.name}-${comment.displayTime}`}
-                      className="!shadow-[0_35px_80px_rgba(0,0,0,0.2)] !border-border/40"
-                      memo={comment}
-                      parentPage={locationState?.from}
-                      showCreator
-                      compact
-                    />
-                  ))}
+                  <div className="flex flex-col gap-2">
+                    {sortedComments.map((comment) => (
+                      <CommentItem key={`${comment.name}-${comment.displayTime}`} memo={comment} onReply={handleReply} />
+                    ))}
+                  </div>
                 </>
               )}
               {comments.length === 0 && showCreateCommentButton && !showCommentEditor && (
@@ -138,12 +155,22 @@ const MemoDetail = () => {
             {showCommentEditor && (
               <div className="w-full">
                 <MemoEditor
-                  cacheKey={`${memo.name}-${memo.updateTime}-comment`}
+                  cacheKey={
+                    replyTarget
+                      ? `${memo.name}-${memo.updateTime}-comment-reply-${replyTarget.memo.name}`
+                      : `${memo.name}-${memo.updateTime}-comment`
+                  }
                   placeholder={t("editor.add-your-comment-here")}
+                  initialContent={replyPrefix}
                   parentMemoName={memo.name}
                   autoFocus
                   onConfirm={handleCommentCreated}
-                  onCancel={() => setShowCommentEditor(false)}
+                  onCancel={() => {
+                    setShowCommentEditor(false);
+                    setReplyTarget(null);
+                  }}
+                  minimal
+                  key={replyTarget ? `detail-comment-reply-${replyTarget.memo.name}` : "detail-comment-new"}
                 />
               </div>
             )}
@@ -156,6 +183,27 @@ const MemoDetail = () => {
         )}
       </div>
     </section>
+  );
+};
+
+const CommentItem = ({ memo, onReply }: { memo: Memo; onReply?: (memo: Memo, authorName: string) => void }) => {
+  const t = useTranslate();
+  const { data: creator } = useUser(memo.creator);
+  const content = memo.content?.trim();
+  const creatorName = creator?.displayName || creator?.username || t("common.user");
+  const canReply = Boolean(onReply);
+
+  return (
+    <div
+      className={cn(
+        "flex items-start gap-3 rounded-xl border border-border/50 bg-card/70 px-4 py-2 transition-colors",
+        canReply && "cursor-pointer hover:border-primary/40 hover:bg-accent/10",
+      )}
+      onClick={canReply ? () => onReply?.(memo, creatorName) : undefined}
+    >
+      <UserAvatar className="h-8 w-8" avatarUrl={creator?.avatarUrl} />
+      <div className="min-w-0 flex-1 pt-1">{content && <p className="whitespace-pre-wrap text-sm text-foreground/90">{content}</p>}</div>
+    </div>
   );
 };
 

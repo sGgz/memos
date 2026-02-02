@@ -5,8 +5,12 @@ import AttachmentList from "./AttachmentList";
 import LocationDisplay from "./LocationDisplay";
 import RelationList from "./RelationList";
 
-const EditorMetadata: FC<EditorMetadataProps> = ({ memoName }) => {
+const EditorMetadata: FC<EditorMetadataProps> = ({ memoName, minimal }) => {
   const { state, actions, dispatch } = useEditorContext();
+
+  if (minimal) {
+    return null;
+  }
 
   return (
     <div className="w-full flex flex-col gap-2">

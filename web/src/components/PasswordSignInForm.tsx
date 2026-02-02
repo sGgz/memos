@@ -11,6 +11,7 @@ import { useInstance } from "@/contexts/InstanceContext";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { handleError } from "@/lib/error";
+import { Routes } from "@/router";
 import { useTranslate } from "@/utils/i18n";
 
 function PasswordSignInForm() {
@@ -59,7 +60,7 @@ function PasswordSignInForm() {
         setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
       }
       await initialize();
-      navigateTo("/");
+      navigateTo(Routes.HOME);
     } catch (error: unknown) {
       handleError(error, toast.error, {
         fallbackMessage: "Failed to sign in.",

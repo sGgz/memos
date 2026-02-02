@@ -47,7 +47,8 @@ const router = createBrowserRouter([
           {
             element: <MainLayout />,
             children: [
-              { path: "", element: <Home /> },
+              { index: true, element: <Explore /> },
+              { path: Routes.HOME, element: <Home /> },
               { path: Routes.EXPLORE, element: <Explore /> },
               { path: Routes.ARCHIVED, element: <Archived /> },
               { path: "u/:username", element: <UserProfile /> },

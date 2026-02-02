@@ -13,7 +13,7 @@ import { MemoViewContext } from "./MemoViewContext";
 import type { MemoViewProps } from "./types";
 
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
-  const { memo: memoData, className, parentPage: parentPageProp } = props;
+  const { memo: memoData, className, parentPage: parentPageProp, showComments = true } = props;
   const cardRef = useRef<HTMLDivElement>(null);
   const [showEditor, setShowEditor] = useState(false);
 
@@ -85,7 +85,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
           onContentDoubleClick={handleMemoContentDoubleClick}
           onToggleNsfwVisibility={toggleNsfwVisibility}
         />
-        <MemoInlineComments memoName={memoData.name} parentPage={parentPage} />
+        {showComments && <MemoInlineComments memoName={memoData.name} />}
 
         <PreviewImageDialog
           open={previewState.open}

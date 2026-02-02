@@ -30,7 +30,7 @@ const Navigation = (props: Props) => {
 
   const homeNavLink: NavLinkItem = {
     id: "header-memos",
-    path: Routes.ROOT,
+    path: Routes.HOME,
     title: t("common.memos"),
     icon: <LibraryIcon className="w-6 h-auto shrink-0" />,
   };
@@ -82,7 +82,7 @@ const Navigation = (props: Props) => {
   return (
     <header className={cn("w-full h-full overflow-auto flex flex-col justify-between items-start gap-4 hide-scrollbar", className)}>
       <div className="w-full px-1 py-1 flex flex-col justify-start items-start space-y-2 overflow-auto overflow-x-hidden hide-scrollbar shrink">
-        <NavLink className="mb-3 cursor-default" to={currentUser ? Routes.ROOT : Routes.EXPLORE}>
+        <NavLink className="mb-3 cursor-default" to={currentUser ? Routes.HOME : Routes.EXPLORE}>
           <MemosLogo collapsed={collapsed} />
         </NavLink>
         {navLinks.map((navLink) => (

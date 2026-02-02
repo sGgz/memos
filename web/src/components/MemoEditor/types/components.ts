@@ -8,11 +8,13 @@ export interface MemoEditorProps {
   className?: string;
   cacheKey?: string;
   placeholder?: string;
+  initialContent?: string;
   memoName?: string;
   parentMemoName?: string;
   autoFocus?: boolean;
   onConfirm?: (memoName: string) => void;
   onCancel?: () => void;
+  minimal?: boolean;
 }
 
 export interface EditorContentProps {
@@ -24,10 +26,12 @@ export interface EditorToolbarProps {
   onSave: () => void;
   onCancel?: () => void;
   memoName?: string;
+  minimal?: boolean;
 }
 
 export interface EditorMetadataProps {
   memoName?: string;
+  minimal?: boolean;
 }
 
 export interface FocusModeOverlayProps {

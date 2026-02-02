@@ -18,7 +18,7 @@ import { EditorProvider, useEditorContext } from "./state";
 import type { MemoEditorProps } from "./types";
 
 const MemoEditor = (props: MemoEditorProps) => {
-  const { className, cacheKey, memoName, parentMemoName, autoFocus, placeholder, onConfirm, onCancel } = props;
+  const { className, cacheKey, memoName, parentMemoName, autoFocus, placeholder, onConfirm, onCancel, minimal, initialContent } = props;
 
   return (
     <EditorProvider>
@@ -29,8 +29,10 @@ const MemoEditor = (props: MemoEditorProps) => {
         parentMemoName={parentMemoName}
         autoFocus={autoFocus}
         placeholder={placeholder}
+        initialContent={initialContent}
         onConfirm={onConfirm}
         onCancel={onCancel}
+        minimal={minimal}
       />
     </EditorProvider>
   );
@@ -43,8 +45,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   parentMemoName,
   autoFocus,
   placeholder,
+  initialContent,
   onConfirm,
   onCancel,
+  minimal,
 }) => {
   const t = useTranslate();
   const queryClient = useQueryClient();
@@ -56,7 +60,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   // Get default visibility from user settings
   const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
 
-  useMemoInit(editorRef, memoName, cacheKey, currentUser?.name ?? "", autoFocus, defaultVisibility);
+  useMemoInit(editorRef, memoName, cacheKey, currentUser?.name ?? "", autoFocus, defaultVisibility, initialContent);
 
   // Auto-save content to localStorage
   useAutoSave(state.content, currentUser?.name ?? "", cacheKey);
@@ -146,8 +150,8 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
-          <EditorMetadata memoName={memoName} />
-          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} />
+          <EditorMetadata memoName={memoName} minimal={minimal} />
+          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} minimal={minimal} />
         </div>
       </div>
     </>

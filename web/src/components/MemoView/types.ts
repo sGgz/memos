@@ -9,6 +9,7 @@ export interface MemoViewProps {
   showNsfwContent?: boolean;
   className?: string;
   parentPage?: string;
+  showComments?: boolean;
 }
 
 export interface MemoHeaderProps {
