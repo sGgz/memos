@@ -40,6 +40,23 @@ const MemoInlineComments = ({ memoName, parentPage }: MemoInlineCommentsProps) =
     return null;
   }
 
+  const hasComments = comments.length > 0;
+  const canWriteComment = Boolean(currentUser);
+
+  if (!isLoading && !hasComments && !showEditor) {
+    if (!canWriteComment) {
+      return null;
+    }
+    return (
+      <div className="mt-3 w-full flex justify-end">
+        <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={() => setShowEditor(true)}>
+          <MessageCircleIcon className="mr-1 h-4 w-4" />
+          {t("memo.comment.write-a-comment")}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <section
       className={cn("mt-4 w-full rounded-2xl border border-border/60 bg-card/70 px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]")}
@@ -76,9 +93,6 @@ const MemoInlineComments = ({ memoName, parentPage }: MemoInlineCommentsProps) =
       )}
 
       <div className="mt-3 flex flex-col gap-3">
-        {!isLoading && comments.length === 0 && (
-          <p className="text-center text-xs text-muted-foreground py-3">{t("memo.comment.no-comments-yet")}</p>
-        )}
         {(expanded ? comments : comments.slice(0, 3)).map((comment) => (
           <MemoView
             key={`${comment.name}-${comment.updateTime}`}

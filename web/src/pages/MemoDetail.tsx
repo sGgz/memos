@@ -100,16 +100,7 @@ const MemoDetail = () => {
               {t("memo.comment.self")}
             </h2>
             <div className="relative mx-auto grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
-              {comments.length === 0 ? (
-                showCreateCommentButton && (
-                  <div className="w-full flex flex-row justify-center items-center py-6">
-                    <Button variant="ghost" onClick={handleShowCommentEditor}>
-                      <span className="text-muted-foreground">{t("memo.comment.write-a-comment")}</span>
-                      <MessageCircleIcon className="ml-2 w-5 h-auto text-muted-foreground" />
-                    </Button>
-                  </div>
-                )
-              ) : (
+              {comments.length > 0 && (
                 <>
                   <div className="w-full flex flex-row justify-between items-center h-8 pl-3 mb-2">
                     <div className="flex flex-row justify-start items-center">
@@ -134,6 +125,14 @@ const MemoDetail = () => {
                     />
                   ))}
                 </>
+              )}
+              {comments.length === 0 && showCreateCommentButton && !showCommentEditor && (
+                <div className="w-full flex flex-row justify-center items-center py-6">
+                  <Button variant="ghost" onClick={handleShowCommentEditor}>
+                    <span className="text-muted-foreground">{t("memo.comment.write-a-comment")}</span>
+                    <MessageCircleIcon className="ml-2 w-5 h-auto text-muted-foreground" />
+                  </Button>
+                </div>
               )}
             </div>
             {showCommentEditor && (
