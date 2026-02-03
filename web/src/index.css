@@ -46,6 +46,19 @@
     z-index: -1;
   }
 
+  @media (max-width: 767px) {
+    body {
+      background-image: none;
+      background-color: var(--background);
+      background-attachment: scroll;
+    }
+
+    body::before,
+    body::after {
+      display: none;
+    }
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     height: 0;
     width: 0;

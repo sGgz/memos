@@ -304,6 +304,109 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/banks:
+        get:
+            tags:
+                - LoanService
+            description: ListBanks lists banks.
+            operationId: LoanService_ListBanks
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListBanksResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - LoanService
+            description: CreateBank creates a bank.
+            operationId: LoanService_CreateBank
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Bank'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Bank'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/banks/{bank}:
+        delete:
+            tags:
+                - LoanService
+            description: DeleteBank deletes a bank.
+            operationId: LoanService_DeleteBank
+            parameters:
+                - name: bank
+                  in: path
+                  description: The bank id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - LoanService
+            description: UpdateBank updates a bank.
+            operationId: LoanService_UpdateBank
+            parameters:
+                - name: bank
+                  in: path
+                  description: The bank id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: Required. The list of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Bank'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Bank'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/identity-providers:
         get:
             tags:
@@ -514,6 +617,263 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/InstanceSetting'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/loans:
+        get:
+            tags:
+                - LoanService
+            description: ListLoans lists loans.
+            operationId: LoanService_ListLoans
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListLoansResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - LoanService
+            description: CreateLoan creates a loan.
+            operationId: LoanService_CreateLoan
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Loan'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Loan'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/loans/{loan}:
+        get:
+            tags:
+                - LoanService
+            description: GetLoan gets a loan by name.
+            operationId: LoanService_GetLoan
+            parameters:
+                - name: loan
+                  in: path
+                  description: The loan id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Loan'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - LoanService
+            description: DeleteLoan deletes a loan.
+            operationId: LoanService_DeleteLoan
+            parameters:
+                - name: loan
+                  in: path
+                  description: The loan id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - LoanService
+            description: UpdateLoan updates a loan.
+            operationId: LoanService_UpdateLoan
+            parameters:
+                - name: loan
+                  in: path
+                  description: The loan id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: Required. The list of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Loan'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Loan'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/loans/{loan}/repayments:
+        get:
+            tags:
+                - LoanService
+            description: ListRepayments lists repayment records for a loan.
+            operationId: LoanService_ListRepayments
+            parameters:
+                - name: loan
+                  in: path
+                  description: The loan id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListRepaymentsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - LoanService
+            description: CreateRepayment creates a repayment record.
+            operationId: LoanService_CreateRepayment
+            parameters:
+                - name: loan
+                  in: path
+                  description: The loan id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Repayment'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Repayment'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/loans/{loan}/repayments/{repayment}:
+        delete:
+            tags:
+                - LoanService
+            description: DeleteRepayment deletes a repayment record.
+            operationId: LoanService_DeleteRepayment
+            parameters:
+                - name: loan
+                  in: path
+                  description: The loan id.
+                  required: true
+                  schema:
+                    type: string
+                - name: repayment
+                  in: path
+                  description: The repayment id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - LoanService
+            description: UpdateRepayment updates a repayment record.
+            operationId: LoanService_UpdateRepayment
+            parameters:
+                - name: loan
+                  in: path
+                  description: The loan id.
+                  required: true
+                  schema:
+                    type: string
+                - name: repayment
+                  in: path
+                  description: The repayment id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: Required. The list of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Repayment'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Repayment'
                 default:
                     description: Default error response
                     content:
@@ -2090,6 +2450,30 @@ components:
                 memo:
                     type: string
                     description: "Optional. The related memo. Refer to `Memo.name`.\r\n Format: memos/{memo}"
+        Bank:
+            required:
+                - title
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: "The resource name of the bank.\r\n Format: banks/{bank}"
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: Output only. The creation timestamp.
+                    format: date-time
+                updateTime:
+                    readOnly: true
+                    type: string
+                    description: Output only. The last update timestamp.
+                    format: date-time
+                title:
+                    type: string
+                    description: Required. The bank display name.
+                description:
+                    type: string
+                    description: Optional. The bank description.
         CreatePersonalAccessTokenRequest:
             required:
                 - parent
@@ -2333,6 +2717,13 @@ components:
                     type: integer
                     description: The total count of attachments (may be approximate).
                     format: int32
+        ListBanksResponse:
+            type: object
+            properties:
+                banks:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Bank'
         ListIdentityProvidersResponse:
             type: object
             properties:
@@ -2341,6 +2732,13 @@ components:
                     items:
                         $ref: '#/components/schemas/IdentityProvider'
                     description: The list of identity providers.
+        ListLoansResponse:
+            type: object
+            properties:
+                loans:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Loan'
         ListMemoAttachmentsResponse:
             type: object
             properties:
@@ -2419,6 +2817,13 @@ components:
                     type: integer
                     description: The total count of personal access tokens.
                     format: int32
+        ListRepaymentsResponse:
+            type: object
+            properties:
+                repayments:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Repayment'
         ListShortcutsResponse:
             type: object
             properties:
@@ -2486,6 +2891,88 @@ components:
                     type: integer
                     description: The total count of users (may be approximate).
                     format: int32
+        Loan:
+            required:
+                - title
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: "The resource name of the loan.\r\n Format: loans/{loan}"
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: Output only. The creation timestamp.
+                    format: date-time
+                updateTime:
+                    readOnly: true
+                    type: string
+                    description: Output only. The last update timestamp.
+                    format: date-time
+                title:
+                    type: string
+                    description: Required. The loan title.
+                description:
+                    type: string
+                    description: Optional. The loan description.
+                bank:
+                    type: string
+                    description: "Optional. The bank name.\r\n Format: banks/{bank}"
+                principalCents:
+                    type: string
+                    description: Optional. The principal amount in cents.
+                interestRateBps:
+                    type: integer
+                    description: Optional. The interest rate in basis points.
+                    format: int32
+                startTime:
+                    type: string
+                    description: Optional. The start date.
+                    format: date-time
+                nextRepaymentTime:
+                    readOnly: true
+                    type: string
+                    description: Optional. The next repayment date.
+                    format: date-time
+                repaidPrincipalCents:
+                    readOnly: true
+                    type: string
+                    description: Optional. The total repaid principal in cents.
+                repaidInterestCents:
+                    readOnly: true
+                    type: string
+                    description: Optional. The total repaid interest in cents.
+                repaidAmountCents:
+                    readOnly: true
+                    type: string
+                    description: Optional. The total repaid amount in cents.
+                remainingPrincipalCents:
+                    readOnly: true
+                    type: string
+                    description: Optional. The remaining principal in cents.
+                orderIndex:
+                    type: integer
+                    description: Optional. The order index for display.
+                    format: int32
+                monthlyRepaymentDay:
+                    type: integer
+                    description: Optional. The monthly repayment day (1-31).
+                    format: int32
+                repaymentPeriods:
+                    type: integer
+                    description: Optional. The repayment term in years.
+                    format: int32
+                repaymentMethod:
+                    enum:
+                        - REPAYMENT_METHOD_UNSPECIFIED
+                        - REPAYMENT_METHOD_EQUAL_INSTALLMENT
+                        - REPAYMENT_METHOD_EQUAL_PRINCIPAL
+                        - REPAYMENT_METHOD_INTEREST_ONLY
+                        - REPAYMENT_METHOD_FLEXIBLE
+                        - REPAYMENT_METHOD_EQUAL_PRINCIPAL_INTEREST
+                    type: string
+                    description: Optional. The repayment method.
+                    format: enum
         Location:
             type: object
             properties:
@@ -2716,6 +3203,59 @@ components:
                     type: string
                     description: When the access token expires.
                     format: date-time
+        Repayment:
+            required:
+                - loan
+                - repaymentTime
+                - principalCents
+                - interestCents
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: "The resource name of the repayment.\r\n Format: loans/{loan}/repayments/{repayment}"
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: Output only. The creation timestamp.
+                    format: date-time
+                updateTime:
+                    readOnly: true
+                    type: string
+                    description: Output only. The last update timestamp.
+                    format: date-time
+                loan:
+                    type: string
+                    description: "Required. The parent loan name.\r\n Format: loans/{loan}"
+                repaymentTime:
+                    type: string
+                    description: Required. The repayment date.
+                    format: date-time
+                principalCents:
+                    type: string
+                    description: Required. The principal amount in cents.
+                interestCents:
+                    type: string
+                    description: Required. The interest amount in cents.
+                totalCents:
+                    readOnly: true
+                    type: string
+                    description: Optional. The total amount in cents.
+                remainingPrincipalCents:
+                    readOnly: true
+                    type: string
+                    description: Optional. The remaining principal in cents after this repayment.
+                note:
+                    type: string
+                    description: Optional. The note for this repayment.
+                isEarlyRepayment:
+                    type: boolean
+                    description: Optional. Whether the repayment is marked as early repayment.
+                period:
+                    readOnly: true
+                    type: integer
+                    description: Output only. The period index for on-time repayments.
+                    format: int32
         SetMemoAttachmentsRequest:
             required:
                 - name
@@ -3132,6 +3672,7 @@ tags:
     - name: AuthService
     - name: IdentityProviderService
     - name: InstanceService
+    - name: LoanService
     - name: MemoService
     - name: ShortcutService
     - name: TodoService

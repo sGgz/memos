@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package memos.api.v1;
 
-import "api/v1/common.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";

@@ -36,6 +36,27 @@ type Driver interface {
 	UpdateTodo(ctx context.Context, update *UpdateTodo) error
 	DeleteTodo(ctx context.Context, delete *DeleteTodo) error
 
+	// Bank model related methods.
+	CreateBank(ctx context.Context, create *Bank) (*Bank, error)
+	ListBanks(ctx context.Context, find *FindBank) ([]*Bank, error)
+	GetBank(ctx context.Context, find *FindBank) (*Bank, error)
+	UpdateBank(ctx context.Context, update *UpdateBank) error
+	DeleteBank(ctx context.Context, delete *DeleteBank) error
+
+	// Loan model related methods.
+	CreateLoan(ctx context.Context, create *Loan) (*Loan, error)
+	ListLoans(ctx context.Context, find *FindLoan) ([]*Loan, error)
+	GetLoan(ctx context.Context, find *FindLoan) (*Loan, error)
+	UpdateLoan(ctx context.Context, update *UpdateLoan) error
+	DeleteLoan(ctx context.Context, delete *DeleteLoan) error
+
+	// Repayment model related methods.
+	CreateRepayment(ctx context.Context, create *Repayment) (*Repayment, error)
+	ListRepayments(ctx context.Context, find *FindRepayment) ([]*Repayment, error)
+	GetRepayment(ctx context.Context, find *FindRepayment) (*Repayment, error)
+	UpdateRepayment(ctx context.Context, update *UpdateRepayment) error
+	DeleteRepayment(ctx context.Context, delete *DeleteRepayment) error
+
 	// MemoRelation model related methods.
 	UpsertMemoRelation(ctx context.Context, create *MemoRelation) (*MemoRelation, error)
 	ListMemoRelations(ctx context.Context, find *FindMemoRelation) ([]*MemoRelation, error)

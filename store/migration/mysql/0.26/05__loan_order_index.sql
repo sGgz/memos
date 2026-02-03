@@ -1,0 +1,1 @@
+ALTER TABLE `loan` ADD COLUMN `order_index` INT NOT NULL DEFAULT 0;

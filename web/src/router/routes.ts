@@ -6,6 +6,7 @@ export const ROUTES = {
   ARCHIVED: "/archived",
   SETTING: "/setting",
   TODOS: "/todos",
+  LOANS: "/loans",
   EXPLORE: "/explore",
   AUTH: "/auth",
 } as const;

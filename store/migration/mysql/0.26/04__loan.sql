@@ -1,0 +1,46 @@
+-- bank
+CREATE TABLE `bank` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `uid` VARCHAR(256) NOT NULL UNIQUE,
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `title` TEXT NOT NULL,
+  `description` TEXT NOT NULL
+);
+
+-- loan
+CREATE TABLE `loan` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `uid` VARCHAR(256) NOT NULL UNIQUE,
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `title` TEXT NOT NULL,
+  `description` TEXT NOT NULL,
+  `bank_id` INT DEFAULT NULL,
+  `principal_cents` BIGINT NOT NULL DEFAULT 0,
+  `interest_rate_bps` INT NOT NULL DEFAULT 0,
+  `start_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `next_repayment_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `repaid_principal_cents` BIGINT NOT NULL DEFAULT 0,
+  `repaid_interest_cents` BIGINT NOT NULL DEFAULT 0,
+  `repaid_amount_cents` BIGINT NOT NULL DEFAULT 0,
+  `remaining_principal_cents` BIGINT NOT NULL DEFAULT 0,
+  `order_index` INT NOT NULL DEFAULT 0,
+  `repayment_periods` INT NOT NULL DEFAULT 0,
+  `repayment_method` INT NOT NULL DEFAULT 0
+);
+
+-- repayment
+CREATE TABLE `repayment` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `uid` VARCHAR(256) NOT NULL UNIQUE,
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `loan_id` INT NOT NULL,
+  `repayment_time` TIMESTAMP NOT NULL,
+  `principal_cents` BIGINT NOT NULL DEFAULT 0,
+  `interest_cents` BIGINT NOT NULL DEFAULT 0,
+  `total_cents` BIGINT NOT NULL DEFAULT 0,
+  `remaining_principal_cents` BIGINT NOT NULL DEFAULT 0,
+  `note` TEXT NOT NULL
+);

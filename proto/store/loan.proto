@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package memos.store;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/store";
+
+message Bank {
+  int32 id = 1;
+  string uid = 2;
+  int64 created_ts = 3;
+  int64 updated_ts = 4;
+  string title = 5;
+  string description = 6;
+}
+
+message Loan {
+  int32 id = 1;
+  string uid = 2;
+  int64 created_ts = 3;
+  int64 updated_ts = 4;
+  string title = 5;
+  string description = 6;
+  int32 bank_id = 7;
+  int64 principal_cents = 8;
+  int32 interest_rate_bps = 9;
+  google.protobuf.Timestamp start_time = 10;
+  google.protobuf.Timestamp next_repayment_time = 11;
+  int64 repaid_principal_cents = 12;
+  int64 repaid_interest_cents = 13;
+  int64 repaid_amount_cents = 14;
+  int64 remaining_principal_cents = 15;
+  int32 order_index = 16;
+}
+
+message Repayment {
+  int32 id = 1;
+  string uid = 2;
+  int64 created_ts = 3;
+  int64 updated_ts = 4;
+  int32 loan_id = 5;
+  google.protobuf.Timestamp repayment_time = 6;
+  int64 principal_cents = 7;
+  int64 interest_cents = 8;
+  int64 total_cents = 9;
+  int64 remaining_principal_cents = 10;
+  string note = 11;
+}

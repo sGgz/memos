@@ -153,6 +153,112 @@ func (s *ConnectServiceHandler) DeleteTodo(ctx context.Context, req *connect.Req
 	return connect.NewResponse(resp), nil
 }
 
+// LoanService
+
+func (s *ConnectServiceHandler) CreateBank(ctx context.Context, req *connect.Request[v1pb.CreateBankRequest]) (*connect.Response[v1pb.Bank], error) {
+	resp, err := s.APIV1Service.CreateBank(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListBanks(ctx context.Context, req *connect.Request[v1pb.ListBanksRequest]) (*connect.Response[v1pb.ListBanksResponse], error) {
+	resp, err := s.APIV1Service.ListBanks(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) UpdateBank(ctx context.Context, req *connect.Request[v1pb.UpdateBankRequest]) (*connect.Response[v1pb.Bank], error) {
+	resp, err := s.APIV1Service.UpdateBank(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) DeleteBank(ctx context.Context, req *connect.Request[v1pb.DeleteBankRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteBank(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) CreateLoan(ctx context.Context, req *connect.Request[v1pb.CreateLoanRequest]) (*connect.Response[v1pb.Loan], error) {
+	resp, err := s.APIV1Service.CreateLoan(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListLoans(ctx context.Context, req *connect.Request[v1pb.ListLoansRequest]) (*connect.Response[v1pb.ListLoansResponse], error) {
+	resp, err := s.APIV1Service.ListLoans(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) GetLoan(ctx context.Context, req *connect.Request[v1pb.GetLoanRequest]) (*connect.Response[v1pb.Loan], error) {
+	resp, err := s.APIV1Service.GetLoan(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) UpdateLoan(ctx context.Context, req *connect.Request[v1pb.UpdateLoanRequest]) (*connect.Response[v1pb.Loan], error) {
+	resp, err := s.APIV1Service.UpdateLoan(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) DeleteLoan(ctx context.Context, req *connect.Request[v1pb.DeleteLoanRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteLoan(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) CreateRepayment(ctx context.Context, req *connect.Request[v1pb.CreateRepaymentRequest]) (*connect.Response[v1pb.Repayment], error) {
+	resp, err := s.APIV1Service.CreateRepayment(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListRepayments(ctx context.Context, req *connect.Request[v1pb.ListRepaymentsRequest]) (*connect.Response[v1pb.ListRepaymentsResponse], error) {
+	resp, err := s.APIV1Service.ListRepayments(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) UpdateRepayment(ctx context.Context, req *connect.Request[v1pb.UpdateRepaymentRequest]) (*connect.Response[v1pb.Repayment], error) {
+	resp, err := s.APIV1Service.UpdateRepayment(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) DeleteRepayment(ctx context.Context, req *connect.Request[v1pb.DeleteRepaymentRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteRepayment(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 func (s *ConnectServiceHandler) ListAllUserStats(ctx context.Context, req *connect.Request[v1pb.ListAllUserStatsRequest]) (*connect.Response[v1pb.ListAllUserStatsResponse], error) {
 	resp, err := s.APIV1Service.ListAllUserStats(ctx, req.Msg)
 	if err != nil {

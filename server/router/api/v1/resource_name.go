@@ -20,6 +20,9 @@ const (
 	ActivityNamePrefix         = "activities/"
 	WebhookNamePrefix          = "webhooks/"
 	TodoNamePrefix             = "todos/"
+	BankNamePrefix             = "banks/"
+	LoanNamePrefix             = "loans/"
+	RepaymentNamePrefix        = "repayments/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.
@@ -114,6 +117,41 @@ func ExtractTodoUIDFromName(name string) (string, error) {
 		return "", err
 	}
 	return tokens[0], nil
+}
+
+// ExtractBankUIDFromName returns the bank UID from a resource name.
+// e.g., "banks/uuid" -> "uuid".
+func ExtractBankUIDFromName(name string) (string, error) {
+	tokens, err := GetNameParentTokens(name, BankNamePrefix)
+	if err != nil {
+		return "", err
+	}
+	return tokens[0], nil
+}
+
+// ExtractLoanUIDFromName returns the loan UID from a resource name.
+// e.g., "loans/uuid" -> "uuid".
+func ExtractLoanUIDFromName(name string) (string, error) {
+	tokens, err := GetNameParentTokens(name, LoanNamePrefix)
+	if err != nil {
+		return "", err
+	}
+	return tokens[0], nil
+}
+
+// ExtractLoanRepaymentIDFromName returns loan UID and repayment ID from a resource name.
+// e.g., "loans/abc/repayments/123" -> ("abc", 123).
+func ExtractLoanRepaymentIDFromName(name string) (string, int32, error) {
+	tokens, err := GetNameParentTokens(name, LoanNamePrefix, RepaymentNamePrefix)
+	if err != nil {
+		return "", 0, err
+	}
+	loanUID := tokens[0]
+	repaymentID, err := util.ConvertStringToInt32(tokens[1])
+	if err != nil {
+		return "", 0, errors.Errorf("invalid repayment ID %q", tokens[1])
+	}
+	return loanUID, repaymentID, nil
 }
 
 // ExtractMemoReactionIDFromName returns the memo UID and reaction ID from a resource name.

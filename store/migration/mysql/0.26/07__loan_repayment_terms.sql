@@ -1,0 +1,2 @@
+ALTER TABLE `loan` ADD COLUMN `repayment_periods` INT NOT NULL DEFAULT 0;
+ALTER TABLE `loan` ADD COLUMN `repayment_method` INT NOT NULL DEFAULT 0;

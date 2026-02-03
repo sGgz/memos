@@ -7,6 +7,7 @@ import { AttachmentService } from "./types/proto/api/v1/attachment_service_pb";
 import { AuthService } from "./types/proto/api/v1/auth_service_pb";
 import { IdentityProviderService } from "./types/proto/api/v1/idp_service_pb";
 import { InstanceService } from "./types/proto/api/v1/instance_service_pb";
+import { LoanService } from "./types/proto/api/v1/loan_service_pb";
 import { MemoService } from "./types/proto/api/v1/memo_service_pb";
 import { ShortcutService } from "./types/proto/api/v1/shortcut_service_pb";
 import { TodoService } from "./types/proto/api/v1/todo_service_pb";
@@ -144,6 +145,7 @@ export const attachmentServiceClient = createClient(AttachmentService, transport
 export const shortcutServiceClient = createClient(ShortcutService, transport);
 export const activityServiceClient = createClient(ActivityService, transport);
 export const todoServiceClient = createClient(TodoService, transport);
+export const loanServiceClient = createClient(LoanService, transport);
 
 // Configuration service clients
 export const identityProviderServiceClient = createClient(IdentityProviderService, transport);
