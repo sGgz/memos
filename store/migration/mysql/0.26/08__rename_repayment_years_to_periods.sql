@@ -1,1 +1,2 @@
-ALTER TABLE `loan` CHANGE COLUMN `repayment_years` `repayment_periods` INT NOT NULL DEFAULT 0;
+-- Deprecated: column is already renamed in schema for fresh installs.
+SELECT 1;

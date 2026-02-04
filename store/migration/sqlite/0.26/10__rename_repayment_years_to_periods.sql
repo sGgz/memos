@@ -1,1 +1,2 @@
-ALTER TABLE loan RENAME COLUMN repayment_years TO repayment_periods;
+-- Deprecated: column is already renamed in schema for fresh installs.
+SELECT 1;
