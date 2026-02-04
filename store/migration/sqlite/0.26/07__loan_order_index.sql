@@ -1,1 +1,2 @@
-ALTER TABLE loan ADD COLUMN IF NOT EXISTS order_index INTEGER NOT NULL DEFAULT 0;
+-- Deprecated: order_index is already in loan schema.
+SELECT 1;
