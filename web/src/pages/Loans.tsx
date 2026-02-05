@@ -126,17 +126,15 @@ const LoanRepayments = ({ loan, onEditRepayment }: LoanRepaymentsProps) => {
           const hasPeriod = !repayment.isEarlyRepayment && (repayment.period ?? 0) >= 1;
           return (
             <div key={repayment.name} className="relative border border-border rounded-lg px-3 py-2 bg-muted/20">
-              {loan.remainingPrincipalCents !== 0n && (
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="absolute right-2 top-2 h-7 w-7"
-                  aria-label={t("loan.edit-repayment")}
-                  onClick={() => onEditRepayment(repayment)}
-                >
-                  <PencilIcon className="h-3.5 w-3.5" />
-                </Button>
-              )}
+              <Button
+                size="icon"
+                variant="outline"
+                className="absolute right-2 top-2 h-7 w-7"
+                aria-label={t("loan.edit-repayment")}
+                onClick={() => onEditRepayment(repayment)}
+              >
+                <PencilIcon className="h-3.5 w-3.5" />
+              </Button>
               <div className="flex flex-col gap-1">
                 <div className="flex flex-col gap-1 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex flex-wrap items-center gap-1.5 text-foreground">

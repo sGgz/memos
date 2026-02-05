@@ -1,11 +1,13 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema, timestampDate } from "@bufbuild/protobuf/wkt";
+import { useQueryClient } from "@tanstack/react-query";
 import { BellIcon, CheckIcon, TrashIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { todoServiceClient, userServiceClient } from "@/connect";
 import { getTodoDueLabel } from "@/helpers/todo";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
+import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import type { Todo } from "@/types/proto/api/v1/todo_service_pb";
@@ -21,6 +23,7 @@ function TodoReminderMessage({ notification }: Props) {
   const [todo, setTodo] = useState<Todo | undefined>(undefined);
   const [initialized, setInitialized] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
+  const queryClient = useQueryClient();
 
   useAsyncEffect(async () => {
     if (!notification.todoName) {
@@ -49,6 +52,7 @@ function TodoReminderMessage({ notification }: Props) {
       },
       updateMask: create(FieldMaskSchema, { paths: ["status"] }),
     });
+    queryClient.invalidateQueries({ queryKey: userKeys.notifications() });
     if (!silence) {
       toast.success(t("message.archived-successfully"));
     }
@@ -58,6 +62,7 @@ function TodoReminderMessage({ notification }: Props) {
     await userServiceClient.deleteUserNotification({
       name: notification.name,
     });
+    queryClient.invalidateQueries({ queryKey: userKeys.notifications() });
     toast.success(t("message.deleted-successfully"));
   };
 
@@ -132,7 +137,7 @@ function TodoReminderMessage({ notification }: Props) {
               {isUnread ? (
                 <button
                   onClick={() => handleArchiveMessage()}
-                  className="p-1.5 hover:bg-primary/10 rounded-lg transition-all duration-150 opacity-0 group-hover:opacity-100"
+                  className="p-1.5 rounded-lg border border-border/60 bg-background/80 hover:bg-primary/10 transition-all duration-150"
                   title={t("common.archive")}
                 >
                   <CheckIcon className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" strokeWidth={2} />
@@ -140,7 +145,7 @@ function TodoReminderMessage({ notification }: Props) {
               ) : (
                 <button
                   onClick={handleDeleteMessage}
-                  className="p-1.5 hover:bg-destructive/10 rounded-lg transition-all duration-150 opacity-0 group-hover:opacity-100"
+                  className="p-1.5 rounded-lg border border-border/60 bg-background/80 hover:bg-destructive/10 transition-all duration-150"
                   title={t("common.delete")}
                 >
                   <TrashIcon className="w-4 h-4 text-muted-foreground hover:text-destructive transition-colors" strokeWidth={2} />

@@ -1,5 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema, timestampDate } from "@bufbuild/protobuf/wkt";
+import { useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, MessageCircleIcon, TrashIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -8,7 +9,7 @@ import { activityServiceClient, memoServiceClient, userServiceClient } from "@/c
 import { activityNamePrefix } from "@/helpers/resource-names";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUser } from "@/hooks/useUserQueries";
+import { userKeys, useUser } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
@@ -27,6 +28,7 @@ function MemoCommentMessage({ notification }: Props) {
   const [senderName, setSenderName] = useState<string | undefined>(undefined);
   const [initialized, setInitialized] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
+  const queryClient = useQueryClient();
 
   const { data: sender } = useUser(senderName || "", { enabled: !!senderName });
 
@@ -83,6 +85,7 @@ function MemoCommentMessage({ notification }: Props) {
       },
       updateMask: create(FieldMaskSchema, { paths: ["status"] }),
     });
+    queryClient.invalidateQueries({ queryKey: userKeys.notifications() });
     if (!silence) {
       toast.success(t("message.archived-successfully"));
     }
@@ -92,6 +95,7 @@ function MemoCommentMessage({ notification }: Props) {
     await userServiceClient.deleteUserNotification({
       name: notification.name,
     });
+    queryClient.invalidateQueries({ queryKey: userKeys.notifications() });
     toast.success(t("message.deleted-successfully"));
   };
 
@@ -177,7 +181,7 @@ function MemoCommentMessage({ notification }: Props) {
               {isUnread ? (
                 <button
                   onClick={() => handleArchiveMessage()}
-                  className="p-1.5 hover:bg-primary/10 rounded-lg transition-all duration-150 opacity-0 group-hover:opacity-100"
+                  className="p-1.5 rounded-lg border border-border/60 bg-background/80 hover:bg-primary/10 transition-all duration-150"
                   title={t("common.archive")}
                 >
                   <CheckIcon className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" strokeWidth={2} />
@@ -185,7 +189,7 @@ function MemoCommentMessage({ notification }: Props) {
               ) : (
                 <button
                   onClick={handleDeleteMessage}
-                  className="p-1.5 hover:bg-destructive/10 rounded-lg transition-all duration-150 opacity-0 group-hover:opacity-100"
+                  className="p-1.5 rounded-lg border border-border/60 bg-background/80 hover:bg-destructive/10 transition-all duration-150"
                   title={t("common.delete")}
                 >
                   <TrashIcon className="w-4 h-4 text-muted-foreground hover:text-destructive transition-colors" strokeWidth={2} />
