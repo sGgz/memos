@@ -442,9 +442,6 @@ const Loans = () => {
   const activeLoans = useMemo(() => {
     return filteredLoans.filter((loan) => loan.remainingPrincipalCents > 0n);
   }, [filteredLoans]);
-  const totalOutstanding = useMemo(() => {
-    return activeLoans.reduce((sum, loan) => sum + loan.remainingPrincipalCents, 0n);
-  }, [activeLoans]);
   const totalPrincipal = useMemo(() => {
     return activeLoans.reduce((sum, loan) => sum + loan.principalCents, 0n);
   }, [activeLoans]);
@@ -460,6 +457,9 @@ const Loans = () => {
   const totalPayable = useMemo(() => {
     return totalPrincipal + totalInterestEstimate;
   }, [totalPrincipal, totalInterestEstimate]);
+  const totalOutstanding = useMemo(() => {
+    return totalPayable;
+  }, [totalPayable]);
 
   const handleCreateLoan = async () => {
     const normalizedTitle = normalizeLoanTitle(loanTitle);
@@ -1138,24 +1138,33 @@ const Loans = () => {
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-2 text-sm text-primary">
                   <BanknoteIcon className="h-4 w-4" />
-                  <span>{t("loan.total-outstanding")}</span>
+                  <span>{t("loan.total")}</span>
                 </div>
                 <span className="text-lg font-semibold text-primary">{formatCurrency(totalOutstanding, t)}</span>
               </div>
               <div className="mt-3 space-y-1 text-xs text-muted-foreground">
                 <div className="flex items-center justify-between">
                   <span>{t("loan.progress")}</span>
-                  <span>
-                    {t("loan.progress-detail", { repaid: formatCurrency(totalRepaid, t), total: formatCurrency(totalPayable, t) })}
-                  </span>
+                  <span>&nbsp;</span>
                 </div>
-                <div className="h-2 rounded-full bg-muted/40 overflow-hidden">
+                <div className="relative h-4 rounded-full bg-muted/40 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-primary transition-all"
+                    className="absolute inset-y-0 left-0 rounded-full bg-primary transition-all"
                     style={{
                       width: `${Math.min(100, Number(totalPayable === 0n ? 0 : (totalRepaid * 100n) / totalPayable))}%`,
                     }}
                   />
+                  <div className="absolute inset-0 z-10 flex items-center justify-center text-[11px] font-semibold text-white drop-shadow">
+                    {totalPayable === 0n ? "0.00%" : `${((Number(totalRepaid) / Number(totalPayable)) * 100).toFixed(2)}%`}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-[11px] font-medium">
+                  <span className="text-foreground/80">
+                    {t("loan.repaid")}: {formatCurrency(totalRepaid, t)}
+                  </span>
+                  <span className="text-foreground/75">
+                    {t("loan.remaining-total")}: {formatCurrency(totalPayable - totalRepaid, t)}
+                  </span>
                 </div>
                 <div className="flex flex-col gap-1 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
                   <span>
@@ -1297,20 +1306,28 @@ const Loans = () => {
                         <div className={`rounded-lg border p-3 space-y-2 text-sm ${settledStyle}`}>
                           <div className="flex items-center justify-between text-xs text-muted-foreground">
                             <span>{t("loan.progress")}</span>
-                            <span>
-                              {t("loan.progress-detail", {
-                                repaid: formatCurrency(loan.repaidAmountCents, t),
-                                total: formatCurrency(payableTotal, t),
-                              })}
-                            </span>
+                            <span>{formatCurrency(payableTotal, t)}</span>
                           </div>
-                          <div className="h-2 rounded-full bg-muted/40 overflow-hidden">
+                          <div className="relative h-4 rounded-full bg-muted/40 overflow-hidden">
                             <div
-                              className="h-full rounded-full bg-primary transition-all"
+                              className="absolute inset-y-0 left-0 rounded-full bg-primary transition-all"
                               style={{
                                 width: `${Math.min(100, Number(payableTotal === 0n ? 0 : (loan.repaidAmountCents * 100n) / payableTotal))}%`,
                               }}
                             />
+                            <div className="absolute inset-0 z-10 flex items-center justify-center text-[11px] font-semibold text-white drop-shadow">
+                              {payableTotal === 0n
+                                ? "0.00%"
+                                : `${((Number(loan.repaidAmountCents) / Number(payableTotal)) * 100).toFixed(2)}%`}
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between text-[11px] font-medium">
+                            <span className="text-foreground/80">
+                              {t("loan.repaid")}: {formatCurrency(loan.repaidAmountCents, t)}
+                            </span>
+                            <span className={payableTotal - loan.repaidAmountCents < 0n ? "text-rose-600" : "text-foreground/75"}>
+                              {t("loan.remaining-total")}: {formatCurrency(payableTotal - loan.repaidAmountCents, t)}
+                            </span>
                           </div>
                           <div className="grid gap-1 text-xs text-muted-foreground sm:grid-cols-4 sm:items-center">
                             <span>
