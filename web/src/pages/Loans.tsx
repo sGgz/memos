@@ -55,6 +55,7 @@ interface LoanRepaymentsProps {
 
 const LoanRepayments = ({ loan, onEditRepayment }: LoanRepaymentsProps) => {
   const t = useTranslate();
+  const { mutateAsync: createRepayment } = useCreateRepayment();
   const { data } = useRepayments({ parent: loan.name }, { enabled: Boolean(loan.name) });
   const repayments = data?.repayments ?? [];
 
@@ -64,8 +65,55 @@ const LoanRepayments = ({ loan, onEditRepayment }: LoanRepaymentsProps) => {
     return bTime - aTime;
   });
 
+  const latestStandardRepayment = sorted.find((repayment) => !repayment.isEarlyRepayment);
+  const canQuickAdd = Boolean(latestStandardRepayment) && loan.remainingPrincipalCents > 0n;
+
+  const handleQuickAddRepayment = async () => {
+    if (!latestStandardRepayment || !loan.name) return;
+    const baseDate = latestStandardRepayment.repaymentTime ? timestampDate(latestStandardRepayment.repaymentTime) : null;
+    if (!baseDate || Number.isNaN(baseDate.getTime())) {
+      toast.error(t("loan.repayment-date"));
+      return;
+    }
+    const targetDay = loan.monthlyRepaymentDay > 0 ? loan.monthlyRepaymentDay : dayjs(baseDate).date();
+    const nextBase = dayjs(baseDate).add(1, "month");
+    const safeDay = Math.min(targetDay, nextBase.daysInMonth());
+    const nextDate = nextBase.date(safeDay).toDate();
+    if (dayjs(nextDate).isAfter(dayjs(), "day")) {
+      toast.error(t("loan.date-invalid"));
+      return;
+    }
+    try {
+      await createRepayment(
+        create(CreateRepaymentRequestSchema, {
+          parent: loan.name,
+          repayment: create(RepaymentSchema, {
+            loan: loan.name,
+            repaymentTime: timestampFromDate(nextDate),
+            principalCents: latestStandardRepayment.principalCents,
+            interestCents: latestStandardRepayment.interestCents,
+            totalCents: latestStandardRepayment.totalCents,
+            note: latestStandardRepayment.note ?? "",
+            isEarlyRepayment: false,
+          } as Repayment),
+        }),
+      );
+      toast.success(t("loan.repayment-created"));
+    } catch (error) {
+      handleError(error, toast.error, { context: "Quick create repayment" });
+    }
+  };
+
   return (
     <div className="space-y-2 pb-4">
+      {canQuickAdd && (
+        <div className="flex justify-end">
+          <Button size="sm" variant="outline" className="gap-1.5" onClick={handleQuickAddRepayment}>
+            <RefreshCcwIcon className="h-3.5 w-3.5" />
+            {t("loan.repayment-quick-add")}
+          </Button>
+        </div>
+      )}
       {sorted.length === 0 ? (
         <div className="w-full flex flex-col items-center gap-2 py-6 text-sm text-muted-foreground">
           <Empty />
@@ -78,15 +126,17 @@ const LoanRepayments = ({ loan, onEditRepayment }: LoanRepaymentsProps) => {
           const hasPeriod = !repayment.isEarlyRepayment && (repayment.period ?? 0) >= 1;
           return (
             <div key={repayment.name} className="relative border border-border rounded-lg px-3 py-2 bg-muted/20">
-              <Button
-                size="icon"
-                variant="outline"
-                className="absolute right-2 top-2 h-7 w-7"
-                aria-label={t("loan.edit-repayment")}
-                onClick={() => onEditRepayment(repayment)}
-              >
-                <PencilIcon className="h-3.5 w-3.5" />
-              </Button>
+              {loan.remainingPrincipalCents !== 0n && (
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="absolute right-2 top-2 h-7 w-7"
+                  aria-label={t("loan.edit-repayment")}
+                  onClick={() => onEditRepayment(repayment)}
+                >
+                  <PencilIcon className="h-3.5 w-3.5" />
+                </Button>
+              )}
               <div className="flex flex-col gap-1">
                 <div className="flex flex-col gap-1 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex flex-wrap items-center gap-1.5 text-foreground">
@@ -1345,7 +1395,25 @@ const Loans = () => {
         <DialogContent size="lg">
           <DialogHeader>
             <DialogTitle>{selectedLoan?.title}</DialogTitle>
-            <DialogDescription>{t("loan.repayments-title")}</DialogDescription>
+            <DialogDescription className="flex items-center justify-between gap-2">
+              <span>{t("loan.repayments-title")}</span>
+              {selectedLoan?.remainingPrincipalCents !== 0n && (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  className="h-7 w-7"
+                  onClick={() => {
+                    if (!selectedLoan) return;
+                    setRepaymentLoan(selectedLoan);
+                    createRepaymentDialog.open();
+                  }}
+                  aria-label={t("loan.create-repayment")}
+                >
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+              )}
+            </DialogDescription>
           </DialogHeader>
           {selectedLoan && <LoanRepayments loan={selectedLoan} onEditRepayment={startEditRepayment} />}
         </DialogContent>
