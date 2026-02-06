@@ -123,7 +123,17 @@ const SignIn = () => {
           </>
         )}
       </div>
-      <AuthFooter />
+      <div className="mt-4 flex w-full flex-col items-center gap-2 text-center">
+        <AuthFooter className="mt-0" />
+        <a
+          className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+          href="https://beian.miit.gov.cn"
+          target="_blank"
+          rel="noreferrer"
+        >
+          粤ICP备2026014929号-1
+        </a>
+      </div>
     </div>
   );
 };
