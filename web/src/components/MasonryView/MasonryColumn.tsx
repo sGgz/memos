@@ -23,6 +23,8 @@ export function MasonryColumn({
           <MasonryItem
             key={`${memo.name}-${memo.displayTime}`}
             memo={memo}
+            memoIndex={memoIndex}
+            memoList={memoList}
             renderer={renderer}
             renderContext={renderContext}
             onHeightChange={onHeightChange}

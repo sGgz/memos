@@ -3,6 +3,8 @@ import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 export interface MemoRenderContext {
   compact: boolean;
   columns: number;
+  index?: number;
+  memoList?: Memo[];
 }
 
 export interface MasonryViewProps {
@@ -14,6 +16,8 @@ export interface MasonryViewProps {
 
 export interface MasonryItemProps {
   memo: Memo;
+  memoIndex: number;
+  memoList: Memo[];
   renderer: (memo: Memo, context?: MemoRenderContext) => JSX.Element;
   renderContext: MemoRenderContext;
   onHeightChange: (memoName: string, height: number) => void;

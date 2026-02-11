@@ -2,9 +2,11 @@ import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
 import { useState } from "react";
+import type { MemoRenderContext } from "@/components/MasonryView";
 import MemoEditor from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
+import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -13,6 +15,8 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { buildInstanceSettingName } from "@/helpers/resource-names";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useUser } from "@/hooks/useUserQueries";
+import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import {
   InstanceSetting_GeneralSetting_CustomProfileSchema,
@@ -39,6 +43,64 @@ const Home = () => {
     pinnedFirst: true,
     state: State.NORMAL,
   });
+
+  const MemoRow = ({ memo, context }: { memo: Memo; context?: MemoRenderContext }) => {
+    const creator = useUser(memo.creator).data;
+    const displayTime = memo.displayTime ? dayjs(timestampDate(memo.displayTime)) : null;
+    const yearLabel = displayTime ? displayTime.format("YYYY") : "----";
+    const dayLabel = displayTime ? displayTime.format("MM/DD") : "--/--";
+    const timeLabel = displayTime ? displayTime.format("HH:mm") : "--:--";
+    const dayKey = displayTime ? displayTime.format("YYYY-MM-DD") : "";
+    const memoList = context?.memoList;
+    const currentIndex = typeof context?.index === "number" ? context.index : -1;
+    let showYear = true;
+    let showDay = true;
+    if (memoList && currentIndex > 0) {
+      for (let i = currentIndex - 1; i >= 0; i -= 1) {
+        const prevMemo = memoList[i];
+        if (!prevMemo?.displayTime) {
+          continue;
+        }
+        const prevTime = dayjs(timestampDate(prevMemo.displayTime));
+        if (prevTime.format("YYYY") === yearLabel) {
+          showYear = false;
+        }
+        if (prevTime.format("YYYY-MM-DD") === dayKey) {
+          showDay = false;
+        }
+        if (!showYear && !showDay) {
+          break;
+        }
+      }
+    }
+    return (
+      <div className="w-full flex items-start gap-3 mb-6">
+        <div className="w-12 shrink-0 flex flex-col items-start text-xs text-muted-foreground/80">
+          {showYear && <div className="text-lg font-semibold text-foreground">{yearLabel}</div>}
+          {showDay && <div className={cn("font-semibold text-foreground", showYear ? "mt-0.5 text-sm" : "text-base")}>{dayLabel}</div>}
+          <div className={cn("text-[10px]", showYear || showDay ? "mt-1" : "text-sm")}>{timeLabel}</div>
+        </div>
+        <div className="flex-1">
+          <div className="rounded-2xl border border-border/60 bg-background/90 px-3 py-3">
+            <div className="flex items-start gap-3">
+              <UserAvatar className="h-8 w-8 mt-1.5" avatarUrl={creator?.avatarUrl} />
+              <div className="flex-1">
+                <MemoView
+                  key={`${memo.name}-${memo.displayTime}`}
+                  memo={memo}
+                  showVisibility
+                  showPinned
+                  compact
+                  showTimeline
+                  showHeader={false}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="w-full">
@@ -73,24 +135,7 @@ const Home = () => {
             />
           </div>
           <PagedMemoList
-            renderer={(memo: Memo) => (
-              <div className="w-full flex items-start gap-3">
-                <div className="w-12 shrink-0 flex flex-col items-start pt-3 text-xs text-muted-foreground/80">
-                  <div className="text-lg font-semibold text-foreground">
-                    {memo.displayTime ? dayjs(timestampDate(memo.displayTime)).format("YYYY") : "----"}
-                  </div>
-                  <div className="mt-0.5 text-sm font-semibold text-foreground">
-                    {memo.displayTime ? dayjs(timestampDate(memo.displayTime)).format("MM/DD") : "--/--"}
-                  </div>
-                  <div className="mt-1 text-[10px]">
-                    {memo.displayTime ? dayjs(timestampDate(memo.displayTime)).format("HH:mm") : "--:--"}
-                  </div>
-                </div>
-                <div className="flex-1 pt-3">
-                  <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact showTimeline />
-                </div>
-              </div>
-            )}
+            renderer={(memo: Memo, context) => <MemoRow memo={memo} context={context} />}
             listSort={listSort}
             orderBy={orderBy}
             filter={memoFilter}

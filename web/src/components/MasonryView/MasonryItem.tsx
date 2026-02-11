@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { MasonryItemProps } from "./types";
 
-export function MasonryItem({ memo, renderer, renderContext, onHeightChange }: MasonryItemProps) {
+export function MasonryItem({ memo, memoIndex, memoList, renderer, renderContext, onHeightChange }: MasonryItemProps) {
   const itemRef = useRef<HTMLDivElement>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
@@ -28,5 +28,5 @@ export function MasonryItem({ memo, renderer, renderContext, onHeightChange }: M
     };
   }, [memo.name, onHeightChange]);
 
-  return <div ref={itemRef}>{renderer(memo, renderContext)}</div>;
+  return <div ref={itemRef}>{renderer(memo, { ...renderContext, index: memoIndex, memoList })}</div>;
 }

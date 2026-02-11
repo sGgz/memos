@@ -13,7 +13,7 @@ import { MemoViewContext } from "./MemoViewContext";
 import type { MemoViewProps } from "./types";
 
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
-  const { memo: memoData, className, parentPage: parentPageProp, showComments = true, showTimeline } = props;
+  const { memo: memoData, className, parentPage: parentPageProp, showComments = true, showTimeline, showHeader = true } = props;
   const cardRef = useRef<HTMLDivElement>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [forceCommentEditor, setForceCommentEditor] = useState(false);
@@ -73,15 +73,17 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   return (
     <MemoViewContext.Provider value={contextValue}>
       <article className={cn(MEMO_CARD_BASE_CLASSES, className)} ref={cardRef} tabIndex={readonly ? -1 : 0}>
-        <MemoHeader
-          showCreator={props.showCreator}
-          showPinned={props.showPinned}
-          onEdit={openEditor}
-          onGotoDetail={handleGotoMemoDetailPage}
-          onUnpin={unpinMemo}
-          onToggleNsfwVisibility={toggleNsfwVisibility}
-          showTime={!showTimeline}
-        />
+        {showHeader && (
+          <MemoHeader
+            showCreator={props.showCreator}
+            showPinned={props.showPinned}
+            onEdit={openEditor}
+            onGotoDetail={handleGotoMemoDetailPage}
+            onUnpin={unpinMemo}
+            onToggleNsfwVisibility={toggleNsfwVisibility}
+            showTime={!showTimeline}
+          />
+        )}
 
         <MemoBody
           compact={props.compact}

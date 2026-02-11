@@ -11,6 +11,7 @@ export interface MemoViewProps {
   parentPage?: string;
   showComments?: boolean;
   showTimeline?: boolean;
+  showHeader?: boolean;
 }
 
 export interface MemoHeaderProps {
