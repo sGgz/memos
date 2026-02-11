@@ -15,6 +15,7 @@ export interface MemoEditorProps {
   onConfirm?: (memoName: string) => void;
   onCancel?: () => void;
   minimal?: boolean;
+  showInsertMenu?: boolean;
 }
 
 export interface EditorContentProps {
@@ -27,6 +28,7 @@ export interface EditorToolbarProps {
   onCancel?: () => void;
   memoName?: string;
   minimal?: boolean;
+  showInsertMenu?: boolean;
 }
 
 export interface EditorMetadataProps {

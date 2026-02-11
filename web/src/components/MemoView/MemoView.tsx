@@ -16,6 +16,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const { memo: memoData, className, parentPage: parentPageProp, showComments = true, showTimeline } = props;
   const cardRef = useRef<HTMLDivElement>(null);
   const [showEditor, setShowEditor] = useState(false);
+  const [forceCommentEditor, setForceCommentEditor] = useState(false);
 
   const currentUser = useCurrentUser();
   const creator = useUser(memoData.creator).data;
@@ -60,8 +61,11 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
         className="mb-2"
         cacheKey={`inline-memo-editor-${memoData.name}`}
         memoName={memoData.name}
+        parentMemoName={memoData.name}
         onConfirm={handleEditorConfirm}
         onCancel={handleEditorCancel}
+        minimal
+        showInsertMenu={false}
       />
     );
   }
@@ -71,7 +75,6 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       <article className={cn(MEMO_CARD_BASE_CLASSES, className)} ref={cardRef} tabIndex={readonly ? -1 : 0}>
         <MemoHeader
           showCreator={props.showCreator}
-          showVisibility={props.showVisibility}
           showPinned={props.showPinned}
           onEdit={openEditor}
           onGotoDetail={handleGotoMemoDetailPage}
@@ -85,8 +88,17 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
           onContentClick={handleMemoContentClick}
           onContentDoubleClick={handleMemoContentDoubleClick}
           onToggleNsfwVisibility={toggleNsfwVisibility}
+          onCommentClick={() => setForceCommentEditor(true)}
+          showActionBar={currentUser && !isArchived}
+          onEdit={openEditor}
         />
-        {showComments && <MemoInlineComments memoName={memoData.name} />}
+        {showComments && (
+          <MemoInlineComments
+            memoName={memoData.name}
+            forceEditorOpen={forceCommentEditor}
+            onForceEditorClose={() => setForceCommentEditor(false)}
+          />
+        )}
 
         <PreviewImageDialog
           open={previewState.open}

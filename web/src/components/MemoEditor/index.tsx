@@ -18,7 +18,19 @@ import { EditorProvider, useEditorContext } from "./state";
 import type { MemoEditorProps } from "./types";
 
 const MemoEditor = (props: MemoEditorProps) => {
-  const { className, cacheKey, memoName, parentMemoName, autoFocus, placeholder, onConfirm, onCancel, minimal, initialContent } = props;
+  const {
+    className,
+    cacheKey,
+    memoName,
+    parentMemoName,
+    autoFocus,
+    placeholder,
+    onConfirm,
+    onCancel,
+    minimal,
+    initialContent,
+    showInsertMenu,
+  } = props;
 
   return (
     <EditorProvider>
@@ -33,6 +45,7 @@ const MemoEditor = (props: MemoEditorProps) => {
         onConfirm={onConfirm}
         onCancel={onCancel}
         minimal={minimal}
+        showInsertMenu={showInsertMenu}
       />
     </EditorProvider>
   );
@@ -49,6 +62,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   onConfirm,
   onCancel,
   minimal,
+  showInsertMenu,
 }) => {
   const t = useTranslate();
   const queryClient = useQueryClient();
@@ -151,7 +165,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
           <EditorMetadata memoName={memoName} minimal={minimal} />
-          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} minimal={minimal} />
+          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} minimal={minimal} showInsertMenu={showInsertMenu} />
         </div>
       </div>
     </>

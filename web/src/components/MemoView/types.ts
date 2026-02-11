@@ -15,7 +15,6 @@ export interface MemoViewProps {
 
 export interface MemoHeaderProps {
   showCreator?: boolean;
-  showVisibility?: boolean;
   showPinned?: boolean;
   onEdit: () => void;
   onGotoDetail: () => void;
@@ -29,4 +28,7 @@ export interface MemoBodyProps {
   onContentClick: (e: React.MouseEvent) => void;
   onContentDoubleClick: (e: React.MouseEvent) => void;
   onToggleNsfwVisibility: () => void;
+  onCommentClick?: () => void;
+  showActionBar?: boolean;
+  onEdit?: () => void;
 }

@@ -26,7 +26,7 @@ const MemoReactionListView = (props: Props) => {
       {Array.from(reactionGroup).map(([reactionType, users]) => (
         <ReactionView key={`${reactionType.toString()} ${users.length}`} memo={memoData} reactionType={reactionType} users={users} />
       ))}
-      {!readonly && currentUser && <ReactionSelector memo={memoData} />}
+      {!readonly && currentUser && <ReactionSelector memo={memoData} className="hidden" />}
     </div>
   );
 };

@@ -2,8 +2,8 @@ import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
 import { useState } from "react";
-import MemoView from "@/components/MemoView";
 import MemoEditor from "@/components/MemoEditor";
+import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -42,7 +42,7 @@ const Home = () => {
 
   return (
     <div className="w-full">
-      <div className="relative mb-0 overflow-hidden rounded-3xl bg-muted/30">
+      <div className="relative mb-0 overflow-hidden bg-muted/30 w-screen -mx-4 sm:mx-0 sm:w-full">
         <button
           type="button"
           className="group relative h-60 w-full overflow-hidden bg-muted/30"
@@ -63,8 +63,8 @@ const Home = () => {
       </div>
 
       <div className="relative -mt-14">
-        <div className="rounded-[28px] border border-border/60 bg-background/90 px-4 pt-5 pb-3 shadow-[0_20px_45px_-35px_rgba(0,0,0,0.45)] backdrop-blur">
-          <div className="rounded-2xl border border-border/60 bg-background/95 px-4 pt-4 pb-3 shadow-[0_12px_28px_rgba(15,23,42,0.12)] mb-4">
+        <div className="w-full border-0 bg-transparent px-0 pt-5 pb-3 shadow-none">
+          <div className="rounded-2xl border border-border/60 bg-background/95 px-3 pt-4 pb-3 shadow-[0_12px_28px_rgba(15,23,42,0.12)] mb-4">
             <MemoEditor
               className="border-0 shadow-none bg-transparent px-0 pt-0"
               cacheKey="home-memo-editor"
@@ -74,16 +74,21 @@ const Home = () => {
           </div>
           <PagedMemoList
             renderer={(memo: Memo) => (
-              <div className="w-full grid grid-cols-[56px,1fr] gap-3">
-                <div className="flex flex-col items-start pt-3 text-xs text-muted-foreground/80">
-                  <div className="text-base font-semibold text-foreground">
+              <div className="w-full flex items-start gap-3">
+                <div className="w-12 shrink-0 flex flex-col items-start pt-3 text-xs text-muted-foreground/80">
+                  <div className="text-lg font-semibold text-foreground">
+                    {memo.displayTime ? dayjs(timestampDate(memo.displayTime)).format("YYYY") : "----"}
+                  </div>
+                  <div className="mt-0.5 text-sm font-semibold text-foreground">
                     {memo.displayTime ? dayjs(timestampDate(memo.displayTime)).format("MM/DD") : "--/--"}
                   </div>
-                  <div className="mt-1 text-[11px]">
+                  <div className="mt-1 text-[10px]">
                     {memo.displayTime ? dayjs(timestampDate(memo.displayTime)).format("HH:mm") : "--:--"}
                   </div>
                 </div>
-                <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact showTimeline />
+                <div className="flex-1 pt-3">
+                  <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact showTimeline />
+                </div>
               </div>
             )}
             listSort={listSort}
@@ -91,7 +96,7 @@ const Home = () => {
             filter={memoFilter}
             enabled={isInitialized && !!user} // Wait for contexts to stabilize before fetching
             showMemoEditor={false}
-            containerClassName="max-w-none px-0 pt-3"
+            containerClassName="max-w-none px-0 pt-2"
           />
         </div>
       </div>

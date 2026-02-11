@@ -1,9 +1,8 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { MessageCircleIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MemoEditor from "@/components/MemoEditor";
 import UserAvatar from "@/components/UserAvatar";
-import { Button } from "@/components/ui/button";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoComments } from "@/hooks/useMemoQueries";
 import { useUser } from "@/hooks/useUserQueries";
@@ -14,9 +13,11 @@ import { useMemoViewContext } from "../MemoViewContext";
 
 interface MemoInlineCommentsProps {
   memoName: string;
+  forceEditorOpen?: boolean;
+  onForceEditorClose?: () => void;
 }
 
-const MemoInlineComments = ({ memoName }: MemoInlineCommentsProps) => {
+const MemoInlineComments = ({ memoName, forceEditorOpen, onForceEditorClose }: MemoInlineCommentsProps) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const { memo } = useMemoViewContext();
@@ -39,6 +40,7 @@ const MemoInlineComments = ({ memoName }: MemoInlineCommentsProps) => {
     setShowEditor(false);
     setReplyTarget(null);
     setExpanded(true);
+    onForceEditorClose?.();
   };
 
   if (memo.parent) {
@@ -57,25 +59,6 @@ const MemoInlineComments = ({ memoName }: MemoInlineCommentsProps) => {
   const currentUserName = currentUser?.displayName || currentUser?.username || t("common.user");
   const replyPrefix = replyTarget ? `${currentUserName}回复${replyTarget.authorName}：` : undefined;
 
-  if (!isLoading && !hasComments && !showEditor) {
-    if (!canWriteComment) {
-      return null;
-    }
-    return (
-      <div className="mt-3 w-full flex justify-end">
-        <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={() => setShowEditor(true)}>
-          <MessageCircleIcon className="mr-1 h-4 w-4" />
-          {t("memo.comment.write-a-comment")}
-        </Button>
-      </div>
-    );
-  }
-
-  const handleStartComment = () => {
-    setReplyTarget(null);
-    setShowEditor(true);
-  };
-
   const handleReply = (memo: Memo, authorName: string) => {
     if (!canWriteComment) {
       return;
@@ -85,34 +68,43 @@ const MemoInlineComments = ({ memoName }: MemoInlineCommentsProps) => {
     setExpanded(true);
   };
 
+  useEffect(() => {
+    if (forceEditorOpen && !showEditor && canWriteComment) {
+      setReplyTarget(null);
+      setShowEditor(true);
+    }
+  }, [forceEditorOpen, showEditor, canWriteComment]);
+
+  if (!isLoading && !hasComments && !showEditor) {
+    if (!canWriteComment) {
+      return null;
+    }
+    return null;
+  }
+
   return (
-    <section
-      className={cn("mt-4 w-full rounded-2xl border border-border/60 bg-card/70 px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]")}
-    >
-      <div className="flex items-center justify-between gap-2">
-        {needsExpand ? (
-          <button
-            type="button"
-            className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground/80 hover:text-primary transition-colors"
-            onClick={handleToggleExpanded}
-          >
-            <MessageCircleIcon className="w-4 h-4" />
-            {expanded ? t("common.collapse") : t("memo.comment.toggle-comments")}
-            {displayCount > 0 && <span className="text-[0.65rem] text-muted-foreground/70">({displayCount})</span>}
-          </button>
-        ) : (
-          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground/80">
-            <MessageCircleIcon className="w-4 h-4" />
-            {t("memo.comment.self")}
-            {displayCount > 0 && <span className="text-[0.65rem] text-muted-foreground/70">({displayCount})</span>}
-          </div>
-        )}
-        {currentUser && !showEditor && (
-          <Button variant="ghost" size="sm" className="text-xs" onClick={handleStartComment}>
-            {t("memo.comment.write-a-comment")}
-          </Button>
-        )}
-      </div>
+    <section className={cn("mt-4 w-full border-0 bg-transparent px-0 py-0 shadow-none")}>
+      {hasComments && (
+        <div className="flex items-center gap-2">
+          {needsExpand ? (
+            <button
+              type="button"
+              className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground/80 hover:text-primary transition-colors"
+              onClick={handleToggleExpanded}
+            >
+              <MessageCircleIcon className="w-4 h-4" />
+              {expanded ? t("common.collapse") : t("memo.comment.toggle-comments")}
+              {displayCount > 0 && <span className="text-[0.65rem] text-muted-foreground/70">({displayCount})</span>}
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground/80">
+              <MessageCircleIcon className="w-4 h-4" />
+              {t("memo.comment.self")}
+              {displayCount > 0 && <span className="text-[0.65rem] text-muted-foreground/70">({displayCount})</span>}
+            </div>
+          )}
+        </div>
+      )}
 
       {showEditor && (
         <div className="mt-3">
@@ -127,8 +119,10 @@ const MemoInlineComments = ({ memoName }: MemoInlineCommentsProps) => {
             onCancel={() => {
               setShowEditor(false);
               setReplyTarget(null);
+              onForceEditorClose?.();
             }}
             minimal
+            showInsertMenu={false}
             key={replyTarget ? `inline-comment-reply-${replyTarget.memo.name}` : "inline-comment-new"}
           />
         </div>

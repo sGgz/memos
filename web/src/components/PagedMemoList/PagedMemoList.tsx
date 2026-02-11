@@ -153,10 +153,7 @@ const PagedMemoList = (props: Props) => {
 
   const children = (
     <div
-      className={cn(
-        "flex flex-col justify-start items-stretch w-full max-w-6xl mx-auto px-3 sm:px-6 lg:px-8",
-        props.containerClassName,
-      )}
+      className={cn("flex flex-col justify-start items-stretch w-full max-w-6xl mx-auto px-3 sm:px-6 lg:px-8", props.containerClassName)}
     >
       {/* Show skeleton loader during initial load */}
       {isLoading ? (

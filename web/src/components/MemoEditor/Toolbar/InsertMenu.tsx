@@ -169,24 +169,24 @@ const InsertMenu = (props: InsertMenuProps) => {
       )}
 
       {/* Hidden file input */}
-        <input
-          className="hidden"
-          ref={fileInputRef}
-          disabled={isUploading}
-          onChange={handleFileInputChange}
-          type="file"
-          multiple={true}
-          accept={props.compact ? "image/*" : "*"}
-        />
-        <input
-          className="hidden"
-          ref={imageOnlyInputRef}
-          disabled={isUploading}
-          onChange={handleImageInputChange}
-          type="file"
-          multiple={true}
-          accept="image/*"
-        />
+      <input
+        className="hidden"
+        ref={fileInputRef}
+        disabled={isUploading}
+        onChange={handleFileInputChange}
+        type="file"
+        multiple={true}
+        accept={props.compact ? "image/*" : "*"}
+      />
+      <input
+        className="hidden"
+        ref={imageOnlyInputRef}
+        disabled={isUploading}
+        onChange={handleImageInputChange}
+        type="file"
+        multiple={true}
+        accept="image/*"
+      />
 
       <LinkMemoDialog
         open={linkDialogOpen}

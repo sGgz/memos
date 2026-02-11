@@ -1,36 +1,22 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { BookmarkIcon, EyeOffIcon, MessageCircleMoreIcon } from "lucide-react";
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import i18n from "@/i18n";
-import { cn } from "@/lib/utils";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
-import { useTranslate } from "@/utils/i18n";
-import { convertVisibilityToString } from "@/utils/memo";
-import MemoActionMenu from "../../MemoActionMenu";
-import { ReactionSelector } from "../../MemoReactionListView";
 import UserAvatar from "../../UserAvatar";
-import VisibilityIcon from "../../VisibilityIcon";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 import type { MemoHeaderProps } from "../types";
 
 const MemoHeader: React.FC<MemoHeaderProps> = ({
   showCreator,
-  showVisibility,
-  showPinned,
-  onEdit,
+  showPinned: _showPinned,
+  onEdit: _onEdit,
   onGotoDetail,
-  onUnpin,
-  onToggleNsfwVisibility,
+  onUnpin: _onUnpin,
+  onToggleNsfwVisibility: _onToggleNsfwVisibility,
   showTime = true,
 }) => {
-  const t = useTranslate();
-  const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
-
-  const { memo, creator, currentUser, parentPage, isArchived, readonly, showNSFWContent, nsfw } = useMemoViewContext();
-  const { isInMemoDetailPage, commentAmount, relativeTimeFormat } = useMemoViewDerived();
+  const { memo, creator, isArchived } = useMemoViewContext();
+  const { relativeTimeFormat } = useMemoViewDerived();
 
   const displayTime = isArchived ? (
     (memo.displayTime ? timestampDate(memo.displayTime) : undefined)?.toLocaleString(i18n.language)
@@ -44,83 +30,24 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
 
   return (
     <div className="w-full flex flex-row justify-between items-start gap-2">
-      <div className="w-auto max-w-[calc(100%-5.25rem)] grow flex flex-row justify-start items-center">
+      <div className="w-full flex flex-row justify-start items-center">
         {showCreator && creator ? (
-          <CreatorDisplay creator={creator} displayTime={displayTime} onGotoDetail={onGotoDetail} showTime={showTime} />
+          <CreatorDisplay creator={creator} />
         ) : (
           showTime && <TimeDisplay displayTime={displayTime} onGotoDetail={onGotoDetail} />
         )}
       </div>
 
-      <div className="flex flex-row justify-end items-center select-none shrink-0 gap-0.5 text-xs text-muted-foreground/70">
-        {currentUser && !isArchived && (
-          <ReactionSelector
-            className={cn("border-none w-auto h-auto", reactionSelectorOpen && "block!", "block sm:hidden sm:group-hover:block")}
-            memo={memo}
-            onOpenChange={setReactionSelectorOpen}
-          />
-        )}
-
-        {!isInMemoDetailPage && commentAmount > 0 && (
-          <Link
-            className={cn("flex flex-row justify-start items-center rounded-md px-1 hover:opacity-80 gap-0.5")}
-            to={`/${memo.name}#comments`}
-            viewTransition
-            state={{ from: parentPage }}
-          >
-            <MessageCircleMoreIcon className="w-3.5 h-3.5 mx-auto text-muted-foreground" />
-            <span className="text-[11px] text-muted-foreground">{commentAmount}</span>
-          </Link>
-        )}
-
-        {showVisibility && memo.visibility !== Visibility.PRIVATE && (
-          <Tooltip>
-            <TooltipTrigger>
-              <span className="flex justify-center items-center rounded-md hover:opacity-80">
-                <VisibilityIcon visibility={memo.visibility} />
-              </span>
-            </TooltipTrigger>
-            <TooltipContent>
-              {t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as Parameters<typeof t>[0])}
-            </TooltipContent>
-          </Tooltip>
-        )}
-
-        {showPinned && memo.pinned && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="cursor-pointer">
-                  <BookmarkIcon className="w-4 h-auto text-primary" onClick={onUnpin} />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{t("common.unpin")}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
-
-        {nsfw && showNSFWContent && onToggleNsfwVisibility && (
-          <span className="cursor-pointer">
-            <EyeOffIcon className="w-4 h-auto text-primary" onClick={onToggleNsfwVisibility} />
-          </span>
-        )}
-
-        <MemoActionMenu memo={memo} readonly={readonly} onEdit={onEdit} />
-      </div>
+      <div className="hidden"></div>
     </div>
   );
 };
 
 interface CreatorDisplayProps {
   creator: User;
-  displayTime: React.ReactNode;
-  onGotoDetail: () => void;
-  showTime: boolean;
 }
 
-const CreatorDisplay: React.FC<CreatorDisplayProps> = ({ creator, displayTime, onGotoDetail, showTime }) => (
+const CreatorDisplay: React.FC<CreatorDisplayProps> = ({ creator }) => (
   <div className="w-full flex flex-row justify-start items-center gap-3">
     <Link
       className="w-auto hover:opacity-95 rounded-full transition-all duration-300 border border-border/60 hover:border-primary/40"
@@ -129,24 +56,6 @@ const CreatorDisplay: React.FC<CreatorDisplayProps> = ({ creator, displayTime, o
     >
       <UserAvatar className="mr-0 shrink-0 ring-1 ring-border/60" avatarUrl={creator.avatarUrl} />
     </Link>
-    <div className="w-full flex flex-col justify-center items-start">
-      <Link
-        className="block leading-tight text-sm font-semibold text-foreground hover:text-primary transition-colors truncate"
-        to={`/u/${encodeURIComponent(creator.username)}`}
-        viewTransition
-      >
-        {creator.displayName || creator.username}
-      </Link>
-      {showTime && (
-        <button
-          type="button"
-          className="w-auto mt-0.5 text-[0.72rem] text-muted-foreground/70 select-none cursor-pointer hover:text-foreground transition-colors text-left whitespace-nowrap"
-          onClick={onGotoDetail}
-        >
-          {displayTime}
-        </button>
-      )}
-    </div>
   </div>
 );
 
@@ -155,14 +64,6 @@ interface TimeDisplayProps {
   onGotoDetail: () => void;
 }
 
-const TimeDisplay: React.FC<TimeDisplayProps> = ({ displayTime, onGotoDetail }) => (
-  <button
-    type="button"
-    className="w-full text-[11px] text-muted-foreground/70 select-none cursor-pointer hover:text-foreground transition-colors text-left whitespace-nowrap"
-    onClick={onGotoDetail}
-  >
-    {displayTime}
-  </button>
-);
+const TimeDisplay: React.FC<TimeDisplayProps> = () => null;
 
 export default MemoHeader;

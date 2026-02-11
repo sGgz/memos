@@ -1,8 +1,6 @@
-import { ChevronDownIcon, ChevronUpIcon, FileIcon, PaperclipIcon, XIcon } from "lucide-react";
+import { PaperclipIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
-import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import { formatFileSize, getFileTypeLabel } from "@/utils/format";
 import type { LocalFile } from "../types/attachment";
 import { toAttachmentItems } from "../types/attachment";
 
@@ -13,92 +11,7 @@ interface AttachmentListProps {
   onRemoveLocalFile?: (previewUrl: string) => void;
 }
 
-const AttachmentItemCard: FC<{
-  item: ReturnType<typeof toAttachmentItems>[0];
-  onRemove?: () => void;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
-  canMoveUp?: boolean;
-  canMoveDown?: boolean;
-}> = ({ item, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
-  const { category, filename, thumbnailUrl, mimeType, size } = item;
-  const fileTypeLabel = getFileTypeLabel(mimeType);
-  const fileSizeLabel = size ? formatFileSize(size) : undefined;
-
-  return (
-    <div className="relative flex items-center gap-1.5 px-1.5 py-1 rounded border border-transparent hover:border-border hover:bg-accent/20 transition-all">
-      <div className="shrink-0 w-6 h-6 rounded overflow-hidden bg-muted/40 flex items-center justify-center">
-        {category === "image" && thumbnailUrl ? (
-          <img src={thumbnailUrl} alt="" className="w-full h-full object-cover" />
-        ) : (
-          <FileIcon className="w-3.5 h-3.5 text-muted-foreground" />
-        )}
-      </div>
-
-      <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-1.5">
-        <span className="text-xs truncate" title={filename}>
-          {filename}
-        </span>
-
-        <div className="flex items-center gap-1 text-[11px] text-muted-foreground shrink-0">
-          <span>{fileTypeLabel}</span>
-          {fileSizeLabel && (
-            <>
-              <span className="text-muted-foreground/50 hidden sm:inline">•</span>
-              <span className="hidden sm:inline">{fileSizeLabel}</span>
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="shrink-0 flex items-center gap-0.5">
-        {onMoveUp && (
-          <button
-            type="button"
-            onClick={onMoveUp}
-            disabled={!canMoveUp}
-            className={cn(
-              "p-0.5 rounded hover:bg-accent active:bg-accent transition-colors touch-manipulation",
-              !canMoveUp && "opacity-20 cursor-not-allowed hover:bg-transparent",
-            )}
-            title="Move up"
-            aria-label="Move attachment up"
-          >
-            <ChevronUpIcon className="w-3 h-3 text-muted-foreground" />
-          </button>
-        )}
-
-        {onMoveDown && (
-          <button
-            type="button"
-            onClick={onMoveDown}
-            disabled={!canMoveDown}
-            className={cn(
-              "p-0.5 rounded hover:bg-accent active:bg-accent transition-colors touch-manipulation",
-              !canMoveDown && "opacity-20 cursor-not-allowed hover:bg-transparent",
-            )}
-            title="Move down"
-            aria-label="Move attachment down"
-          >
-            <ChevronDownIcon className="w-3 h-3 text-muted-foreground" />
-          </button>
-        )}
-
-        {onRemove && (
-          <button
-            type="button"
-            onClick={onRemove}
-            className="p-0.5 rounded hover:bg-destructive/10 active:bg-destructive/10 transition-colors ml-0.5 touch-manipulation"
-            title="Remove"
-            aria-label="Remove attachment"
-          >
-            <XIcon className="w-3 h-3 text-muted-foreground hover:text-destructive" />
-          </button>
-        )}
-      </div>
-    </div>
-  );
-};
+// AttachmentItemCard removed: grid-only preview used in editor.
 
 const AttachmentList: FC<AttachmentListProps> = ({ attachments, localFiles = [], onAttachmentsChange, onRemoveLocalFile }) => {
   if (attachments.length === 0 && localFiles.length === 0) {
@@ -106,22 +19,6 @@ const AttachmentList: FC<AttachmentListProps> = ({ attachments, localFiles = [],
   }
 
   const items = toAttachmentItems(attachments, localFiles);
-
-  const handleMoveUp = (index: number) => {
-    if (index === 0 || !onAttachmentsChange) return;
-
-    const newAttachments = [...attachments];
-    [newAttachments[index - 1], newAttachments[index]] = [newAttachments[index], newAttachments[index - 1]];
-    onAttachmentsChange(newAttachments);
-  };
-
-  const handleMoveDown = (index: number) => {
-    if (index === attachments.length - 1 || !onAttachmentsChange) return;
-
-    const newAttachments = [...attachments];
-    [newAttachments[index], newAttachments[index + 1]] = [newAttachments[index + 1], newAttachments[index]];
-    onAttachmentsChange(newAttachments);
-  };
 
   const handleRemoveAttachment = (name: string) => {
     if (onAttachmentsChange) {
@@ -150,9 +47,7 @@ const AttachmentList: FC<AttachmentListProps> = ({ attachments, localFiles = [],
             {item.category === "image" && item.thumbnailUrl ? (
               <img src={item.thumbnailUrl} alt="" className="w-full h-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-                {item.filename}
-              </div>
+              <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">{item.filename}</div>
             )}
             <button
               type="button"

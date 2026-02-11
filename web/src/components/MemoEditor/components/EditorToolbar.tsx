@@ -8,7 +8,7 @@ import InsertMenu from "../Toolbar/InsertMenu";
 import VisibilitySelector from "../Toolbar/VisibilitySelector";
 import type { EditorToolbarProps } from "../types";
 
-export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoName, minimal }) => {
+export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoName, minimal, showInsertMenu }) => {
   const t = useTranslate();
   const { state, actions, dispatch } = useEditorContext();
   const { valid } = validationService.canSave(state);
@@ -27,14 +27,14 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
     dispatch(actions.setMetadata({ visibility }));
   };
 
-  const showInsertMenu = true;
+  const showInsertMenuButton = showInsertMenu ?? true;
   const showVisibilitySelector = !minimal;
 
   return (
     <div className={cn("w-full flex flex-col gap-2 lg:flex-row lg:items-center mb-0", minimal ? "lg:justify-end" : "lg:justify-between")}>
       {!minimal && (
         <div className="flex flex-row justify-between items-center w-full lg:w-auto">
-          {showInsertMenu && (
+          {showInsertMenuButton && (
             <InsertMenu
               isUploading={state.ui.isLoading.uploading}
               location={state.metadata.location}
@@ -48,7 +48,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
       )}
 
       <div className="flex flex-row justify-end items-center gap-2">
-        {minimal && (
+        {minimal && showInsertMenuButton && (
           <InsertMenu
             isUploading={state.ui.isLoading.uploading}
             location={state.metadata.location}

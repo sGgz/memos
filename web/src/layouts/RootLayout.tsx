@@ -66,7 +66,6 @@ const RootLayout = () => {
     };
   }, []);
 
-
   return (
     <div className="w-full min-h-full flex flex-row justify-center items-start sm:pl-16">
       {sm && (
