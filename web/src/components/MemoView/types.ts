@@ -10,6 +10,7 @@ export interface MemoViewProps {
   className?: string;
   parentPage?: string;
   showComments?: boolean;
+  showTimeline?: boolean;
 }
 
 export interface MemoHeaderProps {
@@ -20,6 +21,7 @@ export interface MemoHeaderProps {
   onGotoDetail: () => void;
   onUnpin: () => void;
   onToggleNsfwVisibility?: () => void;
+  showTime?: boolean;
 }
 
 export interface MemoBodyProps {

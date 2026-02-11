@@ -70,6 +70,7 @@ export interface LocationDialogProps {
 export interface InsertMenuProps {
   isUploading?: boolean;
   location?: Location;
+  compact?: boolean;
   onLocationChange: (location?: Location) => void;
   onToggleFocusMode?: () => void;
   memoName?: string;

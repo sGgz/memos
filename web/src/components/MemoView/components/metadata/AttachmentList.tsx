@@ -56,11 +56,11 @@ const DocumentItem = ({ attachment }: { attachment: Attachment }) => {
 };
 
 const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => (
-  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
     {attachments.map((attachment) => (
       <div
         key={attachment.name}
-        className="aspect-square rounded-lg overflow-hidden bg-muted/40 border border-border hover:border-accent/50 transition-all cursor-pointer group"
+        className="aspect-square rounded-lg overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer group"
         onClick={() => onImageClick(getAttachmentUrl(attachment))}
       >
         <div className="w-full h-full relative">
@@ -158,7 +158,7 @@ const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[
         {attachments.map((attachment) => (
           <div
             key={attachment.name}
-            className="min-w-full snap-center aspect-[4/3] relative cursor-pointer flex items-center justify-center bg-card/80"
+            className="min-w-full snap-center aspect-[4/3] relative cursor-pointer flex items-center justify-center bg-muted/30"
             onClick={() => {
               if (suppressClickRef.current) {
                 return;
@@ -221,7 +221,7 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
       <div className="w-full rounded-lg border-0 bg-transparent overflow-hidden">
         <SectionHeader icon={PaperclipIcon} title="附件" count={attachments.length} hideIcon hideCount hideBorder />
 
-        <div className="p-2 flex flex-col gap-1">
+        <div className="p-0 flex flex-col gap-1">
           {mediaItems.length > 0 && !allImages && <MediaGrid attachments={mediaItems} onImageClick={handleImageClick} />}
           {allImages && <ImageCarousel attachments={imageOnlyMedia} onImageClick={handleImageClick} />}
 

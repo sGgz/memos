@@ -14,7 +14,7 @@ const MobileHeader = (props: Props) => {
   const md = useMediaQuery("md");
   const sm = useMediaQuery("sm");
 
-  if (md) return null;
+  return null;
 
   return (
     <div

@@ -138,29 +138,32 @@ const AttachmentList: FC<AttachmentListProps> = ({ attachments, localFiles = [],
   };
 
   return (
-    <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
-      <div className="flex items-center gap-1.5 px-2 py-1.5 border-b border-border bg-muted/30">
+    <div className="w-full">
+      <div className="flex items-center gap-1.5 px-1 pb-1">
         <PaperclipIcon className="w-3.5 h-3.5 text-muted-foreground" />
         <span className="text-xs text-muted-foreground">Attachments ({items.length})</span>
       </div>
 
-      <div className="p-1 sm:p-1.5 flex flex-col gap-0.5">
-        {items.map((item) => {
-          const isLocalFile = item.isLocal;
-          const attachmentIndex = isLocalFile ? -1 : attachments.findIndex((a) => a.name === item.id);
-
-          return (
-            <AttachmentItemCard
-              key={item.id}
-              item={item}
-              onRemove={() => handleRemoveItem(item)}
-              onMoveUp={!isLocalFile ? () => handleMoveUp(attachmentIndex) : undefined}
-              onMoveDown={!isLocalFile ? () => handleMoveDown(attachmentIndex) : undefined}
-              canMoveUp={!isLocalFile && attachmentIndex > 0}
-              canMoveDown={!isLocalFile && attachmentIndex < attachments.length - 1}
-            />
-          );
-        })}
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+        {items.map((item) => (
+          <div key={item.id} className="relative aspect-square rounded-lg overflow-hidden bg-muted/30 border border-border/40">
+            {item.category === "image" && item.thumbnailUrl ? (
+              <img src={item.thumbnailUrl} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+                {item.filename}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => handleRemoveItem(item)}
+              className="absolute top-1 right-1 rounded-full bg-background/80 p-0.5 shadow"
+              aria-label="Remove attachment"
+            >
+              <XIcon className="w-3 h-3 text-muted-foreground" />
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );

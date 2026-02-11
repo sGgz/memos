@@ -51,6 +51,12 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
     });
   };
 
+  const handleCoverUrlChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPartialState({
+      coverUrl: e.target.value as string,
+    });
+  };
+
   const handleDescriptionChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPartialState({
       description: e.target.value as string,
@@ -119,6 +125,17 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
           <div className="grid gap-2">
             <Label htmlFor="icon-url">{t("setting.system-section.customize-server.icon-url")}</Label>
             <Input id="icon-url" type="text" value={customProfile.logoUrl} onChange={handleLogoUrlChanged} placeholder="Enter icon URL" />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="cover-url">{t("setting.system-section.customize-server.cover-url")}</Label>
+            <Input
+              id="cover-url"
+              type="text"
+              value={customProfile.coverUrl}
+              onChange={handleCoverUrlChanged}
+              placeholder="Enter cover URL"
+            />
           </div>
 
           <div className="grid gap-2">

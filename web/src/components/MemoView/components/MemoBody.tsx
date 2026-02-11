@@ -18,13 +18,13 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact, onContentClick, onContentD
     <>
       <div
         className={cn(
-          "w-full flex flex-col justify-start items-start gap-4 text-[1.05rem] leading-7 tracking-[0.01em] text-foreground transition-all",
+          "w-full flex flex-col justify-start items-start gap-2.5 text-[0.98rem] leading-6 tracking-[0.01em] text-foreground transition-all",
           nsfw && !showNSFWContent && "blur-lg transition-all duration-200",
         )}
       >
         <MemoContent
           key={`${memo.name}-${memo.updateTime}`}
-          className="memo-content-block w-full rounded-[24px] bg-gradient-to-br from-card/90 via-card/85 to-card/75 px-1 pt-2 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
+          className="memo-content-block w-full bg-transparent px-0 pt-0 text-foreground"
           content={memo.content}
           onClick={onContentClick}
           onDoubleClick={onContentDoubleClick}

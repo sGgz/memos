@@ -8,6 +8,7 @@ import { useView } from "@/contexts/ViewContext";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
+import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
@@ -29,6 +30,7 @@ interface Props {
   showCreator?: boolean;
   enabled?: boolean;
   showMemoEditor?: boolean;
+  containerClassName?: string;
 }
 
 function useAutoFetchWhenNotScrollable({
@@ -150,7 +152,12 @@ const PagedMemoList = (props: Props) => {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const children = (
-    <div className="flex flex-col justify-start items-stretch w-full max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
+    <div
+      className={cn(
+        "flex flex-col justify-start items-stretch w-full max-w-6xl mx-auto px-3 sm:px-6 lg:px-8",
+        props.containerClassName,
+      )}
+    >
       {/* Show skeleton loader during initial load */}
       {isLoading ? (
         <Skeleton showCreator={props.showCreator} count={4} />
@@ -162,7 +169,7 @@ const PagedMemoList = (props: Props) => {
             prefixElement={
               <>
                 {showMemoEditor ? (
-                  <MemoEditor className="mb-2" cacheKey="home-memo-editor" placeholder={t("editor.any-thoughts")} />
+                  <MemoEditor className="mb-3" cacheKey="home-memo-editor" placeholder={t("editor.any-thoughts")} minimal />
                 ) : undefined}
                 <MemoFilters />
               </>

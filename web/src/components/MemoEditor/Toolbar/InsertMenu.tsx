@@ -1,6 +1,6 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
-import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
+import { ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDebounce } from "react-use";
 import { useReverseGeocoding } from "@/components/map";
@@ -39,6 +39,13 @@ const InsertMenu = (props: InsertMenuProps) => {
   const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
     newFiles.forEach((file) => dispatch(actions.addLocalFile(file)));
   });
+  const {
+    fileInputRef: imageOnlyInputRef,
+    selectingFlag: selectingImages,
+    handleFileInputChange: handleImageInputChange,
+  } = useFileUpload((newFiles: LocalFile[]) => {
+    newFiles.forEach((file) => dispatch(actions.addLocalFile(file)));
+  });
 
   const linkMemo = useLinkMemo({
     isOpen: linkDialogOpen,
@@ -70,7 +77,7 @@ const InsertMenu = (props: InsertMenuProps) => {
     }
   }, [displayName]);
 
-  const isUploading = selectingFlag || props.isUploading;
+  const isUploading = selectingFlag || selectingImages || props.isUploading;
 
   const handleLocationClick = () => {
     setLocationDialogOpen(true);
@@ -107,58 +114,79 @@ const InsertMenu = (props: InsertMenuProps) => {
 
   return (
     <>
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="shadow-none" disabled={isUploading}>
-            {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={handleUploadClick}>
-            <FileIcon className="w-4 h-4" />
-            {t("common.upload")}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setLinkDialogOpen(true)}>
-            <LinkIcon className="w-4 h-4" />
-            {t("tooltip.link-memo")}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleLocationClick}>
-            <MapPinIcon className="w-4 h-4" />
-            {t("tooltip.select-location")}
-          </DropdownMenuItem>
-          {/* View submenu with Focus Mode */}
-          <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
-            <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>
-              <MoreHorizontalIcon className="w-4 h-4" />
-              {t("common.more")}
-            </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent onPointerEnter={handleContentEnter} onPointerLeave={handleContentLeave}>
-              <DropdownMenuItem
-                onClick={() => {
-                  props.onToggleFocusMode?.();
-                  setMoreSubmenuOpen(false);
-                }}
-              >
-                <Maximize2Icon className="w-4 h-4" />
-                {t("editor.focus-mode")}
-                <span className="ml-auto text-xs text-muted-foreground opacity-60">⌘⇧F</span>
-              </DropdownMenuItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
-          <div className="px-2 py-1 text-xs text-muted-foreground opacity-80">{t("editor.slash-commands")}</div>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {props.compact ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 rounded-full border border-border/60 bg-muted/20 hover:bg-muted/30"
+          disabled={isUploading}
+          onClick={() => imageOnlyInputRef.current?.click()}
+        >
+          {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <ImageIcon className="size-5" />}
+        </Button>
+      ) : (
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon" className="shadow-none" disabled={isUploading}>
+              {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onClick={handleUploadClick}>
+              <ImageIcon className="w-4 h-4" />
+              {t("common.upload")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLinkDialogOpen(true)}>
+              <LinkIcon className="w-4 h-4" />
+              {t("tooltip.link-memo")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLocationClick}>
+              <MapPinIcon className="w-4 h-4" />
+              {t("tooltip.select-location")}
+            </DropdownMenuItem>
+            {/* View submenu with Focus Mode */}
+            <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
+              <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>
+                <MoreHorizontalIcon className="w-4 h-4" />
+                {t("common.more")}
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent onPointerEnter={handleContentEnter} onPointerLeave={handleContentLeave}>
+                <DropdownMenuItem
+                  onClick={() => {
+                    props.onToggleFocusMode?.();
+                    setMoreSubmenuOpen(false);
+                  }}
+                >
+                  <Maximize2Icon className="w-4 h-4" />
+                  {t("editor.focus-mode")}
+                  <span className="ml-auto text-xs text-muted-foreground opacity-60">⌘⇧F</span>
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <div className="px-2 py-1 text-xs text-muted-foreground opacity-80">{t("editor.slash-commands")}</div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
       {/* Hidden file input */}
-      <input
-        className="hidden"
-        ref={fileInputRef}
-        disabled={isUploading}
-        onChange={handleFileInputChange}
-        type="file"
-        multiple={true}
-        accept="*"
-      />
+        <input
+          className="hidden"
+          ref={fileInputRef}
+          disabled={isUploading}
+          onChange={handleFileInputChange}
+          type="file"
+          multiple={true}
+          accept={props.compact ? "image/*" : "*"}
+        />
+        <input
+          className="hidden"
+          ref={imageOnlyInputRef}
+          disabled={isUploading}
+          onChange={handleImageInputChange}
+          type="file"
+          multiple={true}
+          accept="image/*"
+        />
 
       <LinkMemoDialog
         open={linkDialogOpen}

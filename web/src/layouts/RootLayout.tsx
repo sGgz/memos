@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import usePrevious from "react-use/lib/usePrevious";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import Navigation from "@/components/Navigation";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
@@ -32,6 +33,40 @@ const RootLayout = () => {
     }
   }, [prevPathname, pathname, searchParams, removeFilter]);
 
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) {
+      return;
+    }
+
+    let raf = 0;
+    const updateKeyboardOffset = () => {
+      if (raf) {
+        cancelAnimationFrame(raf);
+      }
+      raf = requestAnimationFrame(() => {
+        const layoutHeight = document.documentElement.clientHeight || window.innerHeight;
+        const visualHeight = viewport.height;
+        const keyboardHeight = Math.max(0, layoutHeight - visualHeight - viewport.offsetTop);
+        document.documentElement.style.setProperty("--keyboard-offset", `${keyboardHeight}px`);
+      });
+    };
+
+    updateKeyboardOffset();
+    viewport.addEventListener("resize", updateKeyboardOffset);
+    viewport.addEventListener("scroll", updateKeyboardOffset);
+
+    return () => {
+      if (raf) {
+        cancelAnimationFrame(raf);
+      }
+      document.documentElement.style.removeProperty("--keyboard-offset");
+      viewport.removeEventListener("resize", updateKeyboardOffset);
+      viewport.removeEventListener("scroll", updateKeyboardOffset);
+    };
+  }, []);
+
+
   return (
     <div className="w-full min-h-full flex flex-row justify-center items-start sm:pl-16">
       {sm && (
@@ -45,9 +80,12 @@ const RootLayout = () => {
           <Navigation className="py-4 md:pt-6" collapsed={true} />
         </div>
       )}
-      <main className="w-full h-auto grow shrink flex flex-col justify-start items-center">
-        <Outlet />
-      </main>
+      <div className="relative w-full min-h-[100vh]">
+        <main className="w-full h-auto grow shrink flex flex-col justify-start items-center pb-20 sm:pb-0">
+          <Outlet />
+        </main>
+        {!sm && <MobileBottomNav />}
+      </div>
     </div>
   );
 };

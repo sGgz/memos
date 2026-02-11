@@ -24,6 +24,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
   onGotoDetail,
   onUnpin,
   onToggleNsfwVisibility,
+  showTime = true,
 }) => {
   const t = useTranslate();
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
@@ -42,16 +43,16 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
   );
 
   return (
-    <div className="w-full flex flex-row justify-between items-center gap-2">
-      <div className="w-auto max-w-[calc(100%-8rem)] grow flex flex-row justify-start items-center">
+    <div className="w-full flex flex-row justify-between items-start gap-2">
+      <div className="w-auto max-w-[calc(100%-5.25rem)] grow flex flex-row justify-start items-center">
         {showCreator && creator ? (
-          <CreatorDisplay creator={creator} displayTime={displayTime} onGotoDetail={onGotoDetail} />
+          <CreatorDisplay creator={creator} displayTime={displayTime} onGotoDetail={onGotoDetail} showTime={showTime} />
         ) : (
-          <TimeDisplay displayTime={displayTime} onGotoDetail={onGotoDetail} />
+          showTime && <TimeDisplay displayTime={displayTime} onGotoDetail={onGotoDetail} />
         )}
       </div>
 
-      <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground/80">
+      <div className="flex flex-row justify-end items-center select-none shrink-0 gap-0.5 text-xs text-muted-foreground/70">
         {currentUser && !isArchived && (
           <ReactionSelector
             className={cn("border-none w-auto h-auto", reactionSelectorOpen && "block!", "block sm:hidden sm:group-hover:block")}
@@ -67,8 +68,8 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
             viewTransition
             state={{ from: parentPage }}
           >
-            <MessageCircleMoreIcon className="w-4 h-4 mx-auto text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">{commentAmount}</span>
+            <MessageCircleMoreIcon className="w-3.5 h-3.5 mx-auto text-muted-foreground" />
+            <span className="text-[11px] text-muted-foreground">{commentAmount}</span>
           </Link>
         )}
 
@@ -116,32 +117,35 @@ interface CreatorDisplayProps {
   creator: User;
   displayTime: React.ReactNode;
   onGotoDetail: () => void;
+  showTime: boolean;
 }
 
-const CreatorDisplay: React.FC<CreatorDisplayProps> = ({ creator, displayTime, onGotoDetail }) => (
+const CreatorDisplay: React.FC<CreatorDisplayProps> = ({ creator, displayTime, onGotoDetail, showTime }) => (
   <div className="w-full flex flex-row justify-start items-center gap-3">
     <Link
-      className="w-auto hover:opacity-95 rounded-full transition-all duration-300 border border-[rgba(72,113,78,0.2)] hover:border-primary/40 shadow-[0_12px_28px_rgba(60,88,70,0.35)]"
+      className="w-auto hover:opacity-95 rounded-full transition-all duration-300 border border-border/60 hover:border-primary/40"
       to={`/u/${encodeURIComponent(creator.username)}`}
       viewTransition
     >
-      <UserAvatar className="mr-0 shrink-0 ring-2 ring-primary/15" avatarUrl={creator.avatarUrl} />
+      <UserAvatar className="mr-0 shrink-0 ring-1 ring-border/60" avatarUrl={creator.avatarUrl} />
     </Link>
     <div className="w-full flex flex-col justify-center items-start">
       <Link
-        className="block leading-tight text-sm font-semibold tracking-wide text-foreground hover:text-primary transition-colors truncate"
+        className="block leading-tight text-sm font-semibold text-foreground hover:text-primary transition-colors truncate"
         to={`/u/${encodeURIComponent(creator.username)}`}
         viewTransition
       >
         {creator.displayName || creator.username}
       </Link>
-      <button
-        type="button"
-        className="w-auto mt-0.5 text-[0.7rem] uppercase tracking-[0.2em] text-muted-foreground/80 select-none cursor-pointer hover:text-primary transition-colors text-left whitespace-nowrap"
-        onClick={onGotoDetail}
-      >
-        {displayTime}
-      </button>
+      {showTime && (
+        <button
+          type="button"
+          className="w-auto mt-0.5 text-[0.72rem] text-muted-foreground/70 select-none cursor-pointer hover:text-foreground transition-colors text-left whitespace-nowrap"
+          onClick={onGotoDetail}
+        >
+          {displayTime}
+        </button>
+      )}
     </div>
   </div>
 );
@@ -154,7 +158,7 @@ interface TimeDisplayProps {
 const TimeDisplay: React.FC<TimeDisplayProps> = ({ displayTime, onGotoDetail }) => (
   <button
     type="button"
-    className="w-full text-xs uppercase tracking-[0.2em] text-muted-foreground/80 select-none cursor-pointer hover:text-primary transition-colors text-left whitespace-nowrap"
+    className="w-full text-[11px] text-muted-foreground/70 select-none cursor-pointer hover:text-foreground transition-colors text-left whitespace-nowrap"
     onClick={onGotoDetail}
   >
     {displayTime}

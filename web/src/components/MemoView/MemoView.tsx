@@ -13,7 +13,7 @@ import { MemoViewContext } from "./MemoViewContext";
 import type { MemoViewProps } from "./types";
 
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
-  const { memo: memoData, className, parentPage: parentPageProp, showComments = true } = props;
+  const { memo: memoData, className, parentPage: parentPageProp, showComments = true, showTimeline } = props;
   const cardRef = useRef<HTMLDivElement>(null);
   const [showEditor, setShowEditor] = useState(false);
 
@@ -77,6 +77,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
           onGotoDetail={handleGotoMemoDetailPage}
           onUnpin={unpinMemo}
           onToggleNsfwVisibility={toggleNsfwVisibility}
+          showTime={!showTimeline}
         />
 
         <MemoBody

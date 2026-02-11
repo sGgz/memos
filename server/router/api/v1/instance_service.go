@@ -92,7 +92,15 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 	if user.Role != store.RoleAdmin {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		if request.Setting.GetGeneralSetting() == nil {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+		if request.Setting.GetGeneralSetting().CustomProfile == nil {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+		if request.Setting.GetGeneralSetting().CustomProfile.CoverUrl == "" {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
 	}
 
 	// TODO: Apply update_mask if specified
@@ -182,6 +190,7 @@ func convertInstanceGeneralSettingFromStore(setting *storepb.InstanceGeneralSett
 			Title:       setting.CustomProfile.Title,
 			Description: setting.CustomProfile.Description,
 			LogoUrl:     setting.CustomProfile.LogoUrl,
+			CoverUrl:    setting.CustomProfile.CoverUrl,
 		}
 	}
 	return generalSetting
@@ -205,6 +214,7 @@ func convertInstanceGeneralSettingToStore(setting *v1pb.InstanceSetting_GeneralS
 			Title:       setting.CustomProfile.Title,
 			Description: setting.CustomProfile.Description,
 			LogoUrl:     setting.CustomProfile.LogoUrl,
+			CoverUrl:    setting.CustomProfile.CoverUrl,
 		}
 	}
 	return generalSetting

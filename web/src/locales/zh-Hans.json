@@ -173,6 +173,10 @@
     "load-more": "加载更多",
     "no-archived-memos": "没有已归档笔记。",
     "no-memos": "无笔记",
+    "cover-edit": "设置笔记封面",
+    "cover-desc": "为工作区设置统一封面，所有成员同步生效。",
+    "cover-url": "封面图片地址",
+    "cover-placeholder": "点击设置封面图片",
     "order-by": "排序",
     "remove-completed-task-list-items": "移除已办",
     "remove-completed-task-list-items-confirm": "您确定要移除所有完成的待办吗？（此操作不可逆）",
@@ -575,6 +579,7 @@
       "allow-user-signup": "允许用户注册",
       "customize-server": {
         "description": "描述",
+        "cover-url": "封面图片地址",
         "icon-url": "图标链接",
         "locale": "服务器语言环境",
         "title": "自定义服务器"

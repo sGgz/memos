@@ -8,7 +8,9 @@ import RelationList from "./RelationList";
 const EditorMetadata: FC<EditorMetadataProps> = ({ memoName, minimal }) => {
   const { state, actions, dispatch } = useEditorContext();
 
-  if (minimal) {
+  const hasAttachments = state.metadata.attachments.length > 0 || state.localFiles.length > 0;
+
+  if (minimal && !hasAttachments) {
     return null;
   }
 
@@ -21,14 +23,18 @@ const EditorMetadata: FC<EditorMetadataProps> = ({ memoName, minimal }) => {
         onRemoveLocalFile={(previewUrl) => dispatch(actions.removeLocalFile(previewUrl))}
       />
 
-      <RelationList
-        relations={state.metadata.relations}
-        onRelationsChange={(relations) => dispatch(actions.setMetadata({ relations }))}
-        memoName={memoName}
-      />
+      {!minimal && (
+        <>
+          <RelationList
+            relations={state.metadata.relations}
+            onRelationsChange={(relations) => dispatch(actions.setMetadata({ relations }))}
+            memoName={memoName}
+          />
 
-      {state.metadata.location && (
-        <LocationDisplay location={state.metadata.location} onRemove={() => dispatch(actions.setMetadata({ location: undefined }))} />
+          {state.metadata.location && (
+            <LocationDisplay location={state.metadata.location} onRemove={() => dispatch(actions.setMetadata({ location: undefined }))} />
+          )}
+        </>
       )}
     </div>
   );

@@ -2519,6 +2519,8 @@ components:
                     type: string
                 logoUrl:
                     type: string
+                coverUrl:
+                    type: string
             description: Custom profile configuration for instance branding.
         GetCurrentUserResponse:
             type: object
