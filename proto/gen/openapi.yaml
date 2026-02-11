@@ -407,6 +407,85 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/cover:upload:
+        post:
+            tags:
+                - InstanceService
+            description: UploadCoverImage uploads a cover image to the server.
+            operationId: InstanceService_UploadCoverImage
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UploadCoverImageRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UploadCoverImageResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/covers:
+        get:
+            tags:
+                - InstanceService
+            description: ListCoverImages lists previously uploaded cover images.
+            operationId: InstanceService_ListCoverImages
+            parameters:
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of cover images to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A page token, received from a previous `ListCoverImages` call.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListCoverImagesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/covers/{filename}:
+        delete:
+            tags:
+                - InstanceService
+            description: DeleteCoverImage deletes a previously uploaded cover image.
+            operationId: InstanceService_DeleteCoverImage
+            parameters:
+                - name: filename
+                  in: path
+                  description: Required. The filename of the cover image to delete.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/identity-providers:
         get:
             tags:
@@ -2474,6 +2553,21 @@ components:
                 description:
                     type: string
                     description: Optional. The bank description.
+        CoverImage:
+            type: object
+            properties:
+                filename:
+                    type: string
+                    description: The filename of the cover image.
+                url:
+                    type: string
+                    description: The URL of the cover image.
+                createTime:
+                    type: string
+                    description: The creation timestamp in seconds.
+                size:
+                    type: string
+                    description: The size of the image in bytes.
         CreatePersonalAccessTokenRequest:
             required:
                 - parent
@@ -2599,7 +2693,25 @@ components:
                     $ref: '#/components/schemas/InstanceSetting_MemoRelatedSetting'
                 todoSetting:
                     $ref: '#/components/schemas/InstanceSetting_TodoSetting'
+                coverStorageSetting:
+                    $ref: '#/components/schemas/InstanceSetting_CoverStorageSetting'
             description: An instance setting resource.
+        InstanceSetting_CoverStorageSetting:
+            type: object
+            properties:
+                directoryPath:
+                    type: string
+                    description: Local directory path for cover images.
+                urlPrefix:
+                    type: string
+                    description: URL prefix for accessing cover images.
+                enableLocalServer:
+                    type: boolean
+                    description: Whether to enable local HTTP server for cover images.
+                uploadSizeLimitMb:
+                    type: string
+                    description: The max upload size in megabytes.
+            description: Cover image storage settings.
         InstanceSetting_GeneralSetting:
             type: object
             properties:
@@ -2726,6 +2838,18 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Bank'
+        ListCoverImagesResponse:
+            type: object
+            properties:
+                images:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CoverImage'
+                nextPageToken:
+                    type: string
+                totalSize:
+                    type: integer
+                    format: int32
         ListIdentityProvidersResponse:
             type: object
             properties:
@@ -3456,6 +3580,24 @@ components:
                         format: int32
                     description: reminder_day_offsets stores the reminder offsets already sent for this todo.
             description: Payload stores reminder metadata for todos.
+        UploadCoverImageRequest:
+            required:
+                - filename
+                - content
+            type: object
+            properties:
+                filename:
+                    type: string
+                    description: Required. The image filename.
+                content:
+                    type: string
+                    description: Required. The image content.
+                    format: bytes
+        UploadCoverImageResponse:
+            type: object
+            properties:
+                image:
+                    $ref: '#/components/schemas/CoverImage'
         UpsertMemoReactionRequest:
             required:
                 - name

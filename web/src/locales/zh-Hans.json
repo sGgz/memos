@@ -176,6 +176,10 @@
     "cover-edit": "设置笔记封面",
     "cover-desc": "为工作区设置统一封面，所有成员同步生效。",
     "cover-url": "封面图片地址",
+    "cover-history": "历史封面",
+    "cover-loading": "封面加载中...",
+    "cover-empty": "暂无封面图片",
+    "cover-config-missing": "请先在系统设置里配置封面存储",
     "cover-placeholder": "点击设置封面图片",
     "order-by": "排序",
     "remove-completed-task-list-items": "移除已办",
@@ -569,6 +573,15 @@
       "url-suffix": "链接后缀",
       "url-suffix-placeholder": "自定义链接后缀，可选",
       "warning-text": "您确定要删除存储服务“{{name}}”吗？（此操作不可逆）"
+    },
+    "cover-storage": {
+      "title": "封面存储",
+      "directory-path": "本地存储路径",
+      "enable-local": "启用本地访问",
+      "enable-local-desc": "开启后，后端会在 /cover/ 提供静态访问，访问前缀将固定为 /cover",
+      "url-prefix": "访问前缀",
+      "url-prefix-disabled": "启用本地访问时，访问前缀固定为 /cover",
+      "max-upload-size": "最大上传大小 (MiB)"
     },
     "system": "系统",
     "system-section": {

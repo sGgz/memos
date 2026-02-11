@@ -39,6 +39,8 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 		valueBytes, err = protojson.Marshal(upsert.GetMemoRelatedSetting())
 	} else if upsert.Key == storepb.InstanceSettingKey_TODO {
 		valueBytes, err = protojson.Marshal(upsert.GetTodoSetting())
+	} else if upsert.Key == storepb.InstanceSettingKey_COVER_STORAGE {
+		valueBytes, err = protojson.Marshal(upsert.GetCoverStorageSetting())
 	} else {
 		return nil, errors.Errorf("unsupported instance setting key: %v", upsert.Key)
 	}
@@ -229,6 +231,37 @@ func (s *Store) GetInstanceStorageSetting(ctx context.Context) (*storepb.Instanc
 	return instanceStorageSetting, nil
 }
 
+const (
+	defaultCoverStorageUploadSizeLimitMb = 10
+)
+
+func (s *Store) GetInstanceCoverStorageSetting(ctx context.Context) (*storepb.InstanceCoverStorageSetting, error) {
+	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{
+		Name: storepb.InstanceSettingKey_COVER_STORAGE.String(),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get instance cover storage setting")
+	}
+
+	coverStorageSetting := &storepb.InstanceCoverStorageSetting{}
+	if instanceSetting != nil {
+		coverStorageSetting = instanceSetting.GetCoverStorageSetting()
+	}
+	if coverStorageSetting.UploadSizeLimitMb == 0 {
+		coverStorageSetting.UploadSizeLimitMb = defaultCoverStorageUploadSizeLimitMb
+	}
+	if coverStorageSetting.EnableLocalServer {
+		coverStorageSetting.UrlPrefix = "/cover"
+	} else if coverStorageSetting.UrlPrefix == "" {
+		coverStorageSetting.UrlPrefix = "/"
+	}
+	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_COVER_STORAGE.String(), &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_COVER_STORAGE,
+		Value: &storepb.InstanceSetting_CoverStorageSetting{CoverStorageSetting: coverStorageSetting},
+	})
+	return coverStorageSetting, nil
+}
+
 func convertInstanceSettingFromRaw(instanceSettingRaw *InstanceSetting) (*storepb.InstanceSetting, error) {
 	instanceSetting := &storepb.InstanceSetting{
 		Key: storepb.InstanceSettingKey(storepb.InstanceSettingKey_value[instanceSettingRaw.Name]),
@@ -264,6 +297,12 @@ func convertInstanceSettingFromRaw(instanceSettingRaw *InstanceSetting) (*storep
 			return nil, err
 		}
 		instanceSetting.Value = &storepb.InstanceSetting_TodoSetting{TodoSetting: todoSetting}
+	case storepb.InstanceSettingKey_COVER_STORAGE.String():
+		coverStorageSetting := &storepb.InstanceCoverStorageSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), coverStorageSetting); err != nil {
+			return nil, err
+		}
+		instanceSetting.Value = &storepb.InstanceSetting_CoverStorageSetting{CoverStorageSetting: coverStorageSetting}
 	default:
 		// Skip unsupported instance setting key.
 		return nil, nil

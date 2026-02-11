@@ -2,6 +2,7 @@ import { CheckSquareIcon, CogIcon, DatabaseIcon, KeyIcon, LibraryIcon, LucideIco
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import MobileHeader from "@/components/MobileHeader";
+import CoverStorageSection from "@/components/Settings/CoverStorageSection";
 import InstanceSection from "@/components/Settings/InstanceSection";
 import MemberSection from "@/components/Settings/MemberSection";
 import MemoRelatedSettings from "@/components/Settings/MemoRelatedSettings";
@@ -19,14 +20,14 @@ import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-type SettingSection = "my-account" | "preference" | "member" | "system" | "memo-related" | "storage" | "sso" | "todo";
+type SettingSection = "my-account" | "preference" | "member" | "system" | "memo-related" | "storage" | "sso" | "todo" | "cover-storage";
 
 interface State {
   selectedSection: SettingSection;
 }
 
 const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference"];
-const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo-related", "todo", "storage", "sso"];
+const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo-related", "todo", "storage", "cover-storage", "sso"];
 const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   "my-account": UserIcon,
   preference: CogIcon,
@@ -35,6 +36,7 @@ const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   "memo-related": LibraryIcon,
   todo: CheckSquareIcon,
   storage: DatabaseIcon,
+  "cover-storage": DatabaseIcon,
   sso: KeyIcon,
 };
 
@@ -73,6 +75,8 @@ const Setting = () => {
         return t("todo.title");
       case "storage":
         return t("setting.storage");
+      case "cover-storage":
+        return t("setting.cover-storage.title");
       case "sso":
         return t("setting.sso");
       default:
@@ -97,11 +101,11 @@ const Setting = () => {
     }
 
     // Initial fetch for instance settings.
-    (async () => {
-      [InstanceSetting_Key.MEMO_RELATED, InstanceSetting_Key.STORAGE].forEach(async (key) => {
-        await fetchSetting(key);
-      });
-    })();
+      (async () => {
+        [InstanceSetting_Key.MEMO_RELATED, InstanceSetting_Key.STORAGE, InstanceSetting_Key.COVER_STORAGE].forEach(async (key) => {
+          await fetchSetting(key);
+        });
+      })();
   }, [isHost, fetchSetting]);
 
   const handleSectionSelectorItemClick = useCallback((settingSection: SettingSection) => {
@@ -179,6 +183,8 @@ const Setting = () => {
               <TodoSettings />
             ) : state.selectedSection === "storage" ? (
               <StorageSection />
+            ) : state.selectedSection === "cover-storage" ? (
+              <CoverStorageSection />
             ) : state.selectedSection === "sso" ? (
               <SSOSection />
             ) : null}

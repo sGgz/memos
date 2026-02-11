@@ -49,6 +49,8 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		_, err = s.Store.GetInstanceStorageSetting(ctx)
 	case storepb.InstanceSettingKey_TODO:
 		_, err = s.Store.GetInstanceTodoSetting(ctx)
+	case storepb.InstanceSettingKey_COVER_STORAGE:
+		_, err = s.Store.GetInstanceCoverStorageSetting(ctx)
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unsupported instance setting key: %v", instanceSettingKey)
 	}
@@ -67,7 +69,7 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 	}
 
 	// For storage setting, only admin can get it.
-	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE {
+	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE || instanceSetting.Key == storepb.InstanceSettingKey_COVER_STORAGE {
 		user, err := s.fetchCurrentUser(ctx)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -92,13 +94,13 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 	if user.Role != store.RoleAdmin {
+		if request.Setting.GetCoverStorageSetting() != nil {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
 		if request.Setting.GetGeneralSetting() == nil {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
 		if request.Setting.GetGeneralSetting().CustomProfile == nil {
-			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-		}
-		if request.Setting.GetGeneralSetting().CustomProfile.CoverUrl == "" {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
 	}
@@ -127,6 +129,10 @@ func convertInstanceSettingFromStore(setting *storepb.InstanceSetting) *v1pb.Ins
 	case *storepb.InstanceSetting_StorageSetting:
 		instanceSetting.Value = &v1pb.InstanceSetting_StorageSetting_{
 			StorageSetting: convertInstanceStorageSettingFromStore(setting.GetStorageSetting()),
+		}
+	case *storepb.InstanceSetting_CoverStorageSetting:
+		instanceSetting.Value = &v1pb.InstanceSetting_CoverStorageSetting_{
+			CoverStorageSetting: convertInstanceCoverStorageSettingFromStore(setting.GetCoverStorageSetting()),
 		}
 	case *storepb.InstanceSetting_MemoRelatedSetting:
 		instanceSetting.Value = &v1pb.InstanceSetting_MemoRelatedSetting_{
@@ -164,6 +170,10 @@ func convertInstanceSettingToStore(setting *v1pb.InstanceSetting) *storepb.Insta
 	case storepb.InstanceSettingKey_TODO:
 		instanceSetting.Value = &storepb.InstanceSetting_TodoSetting{
 			TodoSetting: convertInstanceTodoSettingToStore(setting.GetTodoSetting()),
+		}
+	case storepb.InstanceSettingKey_COVER_STORAGE:
+		instanceSetting.Value = &storepb.InstanceSetting_CoverStorageSetting{
+			CoverStorageSetting: convertInstanceCoverStorageSettingToStore(setting.GetCoverStorageSetting()),
 		}
 	default:
 		// Keep the default GeneralSetting value
@@ -260,6 +270,32 @@ func convertInstanceStorageSettingToStore(setting *v1pb.InstanceSetting_StorageS
 			Bucket:          setting.S3Config.Bucket,
 			UsePathStyle:    setting.S3Config.UsePathStyle,
 		}
+	}
+	return settingpb
+}
+
+func convertInstanceCoverStorageSettingFromStore(settingpb *storepb.InstanceCoverStorageSetting) *v1pb.InstanceSetting_CoverStorageSetting {
+	if settingpb == nil {
+		return nil
+	}
+	setting := &v1pb.InstanceSetting_CoverStorageSetting{
+		DirectoryPath:     settingpb.DirectoryPath,
+		UrlPrefix:         settingpb.UrlPrefix,
+		EnableLocalServer: settingpb.EnableLocalServer,
+		UploadSizeLimitMb: settingpb.UploadSizeLimitMb,
+	}
+	return setting
+}
+
+func convertInstanceCoverStorageSettingToStore(setting *v1pb.InstanceSetting_CoverStorageSetting) *storepb.InstanceCoverStorageSetting {
+	if setting == nil {
+		return nil
+	}
+	settingpb := &storepb.InstanceCoverStorageSetting{
+		DirectoryPath:     setting.DirectoryPath,
+		UrlPrefix:         setting.UrlPrefix,
+		EnableLocalServer: setting.EnableLocalServer,
+		UploadSizeLimitMb: setting.UploadSizeLimitMb,
 	}
 	return settingpb
 }

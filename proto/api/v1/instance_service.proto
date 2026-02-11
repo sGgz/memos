@@ -7,6 +7,7 @@ import "google/api/client.proto";
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
 import "google/protobuf/field_mask.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "gen/api/v1";
 
@@ -29,6 +30,24 @@ service InstanceService {
       body: "setting"
     };
     option (google.api.method_signature) = "setting,update_mask";
+  }
+
+  // UploadCoverImage uploads a cover image to the server.
+  rpc UploadCoverImage(UploadCoverImageRequest) returns (UploadCoverImageResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/cover:upload"
+      body: "*"
+    };
+  }
+
+  // ListCoverImages lists previously uploaded cover images.
+  rpc ListCoverImages(ListCoverImagesRequest) returns (ListCoverImagesResponse) {
+    option (google.api.http) = {get: "/api/v1/covers"};
+  }
+
+  // DeleteCoverImage deletes a previously uploaded cover image.
+  rpc DeleteCoverImage(DeleteCoverImageRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/covers/{filename}"};
   }
 }
 
@@ -70,6 +89,7 @@ message InstanceSetting {
     StorageSetting storage_setting = 3;
     MemoRelatedSetting memo_related_setting = 4;
     TodoSetting todo_setting = 5;
+    CoverStorageSetting cover_storage_setting = 6;
   }
 
   // Enumeration of instance setting keys.
@@ -83,6 +103,8 @@ message InstanceSetting {
     MEMO_RELATED = 3;
     // TODO is the key for todo settings.
     TODO = 4;
+    // COVER_STORAGE is the key for cover image storage settings.
+    COVER_STORAGE = 5;
   }
 
   // General instance settings configuration.
@@ -150,6 +172,18 @@ message InstanceSetting {
     S3Config s3_config = 4;
   }
 
+  // Cover image storage settings.
+  message CoverStorageSetting {
+    // Local directory path for cover images.
+    string directory_path = 1;
+    // URL prefix for accessing cover images.
+    string url_prefix = 2;
+    // Whether to enable local HTTP server for cover images.
+    bool enable_local_server = 3;
+    // The max upload size in megabytes.
+    int64 upload_size_limit_mb = 4;
+  }
+
   // Memo-related instance settings and policies.
   message MemoRelatedSetting {
     // disallow_public_visibility disallows set memo as public visibility.
@@ -189,4 +223,44 @@ message UpdateInstanceSettingRequest {
 
   // The list of fields to update.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message CoverImage {
+  // The filename of the cover image.
+  string filename = 1;
+  // The URL of the cover image.
+  string url = 2;
+  // The creation timestamp in seconds.
+  int64 create_time = 3;
+  // The size of the image in bytes.
+  int64 size = 4;
+}
+
+message UploadCoverImageRequest {
+  // Required. The image filename.
+  string filename = 1 [(google.api.field_behavior) = REQUIRED];
+  // Required. The image content.
+  bytes content = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message UploadCoverImageResponse {
+  CoverImage image = 1;
+}
+
+message ListCoverImagesRequest {
+  // Optional. The maximum number of cover images to return.
+  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Optional. A page token, received from a previous `ListCoverImages` call.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ListCoverImagesResponse {
+  repeated CoverImage images = 1;
+  string next_page_token = 2;
+  int32 total_size = 3;
+}
+
+message DeleteCoverImageRequest {
+  // Required. The filename of the cover image to delete.
+  string filename = 1 [(google.api.field_behavior) = REQUIRED];
 }

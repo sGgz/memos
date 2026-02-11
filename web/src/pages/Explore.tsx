@@ -1,6 +1,7 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
 import type { MemoRenderContext } from "@/components/MasonryView";
+import CoverHeaderDialog from "@/components/CoverHeaderDialog";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
@@ -16,7 +17,7 @@ import { useTranslate } from "@/utils/i18n";
 const Explore = () => {
   const currentUser = useCurrentUser();
   const t = useTranslate();
-  const { generalSetting } = useInstance();
+  useInstance();
 
   const MemoRow = ({ memo, context }: { memo: Memo; context?: MemoRenderContext }) => {
     const creator = useUser(memo.creator).data;
@@ -89,18 +90,7 @@ const Explore = () => {
 
   return (
     <div className="w-full">
-      <div className="relative mb-0 overflow-hidden bg-muted/30 w-screen -mx-4 sm:mx-0 sm:w-full">
-        <div className="group relative h-60 w-full overflow-hidden bg-muted/30">
-          {generalSetting.customProfile?.coverUrl ? (
-            <img src={generalSetting.customProfile.coverUrl} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-              {t("memo.cover-placeholder")}
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
-        </div>
-      </div>
+      <CoverHeaderDialog />
 
       <PagedMemoList
         renderer={(memo: Memo, context) => <MemoRow memo={memo} context={context} />}

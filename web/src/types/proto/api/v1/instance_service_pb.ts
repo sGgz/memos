@@ -8,15 +8,15 @@ import { file_google_api_annotations } from "../../google/api/annotations_pb";
 import { file_google_api_client } from "../../google/api/client_pb";
 import { file_google_api_field_behavior } from "../../google/api/field_behavior_pb";
 import { file_google_api_resource } from "../../google/api/resource_pb";
-import type { FieldMask } from "@bufbuild/protobuf/wkt";
-import { file_google_protobuf_field_mask } from "@bufbuild/protobuf/wkt";
+import type { EmptySchema, FieldMask } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_empty, file_google_protobuf_field_mask } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file api/v1/instance_service.proto.
  */
 export const file_api_v1_instance_service: GenFile = /*@__PURE__*/
-  fileDesc("Ch1hcGkvdjEvaW5zdGFuY2Vfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxIlsKD0luc3RhbmNlUHJvZmlsZRIPCgd2ZXJzaW9uGAIgASgJEgwKBGRlbW8YAyABKAgSFAoMaW5zdGFuY2VfdXJsGAYgASgJEhMKC2luaXRpYWxpemVkGAcgASgIIhsKGUdldEluc3RhbmNlUHJvZmlsZVJlcXVlc3QiwAwKD0luc3RhbmNlU2V0dGluZxIRCgRuYW1lGAEgASgJQgPgQQgSRwoPZ2VuZXJhbF9zZXR0aW5nGAIgASgLMiwubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5HZW5lcmFsU2V0dGluZ0gAEkcKD3N0b3JhZ2Vfc2V0dGluZxgDIAEoCzIsLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZVNldHRpbmdIABJQChRtZW1vX3JlbGF0ZWRfc2V0dGluZxgEIAEoCzIwLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuTWVtb1JlbGF0ZWRTZXR0aW5nSAASQQoMdG9kb19zZXR0aW5nGAUgASgLMikubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5Ub2RvU2V0dGluZ0gAGpoDCg5HZW5lcmFsU2V0dGluZxIiChpkaXNhbGxvd191c2VyX3JlZ2lzdHJhdGlvbhgCIAEoCBIeChZkaXNhbGxvd19wYXNzd29yZF9hdXRoGAMgASgIEhkKEWFkZGl0aW9uYWxfc2NyaXB0GAQgASgJEhgKEGFkZGl0aW9uYWxfc3R5bGUYBSABKAkSUgoOY3VzdG9tX3Byb2ZpbGUYBiABKAsyOi5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLkdlbmVyYWxTZXR0aW5nLkN1c3RvbVByb2ZpbGUSHQoVd2Vla19zdGFydF9kYXlfb2Zmc2V0GAcgASgFEiAKGGRpc2FsbG93X2NoYW5nZV91c2VybmFtZRgIIAEoCBIgChhkaXNhbGxvd19jaGFuZ2Vfbmlja25hbWUYCSABKAgaWAoNQ3VzdG9tUHJvZmlsZRINCgV0aXRsZRgBIAEoCRITCgtkZXNjcmlwdGlvbhgCIAEoCRIQCghsb2dvX3VybBgDIAEoCRIRCgljb3Zlcl91cmwYBCABKAkaugMKDlN0b3JhZ2VTZXR0aW5nEk4KDHN0b3JhZ2VfdHlwZRgBIAEoDjI4Lm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZVNldHRpbmcuU3RvcmFnZVR5cGUSGQoRZmlsZXBhdGhfdGVtcGxhdGUYAiABKAkSHAoUdXBsb2FkX3NpemVfbGltaXRfbWIYAyABKAMSSAoJczNfY29uZmlnGAQgASgLMjUubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5TdG9yYWdlU2V0dGluZy5TM0NvbmZpZxqGAQoIUzNDb25maWcSFQoNYWNjZXNzX2tleV9pZBgBIAEoCRIZChFhY2Nlc3Nfa2V5X3NlY3JldBgCIAEoCRIQCghlbmRwb2ludBgDIAEoCRIOCgZyZWdpb24YBCABKAkSDgoGYnVja2V0GAUgASgJEhYKDnVzZV9wYXRoX3N0eWxlGAYgASgIIkwKC1N0b3JhZ2VUeXBlEhwKGFNUT1JBR0VfVFlQRV9VTlNQRUNJRklFRBAAEgwKCERBVEFCQVNFEAESCQoFTE9DQUwQAhIGCgJTMxADGq0BChJNZW1vUmVsYXRlZFNldHRpbmcSIgoaZGlzYWxsb3dfcHVibGljX3Zpc2liaWxpdHkYASABKAgSIAoYZGlzcGxheV93aXRoX3VwZGF0ZV90aW1lGAIgASgIEhwKFGNvbnRlbnRfbGVuZ3RoX2xpbWl0GAMgASgFEiAKGGVuYWJsZV9kb3VibGVfY2xpY2tfZWRpdBgEIAEoCBIRCglyZWFjdGlvbnMYByADKAkaKwoLVG9kb1NldHRpbmcSHAoUcmVtaW5kZXJfZGF5X29mZnNldHMYASADKAUiUAoDS2V5EhMKD0tFWV9VTlNQRUNJRklFRBAAEgsKB0dFTkVSQUwQARILCgdTVE9SQUdFEAISEAoMTUVNT19SRUxBVEVEEAMSCAoEVE9ETxAEOmHqQV4KHG1lbW9zLmFwaS52MS9JbnN0YW5jZVNldHRpbmcSG2luc3RhbmNlL3NldHRpbmdzL3tzZXR0aW5nfSoQaW5zdGFuY2VTZXR0aW5nczIPaW5zdGFuY2VTZXR0aW5nQgcKBXZhbHVlIk8KGUdldEluc3RhbmNlU2V0dGluZ1JlcXVlc3QSMgoEbmFtZRgBIAEoCUIk4EEC+kEeChxtZW1vcy5hcGkudjEvSW5zdGFuY2VTZXR0aW5nIokBChxVcGRhdGVJbnN0YW5jZVNldHRpbmdSZXF1ZXN0EjMKB3NldHRpbmcYASABKAsyHS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nQgPgQQISNAoLdXBkYXRlX21hc2sYAiABKAsyGi5nb29nbGUucHJvdG9idWYuRmllbGRNYXNrQgPgQQEy2wMKD0luc3RhbmNlU2VydmljZRJ+ChJHZXRJbnN0YW5jZVByb2ZpbGUSJy5tZW1vcy5hcGkudjEuR2V0SW5zdGFuY2VQcm9maWxlUmVxdWVzdBodLm1lbW9zLmFwaS52MS5JbnN0YW5jZVByb2ZpbGUiIILT5JMCGhIYL2FwaS92MS9pbnN0YW5jZS9wcm9maWxlEo8BChJHZXRJbnN0YW5jZVNldHRpbmcSJy5tZW1vcy5hcGkudjEuR2V0SW5zdGFuY2VTZXR0aW5nUmVxdWVzdBodLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmciMdpBBG5hbWWC0+STAiQSIi9hcGkvdjEve25hbWU9aW5zdGFuY2Uvc2V0dGluZ3MvKn0StQEKFVVwZGF0ZUluc3RhbmNlU2V0dGluZxIqLm1lbW9zLmFwaS52MS5VcGRhdGVJbnN0YW5jZVNldHRpbmdSZXF1ZXN0Gh0ubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZyJR2kETc2V0dGluZyx1cGRhdGVfbWFza4LT5JMCNToHc2V0dGluZzIqL2FwaS92MS97c2V0dGluZy5uYW1lPWluc3RhbmNlL3NldHRpbmdzLyp9QqwBChBjb20ubWVtb3MuYXBpLnYxQhRJbnN0YW5jZVNlcnZpY2VQcm90b1ABWjBnaXRodWIuY29tL3VzZW1lbW9zL21lbW9zL3Byb3RvL2dlbi9hcGkvdjE7YXBpdjGiAgNNQViqAgxNZW1vcy5BcGkuVjHKAgxNZW1vc1xBcGlcVjHiAhhNZW1vc1xBcGlcVjFcR1BCTWV0YWRhdGHqAg5NZW1vczo6QXBpOjpWMWIGcHJvdG8z", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_field_mask]);
+  fileDesc("Ch1hcGkvdjEvaW5zdGFuY2Vfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxIlsKD0luc3RhbmNlUHJvZmlsZRIPCgd2ZXJzaW9uGAIgASgJEgwKBGRlbW8YAyABKAgSFAoMaW5zdGFuY2VfdXJsGAYgASgJEhMKC2luaXRpYWxpemVkGAcgASgIIhsKGUdldEluc3RhbmNlUHJvZmlsZVJlcXVlc3QipQ4KD0luc3RhbmNlU2V0dGluZxIRCgRuYW1lGAEgASgJQgPgQQgSRwoPZ2VuZXJhbF9zZXR0aW5nGAIgASgLMiwubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5HZW5lcmFsU2V0dGluZ0gAEkcKD3N0b3JhZ2Vfc2V0dGluZxgDIAEoCzIsLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZVNldHRpbmdIABJQChRtZW1vX3JlbGF0ZWRfc2V0dGluZxgEIAEoCzIwLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuTWVtb1JlbGF0ZWRTZXR0aW5nSAASQQoMdG9kb19zZXR0aW5nGAUgASgLMikubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5Ub2RvU2V0dGluZ0gAElIKFWNvdmVyX3N0b3JhZ2Vfc2V0dGluZxgGIAEoCzIxLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuQ292ZXJTdG9yYWdlU2V0dGluZ0gAGpoDCg5HZW5lcmFsU2V0dGluZxIiChpkaXNhbGxvd191c2VyX3JlZ2lzdHJhdGlvbhgCIAEoCBIeChZkaXNhbGxvd19wYXNzd29yZF9hdXRoGAMgASgIEhkKEWFkZGl0aW9uYWxfc2NyaXB0GAQgASgJEhgKEGFkZGl0aW9uYWxfc3R5bGUYBSABKAkSUgoOY3VzdG9tX3Byb2ZpbGUYBiABKAsyOi5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLkdlbmVyYWxTZXR0aW5nLkN1c3RvbVByb2ZpbGUSHQoVd2Vla19zdGFydF9kYXlfb2Zmc2V0GAcgASgFEiAKGGRpc2FsbG93X2NoYW5nZV91c2VybmFtZRgIIAEoCBIgChhkaXNhbGxvd19jaGFuZ2Vfbmlja25hbWUYCSABKAgaWAoNQ3VzdG9tUHJvZmlsZRINCgV0aXRsZRgBIAEoCRITCgtkZXNjcmlwdGlvbhgCIAEoCRIQCghsb2dvX3VybBgDIAEoCRIRCgljb3Zlcl91cmwYBCABKAkaugMKDlN0b3JhZ2VTZXR0aW5nEk4KDHN0b3JhZ2VfdHlwZRgBIAEoDjI4Lm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZVNldHRpbmcuU3RvcmFnZVR5cGUSGQoRZmlsZXBhdGhfdGVtcGxhdGUYAiABKAkSHAoUdXBsb2FkX3NpemVfbGltaXRfbWIYAyABKAMSSAoJczNfY29uZmlnGAQgASgLMjUubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5TdG9yYWdlU2V0dGluZy5TM0NvbmZpZxqGAQoIUzNDb25maWcSFQoNYWNjZXNzX2tleV9pZBgBIAEoCRIZChFhY2Nlc3Nfa2V5X3NlY3JldBgCIAEoCRIQCghlbmRwb2ludBgDIAEoCRIOCgZyZWdpb24YBCABKAkSDgoGYnVja2V0GAUgASgJEhYKDnVzZV9wYXRoX3N0eWxlGAYgASgIIkwKC1N0b3JhZ2VUeXBlEhwKGFNUT1JBR0VfVFlQRV9VTlNQRUNJRklFRBAAEgwKCERBVEFCQVNFEAESCQoFTE9DQUwQAhIGCgJTMxADGnwKE0NvdmVyU3RvcmFnZVNldHRpbmcSFgoOZGlyZWN0b3J5X3BhdGgYASABKAkSEgoKdXJsX3ByZWZpeBgCIAEoCRIbChNlbmFibGVfbG9jYWxfc2VydmVyGAMgASgIEhwKFHVwbG9hZF9zaXplX2xpbWl0X21iGAQgASgDGq0BChJNZW1vUmVsYXRlZFNldHRpbmcSIgoaZGlzYWxsb3dfcHVibGljX3Zpc2liaWxpdHkYASABKAgSIAoYZGlzcGxheV93aXRoX3VwZGF0ZV90aW1lGAIgASgIEhwKFGNvbnRlbnRfbGVuZ3RoX2xpbWl0GAMgASgFEiAKGGVuYWJsZV9kb3VibGVfY2xpY2tfZWRpdBgEIAEoCBIRCglyZWFjdGlvbnMYByADKAkaKwoLVG9kb1NldHRpbmcSHAoUcmVtaW5kZXJfZGF5X29mZnNldHMYASADKAUiYwoDS2V5EhMKD0tFWV9VTlNQRUNJRklFRBAAEgsKB0dFTkVSQUwQARILCgdTVE9SQUdFEAISEAoMTUVNT19SRUxBVEVEEAMSCAoEVE9ETxAEEhEKDUNPVkVSX1NUT1JBR0UQBTph6kFeChxtZW1vcy5hcGkudjEvSW5zdGFuY2VTZXR0aW5nEhtpbnN0YW5jZS9zZXR0aW5ncy97c2V0dGluZ30qEGluc3RhbmNlU2V0dGluZ3MyD2luc3RhbmNlU2V0dGluZ0IHCgV2YWx1ZSJPChlHZXRJbnN0YW5jZVNldHRpbmdSZXF1ZXN0EjIKBG5hbWUYASABKAlCJOBBAvpBHgocbWVtb3MuYXBpLnYxL0luc3RhbmNlU2V0dGluZyKJAQocVXBkYXRlSW5zdGFuY2VTZXR0aW5nUmVxdWVzdBIzCgdzZXR0aW5nGAEgASgLMh0ubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZ0ID4EECEjQKC3VwZGF0ZV9tYXNrGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLkZpZWxkTWFza0ID4EEBIk4KCkNvdmVySW1hZ2USEAoIZmlsZW5hbWUYASABKAkSCwoDdXJsGAIgASgJEhMKC2NyZWF0ZV90aW1lGAMgASgDEgwKBHNpemUYBCABKAMiRgoXVXBsb2FkQ292ZXJJbWFnZVJlcXVlc3QSFQoIZmlsZW5hbWUYASABKAlCA+BBAhIUCgdjb250ZW50GAIgASgMQgPgQQIiQwoYVXBsb2FkQ292ZXJJbWFnZVJlc3BvbnNlEicKBWltYWdlGAEgASgLMhgubWVtb3MuYXBpLnYxLkNvdmVySW1hZ2UiSQoWTGlzdENvdmVySW1hZ2VzUmVxdWVzdBIWCglwYWdlX3NpemUYASABKAVCA+BBARIXCgpwYWdlX3Rva2VuGAIgASgJQgPgQQEicAoXTGlzdENvdmVySW1hZ2VzUmVzcG9uc2USKAoGaW1hZ2VzGAEgAygLMhgubWVtb3MuYXBpLnYxLkNvdmVySW1hZ2USFwoPbmV4dF9wYWdlX3Rva2VuGAIgASgJEhIKCnRvdGFsX3NpemUYAyABKAUiMAoXRGVsZXRlQ292ZXJJbWFnZVJlcXVlc3QSFQoIZmlsZW5hbWUYASABKAlCA+BBAjLOBgoPSW5zdGFuY2VTZXJ2aWNlEn4KEkdldEluc3RhbmNlUHJvZmlsZRInLm1lbW9zLmFwaS52MS5HZXRJbnN0YW5jZVByb2ZpbGVSZXF1ZXN0Gh0ubWVtb3MuYXBpLnYxLkluc3RhbmNlUHJvZmlsZSIggtPkkwIaEhgvYXBpL3YxL2luc3RhbmNlL3Byb2ZpbGUSjwEKEkdldEluc3RhbmNlU2V0dGluZxInLm1lbW9zLmFwaS52MS5HZXRJbnN0YW5jZVNldHRpbmdSZXF1ZXN0Gh0ubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZyIx2kEEbmFtZYLT5JMCJBIiL2FwaS92MS97bmFtZT1pbnN0YW5jZS9zZXR0aW5ncy8qfRK1AQoVVXBkYXRlSW5zdGFuY2VTZXR0aW5nEioubWVtb3MuYXBpLnYxLlVwZGF0ZUluc3RhbmNlU2V0dGluZ1JlcXVlc3QaHS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nIlHaQRNzZXR0aW5nLHVwZGF0ZV9tYXNrgtPkkwI1OgdzZXR0aW5nMiovYXBpL3YxL3tzZXR0aW5nLm5hbWU9aW5zdGFuY2Uvc2V0dGluZ3MvKn0SggEKEFVwbG9hZENvdmVySW1hZ2USJS5tZW1vcy5hcGkudjEuVXBsb2FkQ292ZXJJbWFnZVJlcXVlc3QaJi5tZW1vcy5hcGkudjEuVXBsb2FkQ292ZXJJbWFnZVJlc3BvbnNlIh+C0+STAhk6ASoiFC9hcGkvdjEvY292ZXI6dXBsb2FkEnYKD0xpc3RDb3ZlckltYWdlcxIkLm1lbW9zLmFwaS52MS5MaXN0Q292ZXJJbWFnZXNSZXF1ZXN0GiUubWVtb3MuYXBpLnYxLkxpc3RDb3ZlckltYWdlc1Jlc3BvbnNlIhaC0+STAhASDi9hcGkvdjEvY292ZXJzEnQKEERlbGV0ZUNvdmVySW1hZ2USJS5tZW1vcy5hcGkudjEuRGVsZXRlQ292ZXJJbWFnZVJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiIYLT5JMCGyoZL2FwaS92MS9jb3ZlcnMve2ZpbGVuYW1lfUKsAQoQY29tLm1lbW9zLmFwaS52MUIUSW5zdGFuY2VTZXJ2aWNlUHJvdG9QAVowZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpL3YxO2FwaXYxogIDTUFYqgIMTWVtb3MuQXBpLlYxygIMTWVtb3NcQXBpXFYx4gIYTWVtb3NcQXBpXFYxXEdQQk1ldGFkYXRh6gIOTWVtb3M6OkFwaTo6VjFiBnByb3RvMw", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_field_mask, file_google_protobuf_empty]);
 
 /**
  * Instance profile message containing basic instance information.
@@ -118,6 +118,12 @@ export type InstanceSetting = Message<"memos.api.v1.InstanceSetting"> & {
      */
     value: InstanceSetting_TodoSetting;
     case: "todoSetting";
+  } | {
+    /**
+     * @generated from field: memos.api.v1.InstanceSetting.CoverStorageSetting cover_storage_setting = 6;
+     */
+    value: InstanceSetting_CoverStorageSetting;
+    case: "coverStorageSetting";
   } | { case: undefined; value?: undefined };
 };
 
@@ -362,6 +368,48 @@ export const InstanceSetting_StorageSetting_StorageTypeSchema: GenEnum<InstanceS
   enumDesc(file_api_v1_instance_service, 2, 1, 0);
 
 /**
+ * Cover image storage settings.
+ *
+ * @generated from message memos.api.v1.InstanceSetting.CoverStorageSetting
+ */
+export type InstanceSetting_CoverStorageSetting = Message<"memos.api.v1.InstanceSetting.CoverStorageSetting"> & {
+  /**
+   * Local directory path for cover images.
+   *
+   * @generated from field: string directory_path = 1;
+   */
+  directoryPath: string;
+
+  /**
+   * URL prefix for accessing cover images.
+   *
+   * @generated from field: string url_prefix = 2;
+   */
+  urlPrefix: string;
+
+  /**
+   * Whether to enable local HTTP server for cover images.
+   *
+   * @generated from field: bool enable_local_server = 3;
+   */
+  enableLocalServer: boolean;
+
+  /**
+   * The max upload size in megabytes.
+   *
+   * @generated from field: int64 upload_size_limit_mb = 4;
+   */
+  uploadSizeLimitMb: bigint;
+};
+
+/**
+ * Describes the message memos.api.v1.InstanceSetting.CoverStorageSetting.
+ * Use `create(InstanceSetting_CoverStorageSettingSchema)` to create a new message.
+ */
+export const InstanceSetting_CoverStorageSettingSchema: GenMessage<InstanceSetting_CoverStorageSetting> = /*@__PURE__*/
+  messageDesc(file_api_v1_instance_service, 2, 2);
+
+/**
  * Memo-related instance settings and policies.
  *
  * @generated from message memos.api.v1.InstanceSetting.MemoRelatedSetting
@@ -408,7 +456,7 @@ export type InstanceSetting_MemoRelatedSetting = Message<"memos.api.v1.InstanceS
  * Use `create(InstanceSetting_MemoRelatedSettingSchema)` to create a new message.
  */
 export const InstanceSetting_MemoRelatedSettingSchema: GenMessage<InstanceSetting_MemoRelatedSetting> = /*@__PURE__*/
-  messageDesc(file_api_v1_instance_service, 2, 2);
+  messageDesc(file_api_v1_instance_service, 2, 3);
 
 /**
  * Todo-related instance settings and policies.
@@ -430,7 +478,7 @@ export type InstanceSetting_TodoSetting = Message<"memos.api.v1.InstanceSetting.
  * Use `create(InstanceSetting_TodoSettingSchema)` to create a new message.
  */
 export const InstanceSetting_TodoSettingSchema: GenMessage<InstanceSetting_TodoSetting> = /*@__PURE__*/
-  messageDesc(file_api_v1_instance_service, 2, 3);
+  messageDesc(file_api_v1_instance_service, 2, 4);
 
 /**
  * Enumeration of instance setting keys.
@@ -470,6 +518,13 @@ export enum InstanceSetting_Key {
    * @generated from enum value: TODO = 4;
    */
   TODO = 4,
+
+  /**
+   * COVER_STORAGE is the key for cover image storage settings.
+   *
+   * @generated from enum value: COVER_STORAGE = 5;
+   */
+  COVER_STORAGE = 5,
 }
 
 /**
@@ -529,6 +584,161 @@ export const UpdateInstanceSettingRequestSchema: GenMessage<UpdateInstanceSettin
   messageDesc(file_api_v1_instance_service, 4);
 
 /**
+ * @generated from message memos.api.v1.CoverImage
+ */
+export type CoverImage = Message<"memos.api.v1.CoverImage"> & {
+  /**
+   * The filename of the cover image.
+   *
+   * @generated from field: string filename = 1;
+   */
+  filename: string;
+
+  /**
+   * The URL of the cover image.
+   *
+   * @generated from field: string url = 2;
+   */
+  url: string;
+
+  /**
+   * The creation timestamp in seconds.
+   *
+   * @generated from field: int64 create_time = 3;
+   */
+  createTime: bigint;
+
+  /**
+   * The size of the image in bytes.
+   *
+   * @generated from field: int64 size = 4;
+   */
+  size: bigint;
+};
+
+/**
+ * Describes the message memos.api.v1.CoverImage.
+ * Use `create(CoverImageSchema)` to create a new message.
+ */
+export const CoverImageSchema: GenMessage<CoverImage> = /*@__PURE__*/
+  messageDesc(file_api_v1_instance_service, 5);
+
+/**
+ * @generated from message memos.api.v1.UploadCoverImageRequest
+ */
+export type UploadCoverImageRequest = Message<"memos.api.v1.UploadCoverImageRequest"> & {
+  /**
+   * Required. The image filename.
+   *
+   * @generated from field: string filename = 1;
+   */
+  filename: string;
+
+  /**
+   * Required. The image content.
+   *
+   * @generated from field: bytes content = 2;
+   */
+  content: Uint8Array;
+};
+
+/**
+ * Describes the message memos.api.v1.UploadCoverImageRequest.
+ * Use `create(UploadCoverImageRequestSchema)` to create a new message.
+ */
+export const UploadCoverImageRequestSchema: GenMessage<UploadCoverImageRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_instance_service, 6);
+
+/**
+ * @generated from message memos.api.v1.UploadCoverImageResponse
+ */
+export type UploadCoverImageResponse = Message<"memos.api.v1.UploadCoverImageResponse"> & {
+  /**
+   * @generated from field: memos.api.v1.CoverImage image = 1;
+   */
+  image?: CoverImage;
+};
+
+/**
+ * Describes the message memos.api.v1.UploadCoverImageResponse.
+ * Use `create(UploadCoverImageResponseSchema)` to create a new message.
+ */
+export const UploadCoverImageResponseSchema: GenMessage<UploadCoverImageResponse> = /*@__PURE__*/
+  messageDesc(file_api_v1_instance_service, 7);
+
+/**
+ * @generated from message memos.api.v1.ListCoverImagesRequest
+ */
+export type ListCoverImagesRequest = Message<"memos.api.v1.ListCoverImagesRequest"> & {
+  /**
+   * Optional. The maximum number of cover images to return.
+   *
+   * @generated from field: int32 page_size = 1;
+   */
+  pageSize: number;
+
+  /**
+   * Optional. A page token, received from a previous `ListCoverImages` call.
+   *
+   * @generated from field: string page_token = 2;
+   */
+  pageToken: string;
+};
+
+/**
+ * Describes the message memos.api.v1.ListCoverImagesRequest.
+ * Use `create(ListCoverImagesRequestSchema)` to create a new message.
+ */
+export const ListCoverImagesRequestSchema: GenMessage<ListCoverImagesRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_instance_service, 8);
+
+/**
+ * @generated from message memos.api.v1.ListCoverImagesResponse
+ */
+export type ListCoverImagesResponse = Message<"memos.api.v1.ListCoverImagesResponse"> & {
+  /**
+   * @generated from field: repeated memos.api.v1.CoverImage images = 1;
+   */
+  images: CoverImage[];
+
+  /**
+   * @generated from field: string next_page_token = 2;
+   */
+  nextPageToken: string;
+
+  /**
+   * @generated from field: int32 total_size = 3;
+   */
+  totalSize: number;
+};
+
+/**
+ * Describes the message memos.api.v1.ListCoverImagesResponse.
+ * Use `create(ListCoverImagesResponseSchema)` to create a new message.
+ */
+export const ListCoverImagesResponseSchema: GenMessage<ListCoverImagesResponse> = /*@__PURE__*/
+  messageDesc(file_api_v1_instance_service, 9);
+
+/**
+ * @generated from message memos.api.v1.DeleteCoverImageRequest
+ */
+export type DeleteCoverImageRequest = Message<"memos.api.v1.DeleteCoverImageRequest"> & {
+  /**
+   * Required. The filename of the cover image to delete.
+   *
+   * @generated from field: string filename = 1;
+   */
+  filename: string;
+};
+
+/**
+ * Describes the message memos.api.v1.DeleteCoverImageRequest.
+ * Use `create(DeleteCoverImageRequestSchema)` to create a new message.
+ */
+export const DeleteCoverImageRequestSchema: GenMessage<DeleteCoverImageRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_instance_service, 10);
+
+/**
  * @generated from service memos.api.v1.InstanceService
  */
 export const InstanceService: GenService<{
@@ -561,6 +771,36 @@ export const InstanceService: GenService<{
     methodKind: "unary";
     input: typeof UpdateInstanceSettingRequestSchema;
     output: typeof InstanceSettingSchema;
+  },
+  /**
+   * UploadCoverImage uploads a cover image to the server.
+   *
+   * @generated from rpc memos.api.v1.InstanceService.UploadCoverImage
+   */
+  uploadCoverImage: {
+    methodKind: "unary";
+    input: typeof UploadCoverImageRequestSchema;
+    output: typeof UploadCoverImageResponseSchema;
+  },
+  /**
+   * ListCoverImages lists previously uploaded cover images.
+   *
+   * @generated from rpc memos.api.v1.InstanceService.ListCoverImages
+   */
+  listCoverImages: {
+    methodKind: "unary";
+    input: typeof ListCoverImagesRequestSchema;
+    output: typeof ListCoverImagesResponseSchema;
+  },
+  /**
+   * DeleteCoverImage deletes a previously uploaded cover image.
+   *
+   * @generated from rpc memos.api.v1.InstanceService.DeleteCoverImage
+   */
+  deleteCoverImage: {
+    methodKind: "unary";
+    input: typeof DeleteCoverImageRequestSchema;
+    output: typeof EmptySchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_api_v1_instance_service, 0);

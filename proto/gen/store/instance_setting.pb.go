@@ -35,6 +35,8 @@ const (
 	InstanceSettingKey_MEMO_RELATED InstanceSettingKey = 4
 	// TODO is the key for todo settings.
 	InstanceSettingKey_TODO InstanceSettingKey = 5
+	// COVER_STORAGE is the key for cover image storage settings.
+	InstanceSettingKey_COVER_STORAGE InstanceSettingKey = 6
 )
 
 // Enum value maps for InstanceSettingKey.
@@ -46,6 +48,7 @@ var (
 		3: "STORAGE",
 		4: "MEMO_RELATED",
 		5: "TODO",
+		6: "COVER_STORAGE",
 	}
 	InstanceSettingKey_value = map[string]int32{
 		"INSTANCE_SETTING_KEY_UNSPECIFIED": 0,
@@ -54,6 +57,7 @@ var (
 		"STORAGE":                          3,
 		"MEMO_RELATED":                     4,
 		"TODO":                             5,
+		"COVER_STORAGE":                    6,
 	}
 )
 
@@ -149,6 +153,7 @@ type InstanceSetting struct {
 	//	*InstanceSetting_StorageSetting
 	//	*InstanceSetting_MemoRelatedSetting
 	//	*InstanceSetting_TodoSetting
+	//	*InstanceSetting_CoverStorageSetting
 	Value         isInstanceSetting_Value `protobuf_oneof:"value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -243,6 +248,15 @@ func (x *InstanceSetting) GetTodoSetting() *InstanceTodoSetting {
 	return nil
 }
 
+func (x *InstanceSetting) GetCoverStorageSetting() *InstanceCoverStorageSetting {
+	if x != nil {
+		if x, ok := x.Value.(*InstanceSetting_CoverStorageSetting); ok {
+			return x.CoverStorageSetting
+		}
+	}
+	return nil
+}
+
 type isInstanceSetting_Value interface {
 	isInstanceSetting_Value()
 }
@@ -267,6 +281,10 @@ type InstanceSetting_TodoSetting struct {
 	TodoSetting *InstanceTodoSetting `protobuf:"bytes,6,opt,name=todo_setting,json=todoSetting,proto3,oneof"`
 }
 
+type InstanceSetting_CoverStorageSetting struct {
+	CoverStorageSetting *InstanceCoverStorageSetting `protobuf:"bytes,7,opt,name=cover_storage_setting,json=coverStorageSetting,proto3,oneof"`
+}
+
 func (*InstanceSetting_BasicSetting) isInstanceSetting_Value() {}
 
 func (*InstanceSetting_GeneralSetting) isInstanceSetting_Value() {}
@@ -276,6 +294,8 @@ func (*InstanceSetting_StorageSetting) isInstanceSetting_Value() {}
 func (*InstanceSetting_MemoRelatedSetting) isInstanceSetting_Value() {}
 
 func (*InstanceSetting_TodoSetting) isInstanceSetting_Value() {}
+
+func (*InstanceSetting_CoverStorageSetting) isInstanceSetting_Value() {}
 
 type InstanceBasicSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -582,6 +602,78 @@ func (x *InstanceStorageSetting) GetS3Config() *StorageS3Config {
 	return nil
 }
 
+type InstanceCoverStorageSetting struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Local directory path for cover images.
+	DirectoryPath string `protobuf:"bytes,1,opt,name=directory_path,json=directoryPath,proto3" json:"directory_path,omitempty"`
+	// URL prefix for accessing cover images.
+	UrlPrefix string `protobuf:"bytes,2,opt,name=url_prefix,json=urlPrefix,proto3" json:"url_prefix,omitempty"`
+	// Whether to enable local HTTP server for cover images.
+	EnableLocalServer bool `protobuf:"varint,3,opt,name=enable_local_server,json=enableLocalServer,proto3" json:"enable_local_server,omitempty"`
+	// The max upload size in megabytes.
+	UploadSizeLimitMb int64 `protobuf:"varint,4,opt,name=upload_size_limit_mb,json=uploadSizeLimitMb,proto3" json:"upload_size_limit_mb,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *InstanceCoverStorageSetting) Reset() {
+	*x = InstanceCoverStorageSetting{}
+	mi := &file_store_instance_setting_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InstanceCoverStorageSetting) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InstanceCoverStorageSetting) ProtoMessage() {}
+
+func (x *InstanceCoverStorageSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_store_instance_setting_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InstanceCoverStorageSetting.ProtoReflect.Descriptor instead.
+func (*InstanceCoverStorageSetting) Descriptor() ([]byte, []int) {
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *InstanceCoverStorageSetting) GetDirectoryPath() string {
+	if x != nil {
+		return x.DirectoryPath
+	}
+	return ""
+}
+
+func (x *InstanceCoverStorageSetting) GetUrlPrefix() string {
+	if x != nil {
+		return x.UrlPrefix
+	}
+	return ""
+}
+
+func (x *InstanceCoverStorageSetting) GetEnableLocalServer() bool {
+	if x != nil {
+		return x.EnableLocalServer
+	}
+	return false
+}
+
+func (x *InstanceCoverStorageSetting) GetUploadSizeLimitMb() int64 {
+	if x != nil {
+		return x.UploadSizeLimitMb
+	}
+	return 0
+}
+
 // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
 type StorageS3Config struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
@@ -597,7 +689,7 @@ type StorageS3Config struct {
 
 func (x *StorageS3Config) Reset() {
 	*x = StorageS3Config{}
-	mi := &file_store_instance_setting_proto_msgTypes[5]
+	mi := &file_store_instance_setting_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -609,7 +701,7 @@ func (x *StorageS3Config) String() string {
 func (*StorageS3Config) ProtoMessage() {}
 
 func (x *StorageS3Config) ProtoReflect() protoreflect.Message {
-	mi := &file_store_instance_setting_proto_msgTypes[5]
+	mi := &file_store_instance_setting_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -622,7 +714,7 @@ func (x *StorageS3Config) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StorageS3Config.ProtoReflect.Descriptor instead.
 func (*StorageS3Config) Descriptor() ([]byte, []int) {
-	return file_store_instance_setting_proto_rawDescGZIP(), []int{5}
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *StorageS3Config) GetAccessKeyId() string {
@@ -685,7 +777,7 @@ type InstanceMemoRelatedSetting struct {
 
 func (x *InstanceMemoRelatedSetting) Reset() {
 	*x = InstanceMemoRelatedSetting{}
-	mi := &file_store_instance_setting_proto_msgTypes[6]
+	mi := &file_store_instance_setting_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -697,7 +789,7 @@ func (x *InstanceMemoRelatedSetting) String() string {
 func (*InstanceMemoRelatedSetting) ProtoMessage() {}
 
 func (x *InstanceMemoRelatedSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_store_instance_setting_proto_msgTypes[6]
+	mi := &file_store_instance_setting_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -710,7 +802,7 @@ func (x *InstanceMemoRelatedSetting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InstanceMemoRelatedSetting.ProtoReflect.Descriptor instead.
 func (*InstanceMemoRelatedSetting) Descriptor() ([]byte, []int) {
-	return file_store_instance_setting_proto_rawDescGZIP(), []int{6}
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *InstanceMemoRelatedSetting) GetDisallowPublicVisibility() bool {
@@ -759,7 +851,7 @@ type InstanceTodoSetting struct {
 
 func (x *InstanceTodoSetting) Reset() {
 	*x = InstanceTodoSetting{}
-	mi := &file_store_instance_setting_proto_msgTypes[7]
+	mi := &file_store_instance_setting_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -771,7 +863,7 @@ func (x *InstanceTodoSetting) String() string {
 func (*InstanceTodoSetting) ProtoMessage() {}
 
 func (x *InstanceTodoSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_store_instance_setting_proto_msgTypes[7]
+	mi := &file_store_instance_setting_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -784,7 +876,7 @@ func (x *InstanceTodoSetting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InstanceTodoSetting.ProtoReflect.Descriptor instead.
 func (*InstanceTodoSetting) Descriptor() ([]byte, []int) {
-	return file_store_instance_setting_proto_rawDescGZIP(), []int{7}
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *InstanceTodoSetting) GetReminderDayOffsets() []int32 {
@@ -798,14 +890,15 @@ var File_store_instance_setting_proto protoreflect.FileDescriptor
 
 const file_store_instance_setting_proto_rawDesc = "" +
 	"\n" +
-	"\x1cstore/instance_setting.proto\x12\vmemos.store\"\xdb\x03\n" +
+	"\x1cstore/instance_setting.proto\x12\vmemos.store\"\xbb\x04\n" +
 	"\x0fInstanceSetting\x121\n" +
 	"\x03key\x18\x01 \x01(\x0e2\x1f.memos.store.InstanceSettingKeyR\x03key\x12H\n" +
 	"\rbasic_setting\x18\x02 \x01(\v2!.memos.store.InstanceBasicSettingH\x00R\fbasicSetting\x12N\n" +
 	"\x0fgeneral_setting\x18\x03 \x01(\v2#.memos.store.InstanceGeneralSettingH\x00R\x0egeneralSetting\x12N\n" +
 	"\x0fstorage_setting\x18\x04 \x01(\v2#.memos.store.InstanceStorageSettingH\x00R\x0estorageSetting\x12[\n" +
 	"\x14memo_related_setting\x18\x05 \x01(\v2'.memos.store.InstanceMemoRelatedSettingH\x00R\x12memoRelatedSetting\x12E\n" +
-	"\ftodo_setting\x18\x06 \x01(\v2 .memos.store.InstanceTodoSettingH\x00R\vtodoSettingB\a\n" +
+	"\ftodo_setting\x18\x06 \x01(\v2 .memos.store.InstanceTodoSettingH\x00R\vtodoSetting\x12^\n" +
+	"\x15cover_storage_setting\x18\a \x01(\v2(.memos.store.InstanceCoverStorageSettingH\x00R\x13coverStorageSettingB\a\n" +
 	"\x05value\"\\\n" +
 	"\x14InstanceBasicSetting\x12\x1d\n" +
 	"\n" +
@@ -834,7 +927,13 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +
 	"\x05LOCAL\x10\x02\x12\x06\n" +
-	"\x02S3\x10\x03\"\xd3\x01\n" +
+	"\x02S3\x10\x03\"\xc4\x01\n" +
+	"\x1bInstanceCoverStorageSetting\x12%\n" +
+	"\x0edirectory_path\x18\x01 \x01(\tR\rdirectoryPath\x12\x1d\n" +
+	"\n" +
+	"url_prefix\x18\x02 \x01(\tR\turlPrefix\x12.\n" +
+	"\x13enable_local_server\x18\x03 \x01(\bR\x11enableLocalServer\x12/\n" +
+	"\x14upload_size_limit_mb\x18\x04 \x01(\x03R\x11uploadSizeLimitMb\"\xd3\x01\n" +
 	"\x0fStorageS3Config\x12\"\n" +
 	"\raccess_key_id\x18\x01 \x01(\tR\vaccessKeyId\x12*\n" +
 	"\x11access_key_secret\x18\x02 \x01(\tR\x0faccessKeySecret\x12\x1a\n" +
@@ -849,14 +948,15 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +
 	"\treactions\x18\a \x03(\tR\treactions\"G\n" +
 	"\x13InstanceTodoSetting\x120\n" +
-	"\x14reminder_day_offsets\x18\x01 \x03(\x05R\x12reminderDayOffsets*{\n" +
+	"\x14reminder_day_offsets\x18\x01 \x03(\x05R\x12reminderDayOffsets*\x8e\x01\n" +
 	"\x12InstanceSettingKey\x12$\n" +
 	" INSTANCE_SETTING_KEY_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\v\n" +
 	"\aGENERAL\x10\x02\x12\v\n" +
 	"\aSTORAGE\x10\x03\x12\x10\n" +
 	"\fMEMO_RELATED\x10\x04\x12\b\n" +
-	"\x04TODO\x10\x05B\x9f\x01\n" +
+	"\x04TODO\x10\x05\x12\x11\n" +
+	"\rCOVER_STORAGE\x10\x06B\x9f\x01\n" +
 	"\x0fcom.memos.storeB\x14InstanceSettingProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
 
 var (
@@ -872,7 +972,7 @@ func file_store_instance_setting_proto_rawDescGZIP() []byte {
 }
 
 var file_store_instance_setting_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_store_instance_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_store_instance_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_store_instance_setting_proto_goTypes = []any{
 	(InstanceSettingKey)(0),                 // 0: memos.store.InstanceSettingKey
 	(InstanceStorageSetting_StorageType)(0), // 1: memos.store.InstanceStorageSetting.StorageType
@@ -881,25 +981,27 @@ var file_store_instance_setting_proto_goTypes = []any{
 	(*InstanceGeneralSetting)(nil),          // 4: memos.store.InstanceGeneralSetting
 	(*InstanceCustomProfile)(nil),           // 5: memos.store.InstanceCustomProfile
 	(*InstanceStorageSetting)(nil),          // 6: memos.store.InstanceStorageSetting
-	(*StorageS3Config)(nil),                 // 7: memos.store.StorageS3Config
-	(*InstanceMemoRelatedSetting)(nil),      // 8: memos.store.InstanceMemoRelatedSetting
-	(*InstanceTodoSetting)(nil),             // 9: memos.store.InstanceTodoSetting
+	(*InstanceCoverStorageSetting)(nil),     // 7: memos.store.InstanceCoverStorageSetting
+	(*StorageS3Config)(nil),                 // 8: memos.store.StorageS3Config
+	(*InstanceMemoRelatedSetting)(nil),      // 9: memos.store.InstanceMemoRelatedSetting
+	(*InstanceTodoSetting)(nil),             // 10: memos.store.InstanceTodoSetting
 }
 var file_store_instance_setting_proto_depIdxs = []int32{
-	0, // 0: memos.store.InstanceSetting.key:type_name -> memos.store.InstanceSettingKey
-	3, // 1: memos.store.InstanceSetting.basic_setting:type_name -> memos.store.InstanceBasicSetting
-	4, // 2: memos.store.InstanceSetting.general_setting:type_name -> memos.store.InstanceGeneralSetting
-	6, // 3: memos.store.InstanceSetting.storage_setting:type_name -> memos.store.InstanceStorageSetting
-	8, // 4: memos.store.InstanceSetting.memo_related_setting:type_name -> memos.store.InstanceMemoRelatedSetting
-	9, // 5: memos.store.InstanceSetting.todo_setting:type_name -> memos.store.InstanceTodoSetting
-	5, // 6: memos.store.InstanceGeneralSetting.custom_profile:type_name -> memos.store.InstanceCustomProfile
-	1, // 7: memos.store.InstanceStorageSetting.storage_type:type_name -> memos.store.InstanceStorageSetting.StorageType
-	7, // 8: memos.store.InstanceStorageSetting.s3_config:type_name -> memos.store.StorageS3Config
-	9, // [9:9] is the sub-list for method output_type
-	9, // [9:9] is the sub-list for method input_type
-	9, // [9:9] is the sub-list for extension type_name
-	9, // [9:9] is the sub-list for extension extendee
-	0, // [0:9] is the sub-list for field type_name
+	0,  // 0: memos.store.InstanceSetting.key:type_name -> memos.store.InstanceSettingKey
+	3,  // 1: memos.store.InstanceSetting.basic_setting:type_name -> memos.store.InstanceBasicSetting
+	4,  // 2: memos.store.InstanceSetting.general_setting:type_name -> memos.store.InstanceGeneralSetting
+	6,  // 3: memos.store.InstanceSetting.storage_setting:type_name -> memos.store.InstanceStorageSetting
+	9,  // 4: memos.store.InstanceSetting.memo_related_setting:type_name -> memos.store.InstanceMemoRelatedSetting
+	10, // 5: memos.store.InstanceSetting.todo_setting:type_name -> memos.store.InstanceTodoSetting
+	7,  // 6: memos.store.InstanceSetting.cover_storage_setting:type_name -> memos.store.InstanceCoverStorageSetting
+	5,  // 7: memos.store.InstanceGeneralSetting.custom_profile:type_name -> memos.store.InstanceCustomProfile
+	1,  // 8: memos.store.InstanceStorageSetting.storage_type:type_name -> memos.store.InstanceStorageSetting.StorageType
+	8,  // 9: memos.store.InstanceStorageSetting.s3_config:type_name -> memos.store.StorageS3Config
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_store_instance_setting_proto_init() }
@@ -913,6 +1015,7 @@ func file_store_instance_setting_proto_init() {
 		(*InstanceSetting_StorageSetting)(nil),
 		(*InstanceSetting_MemoRelatedSetting)(nil),
 		(*InstanceSetting_TodoSetting)(nil),
+		(*InstanceSetting_CoverStorageSetting)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -920,7 +1023,7 @@ func file_store_instance_setting_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_store_instance_setting_proto_rawDesc), len(file_store_instance_setting_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   8,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -1,7 +1,9 @@
-import { MoreVerticalIcon, PenLineIcon } from "lucide-react";
+import { LogOutIcon, MoreVerticalIcon, PenLineIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
+import { Routes } from "@/router";
 import { useTranslate } from "@/utils/i18n";
 import ChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import UpdateAccountDialog from "../UpdateAccountDialog";
@@ -14,6 +16,7 @@ import SettingSection from "./SettingSection";
 const MyAccountSection = () => {
   const t = useTranslate();
   const user = useCurrentUser();
+  const { logout } = useAuth();
   const accountDialog = useDialog();
   const passwordDialog = useDialog();
 
@@ -23,6 +26,28 @@ const MyAccountSection = () => {
 
   const handleChangePassword = () => {
     passwordDialog.open();
+  };
+
+  const handleSignOut = async () => {
+    await logout();
+
+    try {
+      const keysToPreserve = ["memos-theme", "memos-locale", "memos-view-setting", "tag-view-as-tree", "tag-tree-auto-expand"];
+      const keysToRemove: string[] = [];
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && !keysToPreserve.includes(key)) {
+          keysToRemove.push(key);
+        }
+      }
+
+      keysToRemove.forEach((key) => localStorage.removeItem(key));
+    } catch {
+      // Ignore errors from localStorage operations
+    }
+
+    window.location.replace(Routes.AUTH);
   };
 
   return (
@@ -50,6 +75,10 @@ const MyAccountSection = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={handleChangePassword}>{t("setting.account-section.change-password")}</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOutIcon className="w-4 h-4 mr-2 text-muted-foreground" />
+                  {t("common.sign-out")}
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

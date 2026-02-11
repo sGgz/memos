@@ -16,6 +16,8 @@ enum InstanceSettingKey {
   MEMO_RELATED = 4;
   // TODO is the key for todo settings.
   TODO = 5;
+  // COVER_STORAGE is the key for cover image storage settings.
+  COVER_STORAGE = 6;
 }
 
 message InstanceSetting {
@@ -26,6 +28,7 @@ message InstanceSetting {
     InstanceStorageSetting storage_setting = 4;
     InstanceMemoRelatedSetting memo_related_setting = 5;
     InstanceTodoSetting todo_setting = 6;
+    InstanceCoverStorageSetting cover_storage_setting = 7;
   }
 }
 
@@ -83,6 +86,17 @@ message InstanceStorageSetting {
   int64 upload_size_limit_mb = 3;
   // The S3 config.
   StorageS3Config s3_config = 4;
+}
+
+message InstanceCoverStorageSetting {
+  // Local directory path for cover images.
+  string directory_path = 1;
+  // URL prefix for accessing cover images.
+  string url_prefix = 2;
+  // Whether to enable local HTTP server for cover images.
+  bool enable_local_server = 3;
+  // The max upload size in megabytes.
+  int64 upload_size_limit_mb = 4;
 }
 
 // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/

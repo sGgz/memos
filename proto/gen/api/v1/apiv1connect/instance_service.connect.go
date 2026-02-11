@@ -9,6 +9,7 @@ import (
 	context "context"
 	errors "errors"
 	v1 "github.com/usememos/memos/proto/gen/api/v1"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
 )
@@ -42,6 +43,15 @@ const (
 	// InstanceServiceUpdateInstanceSettingProcedure is the fully-qualified name of the
 	// InstanceService's UpdateInstanceSetting RPC.
 	InstanceServiceUpdateInstanceSettingProcedure = "/memos.api.v1.InstanceService/UpdateInstanceSetting"
+	// InstanceServiceUploadCoverImageProcedure is the fully-qualified name of the InstanceService's
+	// UploadCoverImage RPC.
+	InstanceServiceUploadCoverImageProcedure = "/memos.api.v1.InstanceService/UploadCoverImage"
+	// InstanceServiceListCoverImagesProcedure is the fully-qualified name of the InstanceService's
+	// ListCoverImages RPC.
+	InstanceServiceListCoverImagesProcedure = "/memos.api.v1.InstanceService/ListCoverImages"
+	// InstanceServiceDeleteCoverImageProcedure is the fully-qualified name of the InstanceService's
+	// DeleteCoverImage RPC.
+	InstanceServiceDeleteCoverImageProcedure = "/memos.api.v1.InstanceService/DeleteCoverImage"
 )
 
 // InstanceServiceClient is a client for the memos.api.v1.InstanceService service.
@@ -52,6 +62,12 @@ type InstanceServiceClient interface {
 	GetInstanceSetting(context.Context, *connect.Request[v1.GetInstanceSettingRequest]) (*connect.Response[v1.InstanceSetting], error)
 	// Updates an instance setting.
 	UpdateInstanceSetting(context.Context, *connect.Request[v1.UpdateInstanceSettingRequest]) (*connect.Response[v1.InstanceSetting], error)
+	// UploadCoverImage uploads a cover image to the server.
+	UploadCoverImage(context.Context, *connect.Request[v1.UploadCoverImageRequest]) (*connect.Response[v1.UploadCoverImageResponse], error)
+	// ListCoverImages lists previously uploaded cover images.
+	ListCoverImages(context.Context, *connect.Request[v1.ListCoverImagesRequest]) (*connect.Response[v1.ListCoverImagesResponse], error)
+	// DeleteCoverImage deletes a previously uploaded cover image.
+	DeleteCoverImage(context.Context, *connect.Request[v1.DeleteCoverImageRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewInstanceServiceClient constructs a client for the memos.api.v1.InstanceService service. By
@@ -83,6 +99,24 @@ func NewInstanceServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(instanceServiceMethods.ByName("UpdateInstanceSetting")),
 			connect.WithClientOptions(opts...),
 		),
+		uploadCoverImage: connect.NewClient[v1.UploadCoverImageRequest, v1.UploadCoverImageResponse](
+			httpClient,
+			baseURL+InstanceServiceUploadCoverImageProcedure,
+			connect.WithSchema(instanceServiceMethods.ByName("UploadCoverImage")),
+			connect.WithClientOptions(opts...),
+		),
+		listCoverImages: connect.NewClient[v1.ListCoverImagesRequest, v1.ListCoverImagesResponse](
+			httpClient,
+			baseURL+InstanceServiceListCoverImagesProcedure,
+			connect.WithSchema(instanceServiceMethods.ByName("ListCoverImages")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteCoverImage: connect.NewClient[v1.DeleteCoverImageRequest, emptypb.Empty](
+			httpClient,
+			baseURL+InstanceServiceDeleteCoverImageProcedure,
+			connect.WithSchema(instanceServiceMethods.ByName("DeleteCoverImage")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -91,6 +125,9 @@ type instanceServiceClient struct {
 	getInstanceProfile    *connect.Client[v1.GetInstanceProfileRequest, v1.InstanceProfile]
 	getInstanceSetting    *connect.Client[v1.GetInstanceSettingRequest, v1.InstanceSetting]
 	updateInstanceSetting *connect.Client[v1.UpdateInstanceSettingRequest, v1.InstanceSetting]
+	uploadCoverImage      *connect.Client[v1.UploadCoverImageRequest, v1.UploadCoverImageResponse]
+	listCoverImages       *connect.Client[v1.ListCoverImagesRequest, v1.ListCoverImagesResponse]
+	deleteCoverImage      *connect.Client[v1.DeleteCoverImageRequest, emptypb.Empty]
 }
 
 // GetInstanceProfile calls memos.api.v1.InstanceService.GetInstanceProfile.
@@ -108,6 +145,21 @@ func (c *instanceServiceClient) UpdateInstanceSetting(ctx context.Context, req *
 	return c.updateInstanceSetting.CallUnary(ctx, req)
 }
 
+// UploadCoverImage calls memos.api.v1.InstanceService.UploadCoverImage.
+func (c *instanceServiceClient) UploadCoverImage(ctx context.Context, req *connect.Request[v1.UploadCoverImageRequest]) (*connect.Response[v1.UploadCoverImageResponse], error) {
+	return c.uploadCoverImage.CallUnary(ctx, req)
+}
+
+// ListCoverImages calls memos.api.v1.InstanceService.ListCoverImages.
+func (c *instanceServiceClient) ListCoverImages(ctx context.Context, req *connect.Request[v1.ListCoverImagesRequest]) (*connect.Response[v1.ListCoverImagesResponse], error) {
+	return c.listCoverImages.CallUnary(ctx, req)
+}
+
+// DeleteCoverImage calls memos.api.v1.InstanceService.DeleteCoverImage.
+func (c *instanceServiceClient) DeleteCoverImage(ctx context.Context, req *connect.Request[v1.DeleteCoverImageRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.deleteCoverImage.CallUnary(ctx, req)
+}
+
 // InstanceServiceHandler is an implementation of the memos.api.v1.InstanceService service.
 type InstanceServiceHandler interface {
 	// Gets the instance profile.
@@ -116,6 +168,12 @@ type InstanceServiceHandler interface {
 	GetInstanceSetting(context.Context, *connect.Request[v1.GetInstanceSettingRequest]) (*connect.Response[v1.InstanceSetting], error)
 	// Updates an instance setting.
 	UpdateInstanceSetting(context.Context, *connect.Request[v1.UpdateInstanceSettingRequest]) (*connect.Response[v1.InstanceSetting], error)
+	// UploadCoverImage uploads a cover image to the server.
+	UploadCoverImage(context.Context, *connect.Request[v1.UploadCoverImageRequest]) (*connect.Response[v1.UploadCoverImageResponse], error)
+	// ListCoverImages lists previously uploaded cover images.
+	ListCoverImages(context.Context, *connect.Request[v1.ListCoverImagesRequest]) (*connect.Response[v1.ListCoverImagesResponse], error)
+	// DeleteCoverImage deletes a previously uploaded cover image.
+	DeleteCoverImage(context.Context, *connect.Request[v1.DeleteCoverImageRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewInstanceServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -143,6 +201,24 @@ func NewInstanceServiceHandler(svc InstanceServiceHandler, opts ...connect.Handl
 		connect.WithSchema(instanceServiceMethods.ByName("UpdateInstanceSetting")),
 		connect.WithHandlerOptions(opts...),
 	)
+	instanceServiceUploadCoverImageHandler := connect.NewUnaryHandler(
+		InstanceServiceUploadCoverImageProcedure,
+		svc.UploadCoverImage,
+		connect.WithSchema(instanceServiceMethods.ByName("UploadCoverImage")),
+		connect.WithHandlerOptions(opts...),
+	)
+	instanceServiceListCoverImagesHandler := connect.NewUnaryHandler(
+		InstanceServiceListCoverImagesProcedure,
+		svc.ListCoverImages,
+		connect.WithSchema(instanceServiceMethods.ByName("ListCoverImages")),
+		connect.WithHandlerOptions(opts...),
+	)
+	instanceServiceDeleteCoverImageHandler := connect.NewUnaryHandler(
+		InstanceServiceDeleteCoverImageProcedure,
+		svc.DeleteCoverImage,
+		connect.WithSchema(instanceServiceMethods.ByName("DeleteCoverImage")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/memos.api.v1.InstanceService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case InstanceServiceGetInstanceProfileProcedure:
@@ -151,6 +227,12 @@ func NewInstanceServiceHandler(svc InstanceServiceHandler, opts ...connect.Handl
 			instanceServiceGetInstanceSettingHandler.ServeHTTP(w, r)
 		case InstanceServiceUpdateInstanceSettingProcedure:
 			instanceServiceUpdateInstanceSettingHandler.ServeHTTP(w, r)
+		case InstanceServiceUploadCoverImageProcedure:
+			instanceServiceUploadCoverImageHandler.ServeHTTP(w, r)
+		case InstanceServiceListCoverImagesProcedure:
+			instanceServiceListCoverImagesHandler.ServeHTTP(w, r)
+		case InstanceServiceDeleteCoverImageProcedure:
+			instanceServiceDeleteCoverImageHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -170,4 +252,16 @@ func (UnimplementedInstanceServiceHandler) GetInstanceSetting(context.Context, *
 
 func (UnimplementedInstanceServiceHandler) UpdateInstanceSetting(context.Context, *connect.Request[v1.UpdateInstanceSettingRequest]) (*connect.Response[v1.InstanceSetting], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.InstanceService.UpdateInstanceSetting is not implemented"))
+}
+
+func (UnimplementedInstanceServiceHandler) UploadCoverImage(context.Context, *connect.Request[v1.UploadCoverImageRequest]) (*connect.Response[v1.UploadCoverImageResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.InstanceService.UploadCoverImage is not implemented"))
+}
+
+func (UnimplementedInstanceServiceHandler) ListCoverImages(context.Context, *connect.Request[v1.ListCoverImagesRequest]) (*connect.Response[v1.ListCoverImagesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.InstanceService.ListCoverImages is not implemented"))
+}
+
+func (UnimplementedInstanceServiceHandler) DeleteCoverImage(context.Context, *connect.Request[v1.DeleteCoverImageRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.InstanceService.DeleteCoverImage is not implemented"))
 }

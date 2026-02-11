@@ -10,6 +10,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	reflect "reflect"
 	sync "sync"
@@ -36,6 +37,8 @@ const (
 	InstanceSetting_MEMO_RELATED InstanceSetting_Key = 3
 	// TODO is the key for todo settings.
 	InstanceSetting_TODO InstanceSetting_Key = 4
+	// COVER_STORAGE is the key for cover image storage settings.
+	InstanceSetting_COVER_STORAGE InstanceSetting_Key = 5
 )
 
 // Enum value maps for InstanceSetting_Key.
@@ -46,6 +49,7 @@ var (
 		2: "STORAGE",
 		3: "MEMO_RELATED",
 		4: "TODO",
+		5: "COVER_STORAGE",
 	}
 	InstanceSetting_Key_value = map[string]int32{
 		"KEY_UNSPECIFIED": 0,
@@ -53,6 +57,7 @@ var (
 		"STORAGE":         2,
 		"MEMO_RELATED":    3,
 		"TODO":            4,
+		"COVER_STORAGE":   5,
 	}
 )
 
@@ -263,6 +268,7 @@ type InstanceSetting struct {
 	//	*InstanceSetting_StorageSetting_
 	//	*InstanceSetting_MemoRelatedSetting_
 	//	*InstanceSetting_TodoSetting_
+	//	*InstanceSetting_CoverStorageSetting_
 	Value         isInstanceSetting_Value `protobuf_oneof:"value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -348,6 +354,15 @@ func (x *InstanceSetting) GetTodoSetting() *InstanceSetting_TodoSetting {
 	return nil
 }
 
+func (x *InstanceSetting) GetCoverStorageSetting() *InstanceSetting_CoverStorageSetting {
+	if x != nil {
+		if x, ok := x.Value.(*InstanceSetting_CoverStorageSetting_); ok {
+			return x.CoverStorageSetting
+		}
+	}
+	return nil
+}
+
 type isInstanceSetting_Value interface {
 	isInstanceSetting_Value()
 }
@@ -368,6 +383,10 @@ type InstanceSetting_TodoSetting_ struct {
 	TodoSetting *InstanceSetting_TodoSetting `protobuf:"bytes,5,opt,name=todo_setting,json=todoSetting,proto3,oneof"`
 }
 
+type InstanceSetting_CoverStorageSetting_ struct {
+	CoverStorageSetting *InstanceSetting_CoverStorageSetting `protobuf:"bytes,6,opt,name=cover_storage_setting,json=coverStorageSetting,proto3,oneof"`
+}
+
 func (*InstanceSetting_GeneralSetting_) isInstanceSetting_Value() {}
 
 func (*InstanceSetting_StorageSetting_) isInstanceSetting_Value() {}
@@ -375,6 +394,8 @@ func (*InstanceSetting_StorageSetting_) isInstanceSetting_Value() {}
 func (*InstanceSetting_MemoRelatedSetting_) isInstanceSetting_Value() {}
 
 func (*InstanceSetting_TodoSetting_) isInstanceSetting_Value() {}
+
+func (*InstanceSetting_CoverStorageSetting_) isInstanceSetting_Value() {}
 
 // Request message for GetInstanceSetting method.
 type GetInstanceSettingRequest struct {
@@ -478,6 +499,335 @@ func (x *UpdateInstanceSettingRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
+type CoverImage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The filename of the cover image.
+	Filename string `protobuf:"bytes,1,opt,name=filename,proto3" json:"filename,omitempty"`
+	// The URL of the cover image.
+	Url string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
+	// The creation timestamp in seconds.
+	CreateTime int64 `protobuf:"varint,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// The size of the image in bytes.
+	Size          int64 `protobuf:"varint,4,opt,name=size,proto3" json:"size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CoverImage) Reset() {
+	*x = CoverImage{}
+	mi := &file_api_v1_instance_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CoverImage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CoverImage) ProtoMessage() {}
+
+func (x *CoverImage) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_instance_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CoverImage.ProtoReflect.Descriptor instead.
+func (*CoverImage) Descriptor() ([]byte, []int) {
+	return file_api_v1_instance_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *CoverImage) GetFilename() string {
+	if x != nil {
+		return x.Filename
+	}
+	return ""
+}
+
+func (x *CoverImage) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+func (x *CoverImage) GetCreateTime() int64 {
+	if x != nil {
+		return x.CreateTime
+	}
+	return 0
+}
+
+func (x *CoverImage) GetSize() int64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+type UploadCoverImageRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The image filename.
+	Filename string `protobuf:"bytes,1,opt,name=filename,proto3" json:"filename,omitempty"`
+	// Required. The image content.
+	Content       []byte `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadCoverImageRequest) Reset() {
+	*x = UploadCoverImageRequest{}
+	mi := &file_api_v1_instance_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadCoverImageRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadCoverImageRequest) ProtoMessage() {}
+
+func (x *UploadCoverImageRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_instance_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadCoverImageRequest.ProtoReflect.Descriptor instead.
+func (*UploadCoverImageRequest) Descriptor() ([]byte, []int) {
+	return file_api_v1_instance_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *UploadCoverImageRequest) GetFilename() string {
+	if x != nil {
+		return x.Filename
+	}
+	return ""
+}
+
+func (x *UploadCoverImageRequest) GetContent() []byte {
+	if x != nil {
+		return x.Content
+	}
+	return nil
+}
+
+type UploadCoverImageResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Image         *CoverImage            `protobuf:"bytes,1,opt,name=image,proto3" json:"image,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadCoverImageResponse) Reset() {
+	*x = UploadCoverImageResponse{}
+	mi := &file_api_v1_instance_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadCoverImageResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadCoverImageResponse) ProtoMessage() {}
+
+func (x *UploadCoverImageResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_instance_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadCoverImageResponse.ProtoReflect.Descriptor instead.
+func (*UploadCoverImageResponse) Descriptor() ([]byte, []int) {
+	return file_api_v1_instance_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *UploadCoverImageResponse) GetImage() *CoverImage {
+	if x != nil {
+		return x.Image
+	}
+	return nil
+}
+
+type ListCoverImagesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The maximum number of cover images to return.
+	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. A page token, received from a previous `ListCoverImages` call.
+	PageToken     string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListCoverImagesRequest) Reset() {
+	*x = ListCoverImagesRequest{}
+	mi := &file_api_v1_instance_service_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCoverImagesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCoverImagesRequest) ProtoMessage() {}
+
+func (x *ListCoverImagesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_instance_service_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListCoverImagesRequest.ProtoReflect.Descriptor instead.
+func (*ListCoverImagesRequest) Descriptor() ([]byte, []int) {
+	return file_api_v1_instance_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ListCoverImagesRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListCoverImagesRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+type ListCoverImagesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Images        []*CoverImage          `protobuf:"bytes,1,rep,name=images,proto3" json:"images,omitempty"`
+	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	TotalSize     int32                  `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListCoverImagesResponse) Reset() {
+	*x = ListCoverImagesResponse{}
+	mi := &file_api_v1_instance_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCoverImagesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCoverImagesResponse) ProtoMessage() {}
+
+func (x *ListCoverImagesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_instance_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListCoverImagesResponse.ProtoReflect.Descriptor instead.
+func (*ListCoverImagesResponse) Descriptor() ([]byte, []int) {
+	return file_api_v1_instance_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ListCoverImagesResponse) GetImages() []*CoverImage {
+	if x != nil {
+		return x.Images
+	}
+	return nil
+}
+
+func (x *ListCoverImagesResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListCoverImagesResponse) GetTotalSize() int32 {
+	if x != nil {
+		return x.TotalSize
+	}
+	return 0
+}
+
+type DeleteCoverImageRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The filename of the cover image to delete.
+	Filename      string `protobuf:"bytes,1,opt,name=filename,proto3" json:"filename,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCoverImageRequest) Reset() {
+	*x = DeleteCoverImageRequest{}
+	mi := &file_api_v1_instance_service_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCoverImageRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCoverImageRequest) ProtoMessage() {}
+
+func (x *DeleteCoverImageRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_instance_service_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCoverImageRequest.ProtoReflect.Descriptor instead.
+func (*DeleteCoverImageRequest) Descriptor() ([]byte, []int) {
+	return file_api_v1_instance_service_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *DeleteCoverImageRequest) GetFilename() string {
+	if x != nil {
+		return x.Filename
+	}
+	return ""
+}
+
 // General instance settings configuration.
 type InstanceSetting_GeneralSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -505,7 +855,7 @@ type InstanceSetting_GeneralSetting struct {
 
 func (x *InstanceSetting_GeneralSetting) Reset() {
 	*x = InstanceSetting_GeneralSetting{}
-	mi := &file_api_v1_instance_service_proto_msgTypes[5]
+	mi := &file_api_v1_instance_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -517,7 +867,7 @@ func (x *InstanceSetting_GeneralSetting) String() string {
 func (*InstanceSetting_GeneralSetting) ProtoMessage() {}
 
 func (x *InstanceSetting_GeneralSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_instance_service_proto_msgTypes[5]
+	mi := &file_api_v1_instance_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -607,7 +957,7 @@ type InstanceSetting_StorageSetting struct {
 
 func (x *InstanceSetting_StorageSetting) Reset() {
 	*x = InstanceSetting_StorageSetting{}
-	mi := &file_api_v1_instance_service_proto_msgTypes[6]
+	mi := &file_api_v1_instance_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -619,7 +969,7 @@ func (x *InstanceSetting_StorageSetting) String() string {
 func (*InstanceSetting_StorageSetting) ProtoMessage() {}
 
 func (x *InstanceSetting_StorageSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_instance_service_proto_msgTypes[6]
+	mi := &file_api_v1_instance_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -663,6 +1013,79 @@ func (x *InstanceSetting_StorageSetting) GetS3Config() *InstanceSetting_StorageS
 	return nil
 }
 
+// Cover image storage settings.
+type InstanceSetting_CoverStorageSetting struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Local directory path for cover images.
+	DirectoryPath string `protobuf:"bytes,1,opt,name=directory_path,json=directoryPath,proto3" json:"directory_path,omitempty"`
+	// URL prefix for accessing cover images.
+	UrlPrefix string `protobuf:"bytes,2,opt,name=url_prefix,json=urlPrefix,proto3" json:"url_prefix,omitempty"`
+	// Whether to enable local HTTP server for cover images.
+	EnableLocalServer bool `protobuf:"varint,3,opt,name=enable_local_server,json=enableLocalServer,proto3" json:"enable_local_server,omitempty"`
+	// The max upload size in megabytes.
+	UploadSizeLimitMb int64 `protobuf:"varint,4,opt,name=upload_size_limit_mb,json=uploadSizeLimitMb,proto3" json:"upload_size_limit_mb,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *InstanceSetting_CoverStorageSetting) Reset() {
+	*x = InstanceSetting_CoverStorageSetting{}
+	mi := &file_api_v1_instance_service_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InstanceSetting_CoverStorageSetting) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InstanceSetting_CoverStorageSetting) ProtoMessage() {}
+
+func (x *InstanceSetting_CoverStorageSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_instance_service_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InstanceSetting_CoverStorageSetting.ProtoReflect.Descriptor instead.
+func (*InstanceSetting_CoverStorageSetting) Descriptor() ([]byte, []int) {
+	return file_api_v1_instance_service_proto_rawDescGZIP(), []int{2, 2}
+}
+
+func (x *InstanceSetting_CoverStorageSetting) GetDirectoryPath() string {
+	if x != nil {
+		return x.DirectoryPath
+	}
+	return ""
+}
+
+func (x *InstanceSetting_CoverStorageSetting) GetUrlPrefix() string {
+	if x != nil {
+		return x.UrlPrefix
+	}
+	return ""
+}
+
+func (x *InstanceSetting_CoverStorageSetting) GetEnableLocalServer() bool {
+	if x != nil {
+		return x.EnableLocalServer
+	}
+	return false
+}
+
+func (x *InstanceSetting_CoverStorageSetting) GetUploadSizeLimitMb() int64 {
+	if x != nil {
+		return x.UploadSizeLimitMb
+	}
+	return 0
+}
+
 // Memo-related instance settings and policies.
 type InstanceSetting_MemoRelatedSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -682,7 +1105,7 @@ type InstanceSetting_MemoRelatedSetting struct {
 
 func (x *InstanceSetting_MemoRelatedSetting) Reset() {
 	*x = InstanceSetting_MemoRelatedSetting{}
-	mi := &file_api_v1_instance_service_proto_msgTypes[7]
+	mi := &file_api_v1_instance_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -694,7 +1117,7 @@ func (x *InstanceSetting_MemoRelatedSetting) String() string {
 func (*InstanceSetting_MemoRelatedSetting) ProtoMessage() {}
 
 func (x *InstanceSetting_MemoRelatedSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_instance_service_proto_msgTypes[7]
+	mi := &file_api_v1_instance_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -707,7 +1130,7 @@ func (x *InstanceSetting_MemoRelatedSetting) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use InstanceSetting_MemoRelatedSetting.ProtoReflect.Descriptor instead.
 func (*InstanceSetting_MemoRelatedSetting) Descriptor() ([]byte, []int) {
-	return file_api_v1_instance_service_proto_rawDescGZIP(), []int{2, 2}
+	return file_api_v1_instance_service_proto_rawDescGZIP(), []int{2, 3}
 }
 
 func (x *InstanceSetting_MemoRelatedSetting) GetDisallowPublicVisibility() bool {
@@ -757,7 +1180,7 @@ type InstanceSetting_TodoSetting struct {
 
 func (x *InstanceSetting_TodoSetting) Reset() {
 	*x = InstanceSetting_TodoSetting{}
-	mi := &file_api_v1_instance_service_proto_msgTypes[8]
+	mi := &file_api_v1_instance_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -769,7 +1192,7 @@ func (x *InstanceSetting_TodoSetting) String() string {
 func (*InstanceSetting_TodoSetting) ProtoMessage() {}
 
 func (x *InstanceSetting_TodoSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_instance_service_proto_msgTypes[8]
+	mi := &file_api_v1_instance_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -782,7 +1205,7 @@ func (x *InstanceSetting_TodoSetting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InstanceSetting_TodoSetting.ProtoReflect.Descriptor instead.
 func (*InstanceSetting_TodoSetting) Descriptor() ([]byte, []int) {
-	return file_api_v1_instance_service_proto_rawDescGZIP(), []int{2, 3}
+	return file_api_v1_instance_service_proto_rawDescGZIP(), []int{2, 4}
 }
 
 func (x *InstanceSetting_TodoSetting) GetReminderDayOffsets() []int32 {
@@ -805,7 +1228,7 @@ type InstanceSetting_GeneralSetting_CustomProfile struct {
 
 func (x *InstanceSetting_GeneralSetting_CustomProfile) Reset() {
 	*x = InstanceSetting_GeneralSetting_CustomProfile{}
-	mi := &file_api_v1_instance_service_proto_msgTypes[9]
+	mi := &file_api_v1_instance_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -817,7 +1240,7 @@ func (x *InstanceSetting_GeneralSetting_CustomProfile) String() string {
 func (*InstanceSetting_GeneralSetting_CustomProfile) ProtoMessage() {}
 
 func (x *InstanceSetting_GeneralSetting_CustomProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_instance_service_proto_msgTypes[9]
+	mi := &file_api_v1_instance_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -877,7 +1300,7 @@ type InstanceSetting_StorageSetting_S3Config struct {
 
 func (x *InstanceSetting_StorageSetting_S3Config) Reset() {
 	*x = InstanceSetting_StorageSetting_S3Config{}
-	mi := &file_api_v1_instance_service_proto_msgTypes[10]
+	mi := &file_api_v1_instance_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -889,7 +1312,7 @@ func (x *InstanceSetting_StorageSetting_S3Config) String() string {
 func (*InstanceSetting_StorageSetting_S3Config) ProtoMessage() {}
 
 func (x *InstanceSetting_StorageSetting_S3Config) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_instance_service_proto_msgTypes[10]
+	mi := &file_api_v1_instance_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -951,19 +1374,20 @@ var File_api_v1_instance_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1dapi/v1/instance_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\x84\x01\n" +
+	"\x1dapi/v1/instance_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x84\x01\n" +
 	"\x0fInstanceProfile\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04demo\x18\x03 \x01(\bR\x04demo\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\x12 \n" +
 	"\vinitialized\x18\a \x01(\bR\vinitialized\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\xd1\x10\n" +
+	"\x19GetInstanceProfileRequest\"\x8c\x13\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2,.memos.api.v1.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12W\n" +
 	"\x0fstorage_setting\x18\x03 \x01(\v2,.memos.api.v1.InstanceSetting.StorageSettingH\x00R\x0estorageSetting\x12d\n" +
 	"\x14memo_related_setting\x18\x04 \x01(\v20.memos.api.v1.InstanceSetting.MemoRelatedSettingH\x00R\x12memoRelatedSetting\x12N\n" +
-	"\ftodo_setting\x18\x05 \x01(\v2).memos.api.v1.InstanceSetting.TodoSettingH\x00R\vtodoSetting\x1a\xe7\x04\n" +
+	"\ftodo_setting\x18\x05 \x01(\v2).memos.api.v1.InstanceSetting.TodoSettingH\x00R\vtodoSetting\x12g\n" +
+	"\x15cover_storage_setting\x18\x06 \x01(\v21.memos.api.v1.InstanceSetting.CoverStorageSettingH\x00R\x13coverStorageSetting\x1a\xe7\x04\n" +
 	"\x0eGeneralSetting\x12<\n" +
 	"\x1adisallow_user_registration\x18\x02 \x01(\bR\x18disallowUserRegistration\x124\n" +
 	"\x16disallow_password_auth\x18\x03 \x01(\bR\x14disallowPasswordAuth\x12+\n" +
@@ -994,7 +1418,13 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +
 	"\x05LOCAL\x10\x02\x12\x06\n" +
-	"\x02S3\x10\x03\x1a\x94\x02\n" +
+	"\x02S3\x10\x03\x1a\xbc\x01\n" +
+	"\x13CoverStorageSetting\x12%\n" +
+	"\x0edirectory_path\x18\x01 \x01(\tR\rdirectoryPath\x12\x1d\n" +
+	"\n" +
+	"url_prefix\x18\x02 \x01(\tR\turlPrefix\x12.\n" +
+	"\x13enable_local_server\x18\x03 \x01(\bR\x11enableLocalServer\x12/\n" +
+	"\x14upload_size_limit_mb\x18\x04 \x01(\x03R\x11uploadSizeLimitMb\x1a\x94\x02\n" +
 	"\x12MemoRelatedSetting\x12<\n" +
 	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
@@ -1002,13 +1432,14 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +
 	"\treactions\x18\a \x03(\tR\treactions\x1a?\n" +
 	"\vTodoSetting\x120\n" +
-	"\x14reminder_day_offsets\x18\x01 \x03(\x05R\x12reminderDayOffsets\"P\n" +
+	"\x14reminder_day_offsets\x18\x01 \x03(\x05R\x12reminderDayOffsets\"c\n" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\v\n" +
 	"\aSTORAGE\x10\x02\x12\x10\n" +
 	"\fMEMO_RELATED\x10\x03\x12\b\n" +
-	"\x04TODO\x10\x04:a\xeaA^\n" +
+	"\x04TODO\x10\x04\x12\x11\n" +
+	"\rCOVER_STORAGE\x10\x05:a\xeaA^\n" +
 	"\x1cmemos.api.v1/InstanceSetting\x12\x1binstance/settings/{setting}*\x10instanceSettings2\x0finstanceSettingB\a\n" +
 	"\x05value\"U\n" +
 	"\x19GetInstanceSettingRequest\x128\n" +
@@ -1017,11 +1448,37 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x1cUpdateInstanceSettingRequest\x12<\n" +
 	"\asetting\x18\x01 \x01(\v2\x1d.memos.api.v1.InstanceSettingB\x03\xe0A\x02R\asetting\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask2\xdb\x03\n" +
+	"updateMask\"o\n" +
+	"\n" +
+	"CoverImage\x12\x1a\n" +
+	"\bfilename\x18\x01 \x01(\tR\bfilename\x12\x10\n" +
+	"\x03url\x18\x02 \x01(\tR\x03url\x12\x1f\n" +
+	"\vcreate_time\x18\x03 \x01(\x03R\n" +
+	"createTime\x12\x12\n" +
+	"\x04size\x18\x04 \x01(\x03R\x04size\"Y\n" +
+	"\x17UploadCoverImageRequest\x12\x1f\n" +
+	"\bfilename\x18\x01 \x01(\tB\x03\xe0A\x02R\bfilename\x12\x1d\n" +
+	"\acontent\x18\x02 \x01(\fB\x03\xe0A\x02R\acontent\"J\n" +
+	"\x18UploadCoverImageResponse\x12.\n" +
+	"\x05image\x18\x01 \x01(\v2\x18.memos.api.v1.CoverImageR\x05image\"^\n" +
+	"\x16ListCoverImagesRequest\x12 \n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x92\x01\n" +
+	"\x17ListCoverImagesResponse\x120\n" +
+	"\x06images\x18\x01 \x03(\v2\x18.memos.api.v1.CoverImageR\x06images\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
+	"\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\":\n" +
+	"\x17DeleteCoverImageRequest\x12\x1f\n" +
+	"\bfilename\x18\x01 \x01(\tB\x03\xe0A\x02R\bfilename2\xce\x06\n" +
 	"\x0fInstanceService\x12~\n" +
 	"\x12GetInstanceProfile\x12'.memos.api.v1.GetInstanceProfileRequest\x1a\x1d.memos.api.v1.InstanceProfile\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/api/v1/instance/profile\x12\x8f\x01\n" +
 	"\x12GetInstanceSetting\x12'.memos.api.v1.GetInstanceSettingRequest\x1a\x1d.memos.api.v1.InstanceSetting\"1\xdaA\x04name\x82\xd3\xe4\x93\x02$\x12\"/api/v1/{name=instance/settings/*}\x12\xb5\x01\n" +
-	"\x15UpdateInstanceSetting\x12*.memos.api.v1.UpdateInstanceSettingRequest\x1a\x1d.memos.api.v1.InstanceSetting\"Q\xdaA\x13setting,update_mask\x82\xd3\xe4\x93\x025:\asetting2*/api/v1/{setting.name=instance/settings/*}B\xac\x01\n" +
+	"\x15UpdateInstanceSetting\x12*.memos.api.v1.UpdateInstanceSettingRequest\x1a\x1d.memos.api.v1.InstanceSetting\"Q\xdaA\x13setting,update_mask\x82\xd3\xe4\x93\x025:\asetting2*/api/v1/{setting.name=instance/settings/*}\x12\x82\x01\n" +
+	"\x10UploadCoverImage\x12%.memos.api.v1.UploadCoverImageRequest\x1a&.memos.api.v1.UploadCoverImageResponse\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/api/v1/cover:upload\x12v\n" +
+	"\x0fListCoverImages\x12$.memos.api.v1.ListCoverImagesRequest\x1a%.memos.api.v1.ListCoverImagesResponse\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/api/v1/covers\x12t\n" +
+	"\x10DeleteCoverImage\x12%.memos.api.v1.DeleteCoverImageRequest\x1a\x16.google.protobuf.Empty\"!\x82\xd3\xe4\x93\x02\x1b*\x19/api/v1/covers/{filename}B\xac\x01\n" +
 	"\x10com.memos.api.v1B\x14InstanceServiceProtoP\x01Z0github.com/usememos/memos/proto/gen/api/v1;apiv1\xa2\x02\x03MAX\xaa\x02\fMemos.Api.V1\xca\x02\fMemos\\Api\\V1\xe2\x02\x18Memos\\Api\\V1\\GPBMetadata\xea\x02\x0eMemos::Api::V1b\x06proto3"
 
 var (
@@ -1037,7 +1494,7 @@ func file_api_v1_instance_service_proto_rawDescGZIP() []byte {
 }
 
 var file_api_v1_instance_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_api_v1_instance_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_api_v1_instance_service_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_api_v1_instance_service_proto_goTypes = []any{
 	(InstanceSetting_Key)(0),                             // 0: memos.api.v1.InstanceSetting.Key
 	(InstanceSetting_StorageSetting_StorageType)(0),      // 1: memos.api.v1.InstanceSetting.StorageSetting.StorageType
@@ -1046,35 +1503,52 @@ var file_api_v1_instance_service_proto_goTypes = []any{
 	(*InstanceSetting)(nil),                              // 4: memos.api.v1.InstanceSetting
 	(*GetInstanceSettingRequest)(nil),                    // 5: memos.api.v1.GetInstanceSettingRequest
 	(*UpdateInstanceSettingRequest)(nil),                 // 6: memos.api.v1.UpdateInstanceSettingRequest
-	(*InstanceSetting_GeneralSetting)(nil),               // 7: memos.api.v1.InstanceSetting.GeneralSetting
-	(*InstanceSetting_StorageSetting)(nil),               // 8: memos.api.v1.InstanceSetting.StorageSetting
-	(*InstanceSetting_MemoRelatedSetting)(nil),           // 9: memos.api.v1.InstanceSetting.MemoRelatedSetting
-	(*InstanceSetting_TodoSetting)(nil),                  // 10: memos.api.v1.InstanceSetting.TodoSetting
-	(*InstanceSetting_GeneralSetting_CustomProfile)(nil), // 11: memos.api.v1.InstanceSetting.GeneralSetting.CustomProfile
-	(*InstanceSetting_StorageSetting_S3Config)(nil),      // 12: memos.api.v1.InstanceSetting.StorageSetting.S3Config
-	(*fieldmaskpb.FieldMask)(nil),                        // 13: google.protobuf.FieldMask
+	(*CoverImage)(nil),                                   // 7: memos.api.v1.CoverImage
+	(*UploadCoverImageRequest)(nil),                      // 8: memos.api.v1.UploadCoverImageRequest
+	(*UploadCoverImageResponse)(nil),                     // 9: memos.api.v1.UploadCoverImageResponse
+	(*ListCoverImagesRequest)(nil),                       // 10: memos.api.v1.ListCoverImagesRequest
+	(*ListCoverImagesResponse)(nil),                      // 11: memos.api.v1.ListCoverImagesResponse
+	(*DeleteCoverImageRequest)(nil),                      // 12: memos.api.v1.DeleteCoverImageRequest
+	(*InstanceSetting_GeneralSetting)(nil),               // 13: memos.api.v1.InstanceSetting.GeneralSetting
+	(*InstanceSetting_StorageSetting)(nil),               // 14: memos.api.v1.InstanceSetting.StorageSetting
+	(*InstanceSetting_CoverStorageSetting)(nil),          // 15: memos.api.v1.InstanceSetting.CoverStorageSetting
+	(*InstanceSetting_MemoRelatedSetting)(nil),           // 16: memos.api.v1.InstanceSetting.MemoRelatedSetting
+	(*InstanceSetting_TodoSetting)(nil),                  // 17: memos.api.v1.InstanceSetting.TodoSetting
+	(*InstanceSetting_GeneralSetting_CustomProfile)(nil), // 18: memos.api.v1.InstanceSetting.GeneralSetting.CustomProfile
+	(*InstanceSetting_StorageSetting_S3Config)(nil),      // 19: memos.api.v1.InstanceSetting.StorageSetting.S3Config
+	(*fieldmaskpb.FieldMask)(nil),                        // 20: google.protobuf.FieldMask
+	(*emptypb.Empty)(nil),                                // 21: google.protobuf.Empty
 }
 var file_api_v1_instance_service_proto_depIdxs = []int32{
-	7,  // 0: memos.api.v1.InstanceSetting.general_setting:type_name -> memos.api.v1.InstanceSetting.GeneralSetting
-	8,  // 1: memos.api.v1.InstanceSetting.storage_setting:type_name -> memos.api.v1.InstanceSetting.StorageSetting
-	9,  // 2: memos.api.v1.InstanceSetting.memo_related_setting:type_name -> memos.api.v1.InstanceSetting.MemoRelatedSetting
-	10, // 3: memos.api.v1.InstanceSetting.todo_setting:type_name -> memos.api.v1.InstanceSetting.TodoSetting
-	4,  // 4: memos.api.v1.UpdateInstanceSettingRequest.setting:type_name -> memos.api.v1.InstanceSetting
-	13, // 5: memos.api.v1.UpdateInstanceSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
-	11, // 6: memos.api.v1.InstanceSetting.GeneralSetting.custom_profile:type_name -> memos.api.v1.InstanceSetting.GeneralSetting.CustomProfile
-	1,  // 7: memos.api.v1.InstanceSetting.StorageSetting.storage_type:type_name -> memos.api.v1.InstanceSetting.StorageSetting.StorageType
-	12, // 8: memos.api.v1.InstanceSetting.StorageSetting.s3_config:type_name -> memos.api.v1.InstanceSetting.StorageSetting.S3Config
-	3,  // 9: memos.api.v1.InstanceService.GetInstanceProfile:input_type -> memos.api.v1.GetInstanceProfileRequest
-	5,  // 10: memos.api.v1.InstanceService.GetInstanceSetting:input_type -> memos.api.v1.GetInstanceSettingRequest
-	6,  // 11: memos.api.v1.InstanceService.UpdateInstanceSetting:input_type -> memos.api.v1.UpdateInstanceSettingRequest
-	2,  // 12: memos.api.v1.InstanceService.GetInstanceProfile:output_type -> memos.api.v1.InstanceProfile
-	4,  // 13: memos.api.v1.InstanceService.GetInstanceSetting:output_type -> memos.api.v1.InstanceSetting
-	4,  // 14: memos.api.v1.InstanceService.UpdateInstanceSetting:output_type -> memos.api.v1.InstanceSetting
-	12, // [12:15] is the sub-list for method output_type
-	9,  // [9:12] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	13, // 0: memos.api.v1.InstanceSetting.general_setting:type_name -> memos.api.v1.InstanceSetting.GeneralSetting
+	14, // 1: memos.api.v1.InstanceSetting.storage_setting:type_name -> memos.api.v1.InstanceSetting.StorageSetting
+	16, // 2: memos.api.v1.InstanceSetting.memo_related_setting:type_name -> memos.api.v1.InstanceSetting.MemoRelatedSetting
+	17, // 3: memos.api.v1.InstanceSetting.todo_setting:type_name -> memos.api.v1.InstanceSetting.TodoSetting
+	15, // 4: memos.api.v1.InstanceSetting.cover_storage_setting:type_name -> memos.api.v1.InstanceSetting.CoverStorageSetting
+	4,  // 5: memos.api.v1.UpdateInstanceSettingRequest.setting:type_name -> memos.api.v1.InstanceSetting
+	20, // 6: memos.api.v1.UpdateInstanceSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
+	7,  // 7: memos.api.v1.UploadCoverImageResponse.image:type_name -> memos.api.v1.CoverImage
+	7,  // 8: memos.api.v1.ListCoverImagesResponse.images:type_name -> memos.api.v1.CoverImage
+	18, // 9: memos.api.v1.InstanceSetting.GeneralSetting.custom_profile:type_name -> memos.api.v1.InstanceSetting.GeneralSetting.CustomProfile
+	1,  // 10: memos.api.v1.InstanceSetting.StorageSetting.storage_type:type_name -> memos.api.v1.InstanceSetting.StorageSetting.StorageType
+	19, // 11: memos.api.v1.InstanceSetting.StorageSetting.s3_config:type_name -> memos.api.v1.InstanceSetting.StorageSetting.S3Config
+	3,  // 12: memos.api.v1.InstanceService.GetInstanceProfile:input_type -> memos.api.v1.GetInstanceProfileRequest
+	5,  // 13: memos.api.v1.InstanceService.GetInstanceSetting:input_type -> memos.api.v1.GetInstanceSettingRequest
+	6,  // 14: memos.api.v1.InstanceService.UpdateInstanceSetting:input_type -> memos.api.v1.UpdateInstanceSettingRequest
+	8,  // 15: memos.api.v1.InstanceService.UploadCoverImage:input_type -> memos.api.v1.UploadCoverImageRequest
+	10, // 16: memos.api.v1.InstanceService.ListCoverImages:input_type -> memos.api.v1.ListCoverImagesRequest
+	12, // 17: memos.api.v1.InstanceService.DeleteCoverImage:input_type -> memos.api.v1.DeleteCoverImageRequest
+	2,  // 18: memos.api.v1.InstanceService.GetInstanceProfile:output_type -> memos.api.v1.InstanceProfile
+	4,  // 19: memos.api.v1.InstanceService.GetInstanceSetting:output_type -> memos.api.v1.InstanceSetting
+	4,  // 20: memos.api.v1.InstanceService.UpdateInstanceSetting:output_type -> memos.api.v1.InstanceSetting
+	9,  // 21: memos.api.v1.InstanceService.UploadCoverImage:output_type -> memos.api.v1.UploadCoverImageResponse
+	11, // 22: memos.api.v1.InstanceService.ListCoverImages:output_type -> memos.api.v1.ListCoverImagesResponse
+	21, // 23: memos.api.v1.InstanceService.DeleteCoverImage:output_type -> google.protobuf.Empty
+	18, // [18:24] is the sub-list for method output_type
+	12, // [12:18] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_instance_service_proto_init() }
@@ -1087,6 +1561,7 @@ func file_api_v1_instance_service_proto_init() {
 		(*InstanceSetting_StorageSetting_)(nil),
 		(*InstanceSetting_MemoRelatedSetting_)(nil),
 		(*InstanceSetting_TodoSetting_)(nil),
+		(*InstanceSetting_CoverStorageSetting_)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1094,7 +1569,7 @@ func file_api_v1_instance_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_v1_instance_service_proto_rawDesc), len(file_api_v1_instance_service_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   11,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

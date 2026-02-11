@@ -39,6 +39,30 @@ func (s *ConnectServiceHandler) UpdateInstanceSetting(ctx context.Context, req *
 	return connect.NewResponse(resp), nil
 }
 
+func (s *ConnectServiceHandler) UploadCoverImage(ctx context.Context, req *connect.Request[v1pb.UploadCoverImageRequest]) (*connect.Response[v1pb.UploadCoverImageResponse], error) {
+	resp, err := s.APIV1Service.UploadCoverImage(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListCoverImages(ctx context.Context, req *connect.Request[v1pb.ListCoverImagesRequest]) (*connect.Response[v1pb.ListCoverImagesResponse], error) {
+	resp, err := s.APIV1Service.ListCoverImages(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) DeleteCoverImage(ctx context.Context, req *connect.Request[v1pb.DeleteCoverImageRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteCoverImage(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // AuthService
 //
 // Auth service methods need special handling for response headers (cookies).

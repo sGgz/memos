@@ -11,6 +11,8 @@ import {
   InstanceSetting_Key,
   InstanceSetting_MemoRelatedSetting,
   InstanceSetting_MemoRelatedSettingSchema,
+  InstanceSetting_CoverStorageSetting,
+  InstanceSetting_CoverStorageSettingSchema,
   InstanceSetting_StorageSetting,
   InstanceSetting_StorageSettingSchema,
   InstanceSetting_TodoSetting,
@@ -36,6 +38,7 @@ interface InstanceContextValue extends InstanceState {
   memoRelatedSetting: InstanceSetting_MemoRelatedSetting;
   todoSetting: InstanceSetting_TodoSetting;
   storageSetting: InstanceSetting_StorageSetting;
+  coverStorageSetting: InstanceSetting_CoverStorageSetting;
   initialize: () => Promise<void>;
   fetchSetting: (key: InstanceSetting_Key) => Promise<void>;
   updateSetting: (setting: InstanceSetting) => Promise<void>;
@@ -84,6 +87,14 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     return create(InstanceSetting_StorageSettingSchema, {});
   }, [state.settings]);
 
+  const coverStorageSetting = useMemo((): InstanceSetting_CoverStorageSetting => {
+    const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}COVER_STORAGE`);
+    if (setting?.value.case === "coverStorageSetting") {
+      return setting.value.value;
+    }
+    return create(InstanceSetting_CoverStorageSettingSchema, {});
+  }, [state.settings]);
+
   const initialize = useCallback(async () => {
     setState((prev) => ({ ...prev, isLoading: true }));
     try {
@@ -106,7 +117,7 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
 
       setState({
         profile,
-        settings: [generalSetting, memoRelatedSettingResponse, todoSettingResponse],
+      settings: [generalSetting, memoRelatedSettingResponse, todoSettingResponse],
         isInitialized: true,
         isLoading: false,
       });
@@ -146,11 +157,12 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       memoRelatedSetting,
       todoSetting,
       storageSetting,
+      coverStorageSetting,
       initialize,
       fetchSetting,
       updateSetting,
     }),
-    [state, generalSetting, memoRelatedSetting, todoSetting, storageSetting, initialize, fetchSetting, updateSetting],
+    [state, generalSetting, memoRelatedSetting, todoSetting, storageSetting, coverStorageSetting, initialize, fetchSetting, updateSetting],
   );
 
   return <InstanceContext.Provider value={value}>{children}</InstanceContext.Provider>;
