@@ -50,7 +50,7 @@ const Explore = () => {
     }
     return (
       <div className="w-full flex items-start gap-3 mb-6">
-        <div className="w-12 shrink-0 flex flex-col items-start text-xs text-muted-foreground/80">
+        <div className="w-12 shrink-0 flex flex-col items-end text-right text-xs text-muted-foreground/80">
           {showYear && <div className="text-lg font-semibold text-foreground">{yearLabel}</div>}
           {showDay && <div className={cn("font-semibold text-foreground", showYear ? "mt-0.5 text-sm" : "text-base")}>{dayLabel}</div>}
           <div className={cn("text-[10px]", showYear || showDay ? "mt-1" : "text-sm")}>{timeLabel}</div>
