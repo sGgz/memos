@@ -4,10 +4,8 @@ import { createPortal } from "react-dom";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { useTranslate } from "@/utils/i18n";
 
 const MobileBottomNav = () => {
-  const t = useTranslate();
   const [mounted, setMounted] = useState(false);
   const [baseHeight, setBaseHeight] = useState<number | null>(null);
   const [navOffset, setNavOffset] = useState(0);
@@ -59,22 +57,22 @@ const MobileBottomNav = () => {
   const items = [
     {
       to: Routes.EXPLORE,
-      label: t("common.explore"),
+      label: "消息",
       icon: MessageCircleIcon,
     },
     {
       to: Routes.TODOS,
-      label: t("common.todo"),
+      label: "待办",
       icon: CalendarCheckIcon,
     },
     {
       to: Routes.LOANS,
-      label: t("common.loan"),
+      label: "账本",
       icon: LandmarkIcon,
     },
     {
-      to: Routes.HOME,
-      label: t("common.memo"),
+      to: Routes.SETTING,
+      label: "个人",
       icon: UserCircleIcon,
     },
   ];
