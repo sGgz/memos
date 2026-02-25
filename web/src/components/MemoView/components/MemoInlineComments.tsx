@@ -16,6 +16,9 @@ interface MemoInlineCommentsProps {
   onForceEditorClose?: () => void;
 }
 
+const COLLAPSED_COMMENT_COUNT = 3;
+const COLLAPSED_CONTENT_LENGTH = 140;
+
 const MemoInlineComments = ({ memoName, forceEditorOpen, onForceEditorClose }: MemoInlineCommentsProps) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
@@ -29,7 +32,7 @@ const MemoInlineComments = ({ memoName, forceEditorOpen, onForceEditorClose }: M
   });
   const comments = commentsResponse?.memos ?? [];
   const displayCount = comments.length;
-  const needsExpand = displayCount > 3;
+  const needsExpand = displayCount > COLLAPSED_COMMENT_COUNT;
 
   const handleToggleExpanded = () => {
     setExpanded((prev) => !prev);
@@ -54,7 +57,7 @@ const MemoInlineComments = ({ memoName, forceEditorOpen, onForceEditorClose }: M
     const bTime = (b.createTime ? timestampDate(b.createTime) : b.displayTime ? timestampDate(b.displayTime) : undefined)?.getTime() ?? 0;
     return aTime - bTime;
   });
-  const visibleComments = expanded || !needsExpand ? sortedComments : sortedComments.slice(-3);
+  const visibleComments = expanded || !needsExpand ? sortedComments : sortedComments.slice(0, COLLAPSED_COMMENT_COUNT);
   const currentUserName = currentUser?.displayName || currentUser?.username || t("common.user");
   const replyPrefix = replyTarget ? `${currentUserName}回复${replyTarget.authorName}：` : undefined;
 
@@ -140,6 +143,8 @@ const InlineCommentItem = ({ memo, onReply }: { memo: Memo; onReply?: (memo: Mem
   const creatorName = creator?.displayName || creator?.username || t("common.user");
   const canReply = Boolean(onReply);
   const commentTime = memo.createTime ? timestampDate(memo.createTime) : memo.displayTime ? timestampDate(memo.displayTime) : undefined;
+  const [contentExpanded, setContentExpanded] = useState(false);
+  const needsContentExpand = Boolean(content && (content.length > COLLAPSED_CONTENT_LENGTH || content.includes("\n")));
 
   return (
     <div
@@ -153,7 +158,27 @@ const InlineCommentItem = ({ memo, onReply }: { memo: Memo; onReply?: (memo: Mem
         <UserAvatar className="h-4 w-4" avatarUrl={creator?.avatarUrl} />
         {commentTime && <span>{commentTime.toLocaleString()}</span>}
       </div>
-      {content && <p className="mt-1 whitespace-pre-wrap text-sm text-foreground/90">{content}</p>}
+      {content && (
+        <>
+          <p
+            className={cn("mt-1 whitespace-pre-wrap text-sm text-foreground/90", !contentExpanded && needsContentExpand && "line-clamp-2")}
+          >
+            {content}
+          </p>
+          {needsContentExpand && (
+            <button
+              type="button"
+              className="mt-1 text-xs text-muted-foreground/80 hover:text-primary transition-colors"
+              onClick={(event) => {
+                event.stopPropagation();
+                setContentExpanded((prev) => !prev);
+              }}
+            >
+              {contentExpanded ? t("common.collapse") : "查看全部"}
+            </button>
+          )}
+        </>
+      )}
     </div>
   );
 };
