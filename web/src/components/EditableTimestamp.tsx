@@ -8,15 +8,27 @@ interface Props {
   timestamp: Timestamp | undefined;
   onChange: (date: Date) => void;
   className?: string;
+  showSeconds?: boolean;
+  mode?: "date" | "datetime";
 }
 
-const EditableTimestamp = ({ timestamp, onChange, className }: Props) => {
+const EditableTimestamp = ({ timestamp, onChange, className, showSeconds = true, mode = "datetime" }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const date = timestamp ? timestampDate(timestamp) : new Date();
-  const displayValue = date.toLocaleString();
+  const displayValue = mode === "date"
+    ? date.toLocaleDateString()
+    : showSeconds
+      ? date.toLocaleString()
+      : date.toLocaleString(undefined, {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
 
   // Format date for datetime-local input (YYYY-MM-DDTHH:mm)
   const formatForInput = (d: Date): string => {

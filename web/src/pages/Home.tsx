@@ -96,14 +96,6 @@ const Home = () => {
 
       <div className="relative">
         <div className="w-full border-0 bg-transparent px-0 pt-5 pb-3 shadow-none">
-          <div className="rounded-2xl border border-border/60 bg-background/95 px-3 pt-4 pb-3 shadow-[0_12px_28px_rgba(15,23,42,0.12)] mb-4">
-            <MemoEditor
-              className="border-0 shadow-none bg-transparent px-0 pt-0"
-              cacheKey="home-memo-editor"
-              placeholder={t("editor.any-thoughts")}
-              minimal
-            />
-          </div>
           <PagedMemoList
             renderer={(memo: Memo, context) => <MemoRow memo={memo} context={context} />}
             listSort={listSort}

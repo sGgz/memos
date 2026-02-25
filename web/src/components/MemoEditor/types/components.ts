@@ -16,11 +16,13 @@ export interface MemoEditorProps {
   onCancel?: () => void;
   minimal?: boolean;
   showInsertMenu?: boolean;
+  variant?: "default" | "publish";
 }
 
 export interface EditorContentProps {
   placeholder?: string;
   autoFocus?: boolean;
+  variant?: "default" | "publish";
 }
 
 export interface EditorToolbarProps {
@@ -29,11 +31,13 @@ export interface EditorToolbarProps {
   memoName?: string;
   minimal?: boolean;
   showInsertMenu?: boolean;
+  variant?: "default" | "publish";
 }
 
 export interface EditorMetadataProps {
   memoName?: string;
   minimal?: boolean;
+  variant?: "default" | "publish";
 }
 
 export interface FocusModeOverlayProps {
@@ -99,6 +103,7 @@ export interface EditorProps {
   isInIME?: boolean;
   onCompositionStart?: () => void;
   onCompositionEnd?: () => void;
+  variant?: "default" | "publish";
 }
 
 export interface VisibilitySelectorProps {

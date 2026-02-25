@@ -1,4 +1,5 @@
 import { create } from "@bufbuild/protobuf";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -17,23 +18,30 @@ import { useTranslate } from "@/utils/i18n";
 
 const CoverHeaderDialog = () => {
   const t = useTranslate();
-  const { generalSetting, coverStorageSetting, updateSetting } = useInstance();
+  const { generalSetting, updateSetting } = useInstance();
   const [coverOpen, setCoverOpen] = useState(false);
   const [coverUrl, setCoverUrl] = useState(generalSetting.customProfile?.coverUrl ?? "");
   const [coverImages, setCoverImages] = useState<CoverImage[]>([]);
   const [isCoverLoading, setIsCoverLoading] = useState(false);
   const [isCoverUploading, setIsCoverUploading] = useState(false);
+  const [coverError, setCoverError] = useState("");
   const coverUploadRef = useRef<HTMLInputElement>(null);
 
   const fetchCoverImages = async () => {
-    if (!coverStorageSetting.directoryPath || !coverStorageSetting.urlPrefix) {
-      setCoverImages([]);
-      return;
-    }
     setIsCoverLoading(true);
     try {
       const response = await instanceServiceClient.listCoverImages({});
       setCoverImages(response.images);
+      setCoverError("");
+    } catch (error) {
+      setCoverImages([]);
+      if (error instanceof ConnectError && error.code === Code.FailedPrecondition) {
+        setCoverError(t("memo.cover-config-missing"));
+      } else if (error instanceof ConnectError) {
+        setCoverError(error.message);
+      } else {
+        setCoverError(t("memo.cover-config-missing"));
+      }
     } finally {
       setIsCoverLoading(false);
     }
@@ -72,11 +80,11 @@ const CoverHeaderDialog = () => {
       return;
     }
     fetchCoverImages();
-  }, [coverOpen, coverStorageSetting.directoryPath, coverStorageSetting.urlPrefix]);
+  }, [coverOpen]);
 
   return (
     <>
-      <div className="fixed inset-x-0 top-0 z-40 h-60 overflow-hidden bg-muted/30">
+      <div className="fixed inset-x-0 top-0 z-10 h-60 overflow-hidden bg-muted/30">
         <button
           type="button"
           className="group relative h-full w-full overflow-hidden bg-muted/30 pointer-events-auto"
@@ -104,16 +112,7 @@ const CoverHeaderDialog = () => {
           <div className="grid gap-3">
             <div className="flex items-center justify-between">
               <Label>{t("memo.cover-history")}</Label>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => coverUploadRef.current?.click()}
-                disabled={
-                  isCoverUploading ||
-                  coverStorageSetting.directoryPath.length === 0 ||
-                  coverStorageSetting.urlPrefix.length === 0
-                }
-              >
+              <Button variant="outline" size="icon" onClick={() => coverUploadRef.current?.click()} disabled={isCoverUploading}>
                 {isCoverUploading ? (
                   <span className="text-xs">...</span>
                 ) : (
@@ -121,8 +120,8 @@ const CoverHeaderDialog = () => {
                 )}
               </Button>
             </div>
-            {coverStorageSetting.directoryPath.length === 0 || coverStorageSetting.urlPrefix.length === 0 ? (
-              <div className="text-sm text-muted-foreground">{t("memo.cover-config-missing")}</div>
+            {coverError ? (
+              <div className="text-sm text-muted-foreground">{coverError}</div>
             ) : isCoverLoading ? (
               <div className="text-sm text-muted-foreground">{t("memo.cover-loading")}</div>
             ) : coverImages.length === 0 ? (
@@ -169,7 +168,7 @@ const CoverHeaderDialog = () => {
             className="hidden"
             type="file"
             accept="image/*"
-            disabled={isCoverUploading || coverStorageSetting.directoryPath.length === 0 || coverStorageSetting.urlPrefix.length === 0}
+            disabled={isCoverUploading}
             onChange={async (event) => {
               const file = event.target.files?.[0];
               if (!file) {
@@ -187,6 +186,14 @@ const CoverHeaderDialog = () => {
                 }
                 await fetchCoverImages();
                 setCoverOpen(false);
+              } catch (error) {
+                if (error instanceof ConnectError && error.code === Code.FailedPrecondition) {
+                  setCoverError(t("memo.cover-config-missing"));
+                } else if (error instanceof ConnectError) {
+                  setCoverError(error.message);
+                } else {
+                  setCoverError(t("memo.cover-config-missing"));
+                }
               } finally {
                 setIsCoverUploading(false);
                 if (coverUploadRef.current) {

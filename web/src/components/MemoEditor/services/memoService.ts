@@ -69,6 +69,13 @@ function buildUpdateMask(
       patch.updateTime = timestampFromDate(state.timestamps.updateTime);
     }
   }
+  if (state.timestamps.displayTime) {
+    const prevDisplayTime = prevMemo.displayTime ? timestampDate(prevMemo.displayTime) : undefined;
+    if (!isEqual(state.timestamps.displayTime, prevDisplayTime)) {
+      mask.add("display_time");
+      patch.displayTime = timestampFromDate(state.timestamps.displayTime);
+    }
+  }
 
   return { mask, patch };
 }
@@ -110,6 +117,7 @@ export const memoService = {
       location: state.metadata.location,
       createTime: state.timestamps.createTime ? timestampFromDate(state.timestamps.createTime) : undefined,
       updateTime: state.timestamps.updateTime ? timestampFromDate(state.timestamps.updateTime) : undefined,
+      displayTime: state.timestamps.displayTime ? timestampFromDate(state.timestamps.displayTime) : undefined,
     });
 
     const memo = options.parentMemoName
@@ -146,6 +154,7 @@ export const memoService = {
       timestamps: {
         createTime: memo.createTime ? timestampDate(memo.createTime) : undefined,
         updateTime: memo.updateTime ? timestampDate(memo.updateTime) : undefined,
+        displayTime: memo.displayTime ? timestampDate(memo.displayTime) : undefined,
       },
       localFiles: [],
     };

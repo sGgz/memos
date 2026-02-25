@@ -26,6 +26,24 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         },
       };
 
+    case "SET_TIMESTAMPS":
+      return {
+        ...state,
+        timestamps: {
+          ...state.timestamps,
+          ...action.payload,
+        },
+      };
+
+    case "SET_DISPLAY_TIME_MANUAL":
+      return {
+        ...state,
+        timestamps: {
+          ...state.timestamps,
+          displayTimeIsManual: action.payload,
+        },
+      };
+
     case "ADD_ATTACHMENT":
       return {
         ...state,

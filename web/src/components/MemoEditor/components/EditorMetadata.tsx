@@ -5,7 +5,7 @@ import AttachmentList from "./AttachmentList";
 import LocationDisplay from "./LocationDisplay";
 import RelationList from "./RelationList";
 
-const EditorMetadata: FC<EditorMetadataProps> = ({ memoName, minimal }) => {
+const EditorMetadata: FC<EditorMetadataProps> = ({ memoName, minimal, variant = "default" }) => {
   const { state, actions, dispatch } = useEditorContext();
 
   const hasAttachments = state.metadata.attachments.length > 0 || state.localFiles.length > 0;
@@ -15,7 +15,7 @@ const EditorMetadata: FC<EditorMetadataProps> = ({ memoName, minimal }) => {
   }
 
   return (
-    <div className="w-full flex flex-col gap-2">
+    <div className={variant === "publish" ? "w-full flex flex-col gap-2" : "w-full flex flex-col gap-2"}>
       <AttachmentList
         attachments={state.metadata.attachments}
         localFiles={state.localFiles}

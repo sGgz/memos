@@ -26,6 +26,8 @@ export interface EditorState {
   timestamps: {
     createTime?: Date;
     updateTime?: Date;
+    displayTime?: Date;
+    displayTimeIsManual?: boolean;
   };
   localFiles: LocalFile[];
 }
@@ -34,6 +36,8 @@ export type EditorAction =
   | { type: "INIT_MEMO"; payload: { content: string; metadata: EditorState["metadata"]; timestamps: EditorState["timestamps"] } }
   | { type: "UPDATE_CONTENT"; payload: string }
   | { type: "SET_METADATA"; payload: Partial<EditorState["metadata"]> }
+  | { type: "SET_TIMESTAMPS"; payload: Partial<EditorState["timestamps"]> }
+  | { type: "SET_DISPLAY_TIME_MANUAL"; payload: boolean }
   | { type: "ADD_ATTACHMENT"; payload: Attachment }
   | { type: "REMOVE_ATTACHMENT"; payload: string }
   | { type: "ADD_RELATION"; payload: MemoRelation }
@@ -68,6 +72,8 @@ export const initialState: EditorState = {
   timestamps: {
     createTime: undefined,
     updateTime: undefined,
+    displayTime: undefined,
+    displayTimeIsManual: false,
   },
   localFiles: [],
 };

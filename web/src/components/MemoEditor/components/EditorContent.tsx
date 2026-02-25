@@ -5,7 +5,7 @@ import { useEditorContext } from "../state";
 import type { EditorContentProps } from "../types";
 import type { LocalFile } from "../types/attachment";
 
-export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({ placeholder }, ref) => {
+export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({ placeholder, variant = "default" }, ref) => {
   const { state, actions, dispatch } = useEditorContext();
   const { createBlobUrl } = useBlobUrls();
 
@@ -34,7 +34,7 @@ export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({
   };
 
   return (
-    <div className="w-full flex flex-col flex-1" {...dragHandlers}>
+    <div className={variant === "publish" ? "w-full flex flex-col flex-1 mt-0" : "w-full flex flex-col flex-1"} {...dragHandlers}>
       <Editor
         ref={ref}
         className="memo-editor-content"
@@ -42,6 +42,7 @@ export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({
         placeholder={placeholder || ""}
         isFocusMode={state.ui.isFocusMode}
         isInIME={state.ui.isComposing}
+        variant={variant}
         onContentChange={handleContentChange}
         onPaste={handlePaste}
         onCompositionStart={handleCompositionStart}

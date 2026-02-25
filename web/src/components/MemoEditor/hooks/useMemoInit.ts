@@ -53,6 +53,7 @@ export const useMemoInit = (
           if (defaultVisibility !== undefined) {
             dispatch(actions.setMetadata({ visibility: defaultVisibility }));
           }
+          dispatch(actions.setTimestamps({ displayTime: new Date(), displayTimeIsManual: false }));
         }
       } catch (error) {
         console.error("Failed to initialize editor:", error);

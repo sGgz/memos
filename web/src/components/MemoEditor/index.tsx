@@ -8,6 +8,7 @@ import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
+import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { convertVisibilityFromString } from "@/utils/memo";
 import { EditorContent, EditorMetadata, EditorToolbar, FocusModeExitButton, FocusModeOverlay } from "./components";
 import { FOCUS_MODE_STYLES } from "./constants";
@@ -30,6 +31,7 @@ const MemoEditor = (props: MemoEditorProps) => {
     minimal,
     initialContent,
     showInsertMenu,
+    variant = "default",
   } = props;
 
   return (
@@ -46,6 +48,7 @@ const MemoEditor = (props: MemoEditorProps) => {
         onCancel={onCancel}
         minimal={minimal}
         showInsertMenu={showInsertMenu}
+        variant={variant}
       />
     </EditorProvider>
   );
@@ -63,6 +66,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   onCancel,
   minimal,
   showInsertMenu,
+  variant = "default",
 }) => {
   const t = useTranslate();
   const queryClient = useQueryClient();
@@ -72,7 +76,12 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const { userGeneralSetting } = useAuth();
 
   // Get default visibility from user settings
-  const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
+  const defaultVisibility =
+    variant === "publish"
+      ? Visibility.PROTECTED
+      : userGeneralSetting?.memoVisibility
+        ? convertVisibilityFromString(userGeneralSetting.memoVisibility)
+        : undefined;
 
   useMemoInit(editorRef, memoName, cacheKey, currentUser?.name ?? "", autoFocus, defaultVisibility, initialContent);
 
@@ -99,7 +108,19 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     dispatch(actions.setLoading("saving", true));
 
     try {
-      const result = await memoService.save(state, { memoName, parentMemoName });
+      const effectiveDisplayTime = state.timestamps.displayTimeIsManual ? state.timestamps.displayTime : new Date();
+      const result = await memoService.save(
+        {
+          ...state,
+          timestamps: {
+            ...state.timestamps,
+            displayTime: effectiveDisplayTime,
+            createTime: effectiveDisplayTime,
+            updateTime: effectiveDisplayTime,
+          },
+        },
+        { memoName, parentMemoName },
+      );
 
       if (!result.hasChanges) {
         toast.error(t("editor.no-changes-detected"));
@@ -109,6 +130,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
       // Clear localStorage cache on successful save
       cacheService.clear(cacheService.key(currentUser?.name ?? "", cacheKey));
+
+      // Reset memo list queries to avoid pagination gaps on custom display times
+      queryClient.removeQueries({ queryKey: memoKeys.lists() });
 
       // Invalidate React Query cache to refresh memo lists across the app
       const invalidationPromises = [
@@ -153,19 +177,45 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
           "memo-editor-container group relative w-full flex flex-col justify-between items-start bg-background/95 px-5 pt-4 pb-1 rounded-2xl border border-border/60 gap-3 shadow-[0_18px_40px_rgba(15,23,42,0.12)] transition-all duration-300 hover:border-primary/30",
           FOCUS_MODE_STYLES.transition,
           state.ui.isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
+          variant === "publish" && "min-h-[160px] pt-3 pb-5 bg-background/85 backdrop-blur-sm shadow-[0_18px_40px_rgba(15,23,42,0.16)]",
           className,
         )}
       >
+        {variant === "publish" && (
+          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-2xl">
+            <div className="h-[30%] w-full bg-gradient-to-br from-emerald-50/70 via-muted/30 to-transparent" />
+          </div>
+        )}
         {/* Exit button is absolutely positioned in top-right corner when active */}
         <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={handleToggleFocusMode} title={t("editor.exit-focus-mode")} />
 
+        {variant === "publish" && (
+          <EditorToolbar
+            onSave={handleSave}
+            onCancel={onCancel}
+            memoName={memoName}
+            minimal={minimal}
+            showInsertMenu={showInsertMenu}
+            variant={variant}
+          />
+        )}
+
         {/* Editor content grows to fill available space in focus mode */}
-        <EditorContent ref={editorRef} placeholder={placeholder} autoFocus={autoFocus} />
+        <EditorContent ref={editorRef} placeholder={placeholder} autoFocus={autoFocus} variant={variant} />
 
         {/* Metadata and toolbar grouped together at bottom */}
-        <div className="w-full flex flex-col gap-2">
-          <EditorMetadata memoName={memoName} minimal={minimal} />
-          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} minimal={minimal} showInsertMenu={showInsertMenu} />
+        <div className="w-full flex flex-col gap-2 z-10">
+          <EditorMetadata memoName={memoName} minimal={minimal} variant={variant} />
+          {variant !== "publish" && (
+            <EditorToolbar
+              onSave={handleSave}
+              onCancel={onCancel}
+              memoName={memoName}
+              minimal={minimal}
+              showInsertMenu={showInsertMenu}
+              variant={variant}
+            />
+          )}
         </div>
       </div>
     </>
