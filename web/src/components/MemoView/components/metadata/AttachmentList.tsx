@@ -1,5 +1,6 @@
 import { FileIcon } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
@@ -54,12 +55,75 @@ const DocumentItem = ({ attachment }: { attachment: Attachment }) => {
   );
 };
 
+const SingleImageCard = ({ attachment, onImageClick }: { attachment: Attachment; onImageClick: (url: string) => void }) => {
+  const [ratio, setRatio] = useState<number | null>(null);
+  const sourceUrl = getAttachmentUrl(attachment);
+
+  const isWideImage = ratio !== null && ratio >= 1.7;
+  const isTallImage = ratio !== null && ratio <= 0.65;
+
+  return (
+    <button
+      type="button"
+      className={cn(
+        "w-full rounded-lg overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer",
+        isWideImage && "aspect-video",
+        isTallImage && "aspect-[3/4]",
+      )}
+      onClick={() => onImageClick(sourceUrl)}
+    >
+      <img
+        src={sourceUrl}
+        alt={attachment.filename}
+        className={cn("w-full h-full bg-muted/30", isWideImage || isTallImage ? "object-cover" : "object-contain max-h-[30rem]")}
+        onLoad={(event) => {
+          const { naturalWidth, naturalHeight } = event.currentTarget;
+          if (naturalWidth > 0 && naturalHeight > 0) {
+            setRatio(naturalWidth / naturalHeight);
+          }
+        }}
+        loading="lazy"
+      />
+    </button>
+  );
+};
+
+const getGridLayout = (count: number) => {
+  switch (count) {
+    case 2:
+      return {
+        containerClass: "grid-cols-2",
+        itemClass: "aspect-square",
+      };
+    case 3:
+      return {
+        containerClass: "grid-cols-2",
+        itemClass: "aspect-square",
+        itemSpanClassName: (index: number) => (index === 0 ? "col-span-2" : "col-span-1"),
+      };
+    case 4:
+      return {
+        containerClass: "grid-cols-2",
+        itemClass: "aspect-square",
+      };
+    default:
+      return {
+        containerClass: "grid-cols-3",
+        itemClass: "aspect-square",
+      };
+  }
+};
+
 const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => (
-  <div className="grid grid-cols-3 gap-2">
-    {attachments.map((attachment) => (
+  <div className={cn("grid gap-2", getGridLayout(attachments.length).containerClass)}>
+    {attachments.map((attachment, index) => (
       <div
         key={attachment.name}
-        className="aspect-square rounded-lg overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer group"
+        className={cn(
+          getGridLayout(attachments.length).itemClass,
+          "rounded-lg overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer group",
+          getGridLayout(attachments.length).itemSpanClassName?.(index),
+        )}
         onClick={() => onImageClick(getAttachmentUrl(attachment))}
       >
         <div className="w-full h-full relative">
@@ -118,7 +182,8 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
       <div className="w-full rounded-lg border-0 bg-transparent overflow-hidden">
         <div className="p-0 flex flex-col gap-1">
           {mediaItems.length > 0 && !allImages && <MediaGrid attachments={mediaItems} onImageClick={handleImageClick} />}
-          {allImages && <MediaGrid attachments={imageOnlyMedia} onImageClick={handleImageClick} />}
+          {allImages && imageOnlyMedia.length === 1 && <SingleImageCard attachment={imageOnlyMedia[0]} onImageClick={handleImageClick} />}
+          {allImages && imageOnlyMedia.length > 1 && <MediaGrid attachments={imageOnlyMedia} onImageClick={handleImageClick} />}
 
           {mediaItems.length > 0 && docItems.length > 0 && <div className="border-t mt-1 border-border opacity-60" />}
 
