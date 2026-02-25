@@ -7,8 +7,8 @@ import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
-import { useTranslate } from "@/utils/i18n";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import { EditorContent, EditorMetadata, EditorToolbar, FocusModeExitButton, FocusModeOverlay } from "./components";
 import { FOCUS_MODE_STYLES } from "./constants";
@@ -131,12 +131,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       // Clear localStorage cache on successful save
       cacheService.clear(cacheService.key(currentUser?.name ?? "", cacheKey));
 
-      // Reset memo list queries to avoid pagination gaps on custom display times
-      queryClient.removeQueries({ queryKey: memoKeys.lists() });
-
-      // Invalidate React Query cache to refresh memo lists across the app
+      // Reset active/inactive memo list queries to avoid infinite-query pagination gaps
+      // when creating memos with custom display times.
       const invalidationPromises = [
-        queryClient.invalidateQueries({ queryKey: memoKeys.lists() }),
+        queryClient.resetQueries({ queryKey: memoKeys.lists() }),
         queryClient.invalidateQueries({ queryKey: userKeys.stats() }),
       ];
 
