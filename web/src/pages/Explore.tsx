@@ -1,7 +1,7 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
-import type { MemoRenderContext } from "@/components/MasonryView";
 import CoverHeaderDialog from "@/components/CoverHeaderDialog";
+import type { MemoRenderContext } from "@/components/MasonryView";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
@@ -12,11 +12,9 @@ import { useUser } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
-import { useTranslate } from "@/utils/i18n";
 
 const Explore = () => {
   const currentUser = useCurrentUser();
-  const t = useTranslate();
   useInstance();
 
   const MemoRow = ({ memo, context }: { memo: Memo; context?: MemoRenderContext }) => {

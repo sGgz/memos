@@ -6,13 +6,13 @@ import {
   InstanceProfile,
   InstanceProfileSchema,
   InstanceSetting,
+  InstanceSetting_CoverStorageSetting,
+  InstanceSetting_CoverStorageSettingSchema,
   InstanceSetting_GeneralSetting,
   InstanceSetting_GeneralSettingSchema,
   InstanceSetting_Key,
   InstanceSetting_MemoRelatedSetting,
   InstanceSetting_MemoRelatedSettingSchema,
-  InstanceSetting_CoverStorageSetting,
-  InstanceSetting_CoverStorageSettingSchema,
   InstanceSetting_StorageSetting,
   InstanceSetting_StorageSettingSchema,
   InstanceSetting_TodoSetting,
@@ -117,7 +117,7 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
 
       setState({
         profile,
-      settings: [generalSetting, memoRelatedSettingResponse, todoSettingResponse],
+        settings: [generalSetting, memoRelatedSettingResponse, todoSettingResponse],
         isInitialized: true,
         isLoading: false,
       });

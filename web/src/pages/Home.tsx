@@ -1,9 +1,7 @@
-import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
-import type { MemoRenderContext } from "@/components/MasonryView";
 import CoverHeaderDialog from "@/components/CoverHeaderDialog";
-import MemoEditor from "@/components/MemoEditor";
+import type { MemoRenderContext } from "@/components/MasonryView";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
@@ -14,11 +12,9 @@ import { useUser } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { useTranslate } from "@/utils/i18n";
 
 const Home = () => {
   const user = useCurrentUser();
-  const t = useTranslate();
   const { isInitialized } = useInstance();
 
   const memoFilter = useMemoFilters({
@@ -107,7 +103,6 @@ const Home = () => {
           />
         </div>
       </div>
-
     </div>
   );
 };

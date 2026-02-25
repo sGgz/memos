@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import { useAuth } from "./contexts/AuthContext";
 import { useInstance } from "./contexts/InstanceContext";
 import { MemoFilterProvider } from "./contexts/MemoFilterContext";
 import useNavigateTo from "./hooks/useNavigateTo";
@@ -8,7 +9,9 @@ import { useUserTheme } from "./hooks/useUserTheme";
 import { cleanupExpiredOAuthState } from "./utils/oauth";
 
 const App = () => {
+  const location = useLocation();
   const navigateTo = useNavigateTo();
+  const { currentUser } = useAuth();
   const { profile: instanceProfile, generalSetting: instanceGeneralSetting } = useInstance();
 
   // Apply user preferences reactively
@@ -19,6 +22,15 @@ const App = () => {
   useEffect(() => {
     cleanupExpiredOAuthState();
   }, []);
+
+  useEffect(() => {
+    const normalizedPath = location.pathname.replace(/\/+$/, "") || "/";
+    const isEntryRoute = normalizedPath === "/" || normalizedPath === "/explore";
+
+    if (!currentUser && isEntryRoute) {
+      navigateTo("/auth", { replace: true });
+    }
+  }, [currentUser, location.pathname, navigateTo]);
 
   // Redirect to sign up page if instance not initialized (no admin account exists yet)
   useEffect(() => {
