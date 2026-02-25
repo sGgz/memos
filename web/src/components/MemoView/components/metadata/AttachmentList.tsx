@@ -1,11 +1,10 @@
-import { FileIcon, GripHorizontalIcon, PaperclipIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { FileIcon } from "lucide-react";
+import { useState } from "react";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
 import PreviewImageDialog from "../../../PreviewImageDialog";
 import AttachmentCard from "./AttachmentCard";
-import SectionHeader from "./SectionHeader";
 
 interface AttachmentListProps {
   attachments: Attachment[];
@@ -56,7 +55,7 @@ const DocumentItem = ({ attachment }: { attachment: Attachment }) => {
 };
 
 const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => (
-  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+  <div className="grid grid-cols-3 gap-2">
     {attachments.map((attachment) => (
       <div
         key={attachment.name}
@@ -79,108 +78,6 @@ const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; o
     ))}
   </div>
 );
-
-const ImageCarousel = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const touchStartRef = useRef<{ x: number; y: number; scrollLeft: number } | null>(null);
-  const isDraggingRef = useRef(false);
-  const suppressClickRef = useRef(false);
-  const total = attachments.length;
-
-  return (
-    <div className="relative w-full">
-      <div
-        ref={scrollRef}
-        className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar border-0 bg-transparent touch-pan-y rounded-2xl"
-        onTouchStart={(event) => {
-          const touch = event.touches[0];
-          if (!touch) {
-            return;
-          }
-          touchStartRef.current = {
-            x: touch.clientX,
-            y: touch.clientY,
-            scrollLeft: event.currentTarget.scrollLeft,
-          };
-          isDraggingRef.current = false;
-          suppressClickRef.current = false;
-        }}
-        onTouchMove={(event) => {
-          const start = touchStartRef.current;
-          const touch = event.touches[0];
-          if (!start || !touch) {
-            return;
-          }
-          const dx = touch.clientX - start.x;
-          const dy = touch.clientY - start.y;
-          if (!isDraggingRef.current) {
-            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 6) {
-              isDraggingRef.current = true;
-              suppressClickRef.current = true;
-            } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 6) {
-              return;
-            } else {
-              return;
-            }
-          }
-          if (isDraggingRef.current) {
-            event.preventDefault();
-            event.currentTarget.scrollLeft = start.scrollLeft - dx;
-          }
-        }}
-        onTouchEnd={() => {
-          touchStartRef.current = null;
-          isDraggingRef.current = false;
-          if (suppressClickRef.current) {
-            window.setTimeout(() => {
-              suppressClickRef.current = false;
-            }, 0);
-          }
-        }}
-        onWheel={(event) => {
-          if (Math.abs(event.deltaX) < Math.abs(event.deltaY)) {
-            return;
-          }
-          const target = event.currentTarget;
-          if (event.deltaX === 0) {
-            return;
-          }
-          event.preventDefault();
-          target.scrollLeft += event.deltaX;
-        }}
-        onScroll={(event) => {
-          const target = event.currentTarget;
-          const nextIndex = Math.round(target.scrollLeft / target.clientWidth);
-          setActiveIndex(Math.min(Math.max(nextIndex, 0), total - 1));
-        }}
-      >
-        {attachments.map((attachment) => (
-          <div
-            key={attachment.name}
-            className="min-w-full snap-center aspect-[4/3] relative cursor-pointer flex items-center justify-center bg-muted/30"
-            onClick={() => {
-              if (suppressClickRef.current) {
-                return;
-              }
-              onImageClick(getAttachmentUrl(attachment));
-            }}
-          >
-            <AttachmentCard attachment={attachment} className="rounded-none w-full h-full object-contain" />
-          </div>
-        ))}
-      </div>
-      {total > 1 && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-foreground/20 px-3 py-1 text-xs text-foreground">
-          <GripHorizontalIcon className="w-3 h-3 text-foreground/70" />
-          <span>
-            {activeIndex + 1}/{total}
-          </span>
-        </div>
-      )}
-    </div>
-  );
-};
 
 const DocsList = ({ attachments }: { attachments: Attachment[] }) => (
   <div className="flex flex-col gap-0.5">
@@ -219,11 +116,9 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
   return (
     <>
       <div className="w-full rounded-lg border-0 bg-transparent overflow-hidden">
-        <SectionHeader icon={PaperclipIcon} title="附件" count={attachments.length} hideIcon hideCount hideBorder />
-
         <div className="p-0 flex flex-col gap-1">
           {mediaItems.length > 0 && !allImages && <MediaGrid attachments={mediaItems} onImageClick={handleImageClick} />}
-          {allImages && <ImageCarousel attachments={imageOnlyMedia} onImageClick={handleImageClick} />}
+          {allImages && <MediaGrid attachments={imageOnlyMedia} onImageClick={handleImageClick} />}
 
           {mediaItems.length > 0 && docItems.length > 0 && <div className="border-t mt-1 border-border opacity-60" />}
 

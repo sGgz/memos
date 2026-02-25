@@ -1,4 +1,6 @@
 import { forwardRef } from "react";
+import { toast } from "react-hot-toast";
+import { MAX_MEMO_ATTACHMENTS } from "../constants";
 import Editor, { type EditorRefActions } from "../Editor";
 import { useBlobUrls, useDragAndDrop } from "../hooks";
 import { useEditorContext } from "../state";
@@ -14,7 +16,20 @@ export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({
       file,
       previewUrl: createBlobUrl(file),
     }));
-    localFiles.forEach((localFile) => dispatch(actions.addLocalFile(localFile)));
+
+    const currentCount = state.metadata.attachments.length + state.localFiles.length;
+    const availableSlots = Math.max(MAX_MEMO_ATTACHMENTS - currentCount, 0);
+
+    if (availableSlots <= 0) {
+      toast.error(`最多只能上传 ${MAX_MEMO_ATTACHMENTS} 张图片`);
+      return;
+    }
+
+    if (localFiles.length > availableSlots) {
+      toast.error(`最多只能上传 ${MAX_MEMO_ATTACHMENTS} 张图片`);
+    }
+
+    localFiles.slice(0, availableSlots).forEach((localFile) => dispatch(actions.addLocalFile(localFile)));
   });
 
   const handleCompositionStart = () => {
