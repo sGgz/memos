@@ -2,6 +2,7 @@ import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
 import { ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useDebounce } from "react-use";
 import { useReverseGeocoding } from "@/components/map";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import {
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { LinkMemoDialog, LocationDialog } from "../components";
+import { MAX_MEMO_ATTACHMENTS } from "../constants";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
 import { useEditorContext } from "../state";
 import type { InsertMenuProps } from "../types";
@@ -36,15 +38,31 @@ const InsertMenu = (props: InsertMenuProps) => {
     setMoreSubmenuOpen,
   );
 
+  const addFilesWithLimit = (newFiles: LocalFile[]) => {
+    const currentCount = state.metadata.attachments.length + state.localFiles.length;
+    const availableSlots = Math.max(MAX_MEMO_ATTACHMENTS - currentCount, 0);
+
+    if (availableSlots <= 0) {
+      toast.error(`最多只能上传 ${MAX_MEMO_ATTACHMENTS} 张图片`);
+      return;
+    }
+
+    if (newFiles.length > availableSlots) {
+      toast.error(`最多只能上传 ${MAX_MEMO_ATTACHMENTS} 张图片`);
+    }
+
+    newFiles.slice(0, availableSlots).forEach((file) => dispatch(actions.addLocalFile(file)));
+  };
+
   const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
-    newFiles.forEach((file) => dispatch(actions.addLocalFile(file)));
+    addFilesWithLimit(newFiles);
   });
   const {
     fileInputRef: imageOnlyInputRef,
     selectingFlag: selectingImages,
     handleFileInputChange: handleImageInputChange,
   } = useFileUpload((newFiles: LocalFile[]) => {
-    newFiles.forEach((file) => dispatch(actions.addLocalFile(file)));
+    addFilesWithLimit(newFiles);
   });
 
   const linkMemo = useLinkMemo({

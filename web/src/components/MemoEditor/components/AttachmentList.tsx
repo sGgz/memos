@@ -1,4 +1,4 @@
-import { PaperclipIcon, XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 import type { FC } from "react";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import type { LocalFile } from "../types/attachment";
@@ -36,11 +36,6 @@ const AttachmentList: FC<AttachmentListProps> = ({ attachments, localFiles = [],
 
   return (
     <div className="w-full">
-      <div className="flex items-center gap-1.5 px-1 pb-1">
-        <PaperclipIcon className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="text-xs text-muted-foreground">Attachments ({items.length})</span>
-      </div>
-
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         {items.map((item) => (
           <div key={item.id} className="relative aspect-square rounded-lg overflow-hidden bg-muted/30 border border-border/40">

@@ -1,3 +1,5 @@
+export const MAX_MEMO_ATTACHMENTS = 9;
+
 export const LOCALSTORAGE_DEBOUNCE_DELAY = 500;
 
 export const FOCUS_MODE_STYLES = {

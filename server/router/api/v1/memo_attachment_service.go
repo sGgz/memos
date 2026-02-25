@@ -13,6 +13,8 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+const maxMemoAttachments = 9
+
 func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.SetMemoAttachmentsRequest) (*emptypb.Empty, error) {
 	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -34,6 +36,9 @@ func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.Set
 	}
 	if memo.CreatorID != user.ID && !isSuperUser(user) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+	if len(request.Attachments) > maxMemoAttachments {
+		return nil, status.Errorf(codes.InvalidArgument, "memo attachments cannot exceed %d", maxMemoAttachments)
 	}
 	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
 		MemoID: &memo.ID,
