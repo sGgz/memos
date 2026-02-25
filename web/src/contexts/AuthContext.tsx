@@ -3,6 +3,7 @@ import { createContext, type ReactNode, useCallback, useContext, useMemo, useSta
 import { clearAccessToken } from "@/auth-state";
 import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/connect";
 import { userKeys } from "@/hooks/useUserQueries";
+import { ROUTES } from "@/router/routes";
 import type { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
 import type { User, UserSetting_GeneralSetting, UserSetting_WebhooksSetting } from "@/types/proto/api/v1/user_service_pb";
 
@@ -110,6 +111,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading: false,
       });
       queryClient.clear();
+
+      try {
+        const keysToPreserve = ["memos-theme", "memos-locale", "memos-view-setting", "tag-view-as-tree", "tag-tree-auto-expand"];
+        const keysToRemove: string[] = [];
+
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && !keysToPreserve.includes(key)) {
+            keysToRemove.push(key);
+          }
+        }
+
+        keysToRemove.forEach((key) => localStorage.removeItem(key));
+      } catch {
+        // Ignore errors from localStorage operations
+      }
+
+      // Replace current history entry immediately to avoid rendering private pages with cleared auth state.
+      window.location.replace(ROUTES.AUTH);
     }
   }, [queryClient]);
 
