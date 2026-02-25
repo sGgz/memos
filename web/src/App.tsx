@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import { useInstance } from "./contexts/InstanceContext";
 import { MemoFilterProvider } from "./contexts/MemoFilterContext";
@@ -23,14 +23,12 @@ const App = () => {
     cleanupExpiredOAuthState();
   }, []);
 
-  useEffect(() => {
-    const normalizedPath = location.pathname.replace(/\/+$/, "") || "/";
-    const isEntryRoute = normalizedPath === "/" || normalizedPath === "/explore";
+  const normalizedPath = location.pathname.replace(/\/+$/, "") || "/";
+  const isEntryRoute = normalizedPath === "/" || normalizedPath === "/explore";
 
-    if (!currentUser && isEntryRoute) {
-      navigateTo("/auth", { replace: true });
-    }
-  }, [currentUser, location.pathname, navigateTo]);
+  if (!currentUser && isEntryRoute) {
+    return <Navigate to="/auth" replace />;
+  }
 
   // Redirect to sign up page if instance not initialized (no admin account exists yet)
   useEffect(() => {
