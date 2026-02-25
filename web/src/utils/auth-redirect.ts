@@ -26,9 +26,8 @@ export function redirectOnAuthFailure(): void {
   const currentPath = window.location.pathname;
   const disallowPublicVisibility = getInstanceConfig().memoRelatedSetting.disallowPublicVisibility;
 
-  // Root and explore are app entry routes and should redirect to auth for unauthenticated visitors.
-  if (isAuthRequiredEntryRoute(currentPath)) {
-    window.location.replace(ROUTES.AUTH);
+  // Explore page is only public when public visibility is allowed.
+  if (!disallowPublicVisibility && currentPath.startsWith(ROUTES.EXPLORE)) {
     return;
   }
 
