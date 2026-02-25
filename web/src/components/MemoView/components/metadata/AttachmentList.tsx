@@ -66,7 +66,7 @@ const SingleImageCard = ({ attachment, onImageClick }: { attachment: Attachment;
     <button
       type="button"
       className={cn(
-        "w-full rounded-lg overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer",
+        "w-full max-w-[18rem] rounded-lg overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer",
         isWideImage && "aspect-video",
         isTallImage && "aspect-[3/4]",
       )}
@@ -91,15 +91,10 @@ const SingleImageCard = ({ attachment, onImageClick }: { attachment: Attachment;
 const getGridLayout = (count: number) => {
   switch (count) {
     case 2:
-      return {
-        containerClass: "grid-cols-2",
-        itemClass: "aspect-square",
-      };
     case 3:
       return {
-        containerClass: "grid-cols-2",
+        containerClass: "grid-cols-3",
         itemClass: "aspect-square",
-        itemSpanClassName: (index: number) => (index === 0 ? "col-span-2" : "col-span-1"),
       };
     case 4:
       return {
@@ -114,34 +109,37 @@ const getGridLayout = (count: number) => {
   }
 };
 
-const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => (
-  <div className={cn("grid gap-2", getGridLayout(attachments.length).containerClass)}>
-    {attachments.map((attachment, index) => (
-      <div
-        key={attachment.name}
-        className={cn(
-          getGridLayout(attachments.length).itemClass,
-          "rounded-lg overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer group",
-          getGridLayout(attachments.length).itemSpanClassName?.(index),
-        )}
-        onClick={() => onImageClick(getAttachmentUrl(attachment))}
-      >
-        <div className="w-full h-full relative">
-          <AttachmentCard attachment={attachment} className="rounded-none" />
-          {getAttachmentType(attachment) === "video/*" && (
-            <div className="absolute inset-0 flex items-center justify-center bg-foreground/20 group-hover:bg-foreground/30 transition-colors">
-              <div className="w-8 h-8 rounded-full bg-background/80 flex items-center justify-center">
-                <svg className="w-5 h-5 text-foreground fill-current ml-0.5" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </div>
-            </div>
+const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => {
+  const layout = getGridLayout(attachments.length);
+
+  return (
+    <div className={cn("grid gap-2", layout.containerClass, attachments.length <= 3 && "max-w-[18rem]")}>
+      {attachments.map((attachment) => (
+        <div
+          key={attachment.name}
+          className={cn(
+            layout.itemClass,
+            "rounded-lg overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer group",
           )}
+          onClick={() => onImageClick(getAttachmentUrl(attachment))}
+        >
+          <div className="w-full h-full relative">
+            <AttachmentCard attachment={attachment} className="rounded-none" />
+            {getAttachmentType(attachment) === "video/*" && (
+              <div className="absolute inset-0 flex items-center justify-center bg-foreground/20 group-hover:bg-foreground/30 transition-colors">
+                <div className="w-8 h-8 rounded-full bg-background/80 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-foreground fill-current ml-0.5" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    ))}
-  </div>
-);
+      ))}
+    </div>
+  );
+};
 
 const DocsList = ({ attachments }: { attachments: Attachment[] }) => (
   <div className="flex flex-col gap-0.5">
