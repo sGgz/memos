@@ -9,13 +9,14 @@ show_usage() {
 选项:
   -f, --frontend   编译前端（pnpm build && pnpm release）
   -b, --backend    编译后端（./scripts/build.sh）
-  -s, --start      仅启动服务（不触发自动选择）
+  -s, --start      仅启动服务（跳过编译）
   -h, --help       显示帮助
 
 说明:
   - 选项支持多选，例如: ./scripts/all_build.sh -f -b
   - 不传任何选项时，默认执行全部步骤（前端 + 后端 + 启动服务）
-  - 选择了前后端同时编译（-f -b）时，编译成功后会自动启动服务
+  - 选择任意编译选项（-f 或 -b）时，编译成功后会自动启动服务
+  - 仅传 -s 时只启动服务，不会执行编译
 USAGE
 }
 
@@ -59,7 +60,7 @@ if [ "$has_selection" = false ]; then
 else
   if [ "$explicit_start" = true ]; then
     run_start=true
-  elif [ "$run_frontend" = true ] && [ "$run_backend" = true ]; then
+  elif [ "$run_frontend" = true ] || [ "$run_backend" = true ]; then
     run_start=true
   fi
 fi
