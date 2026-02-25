@@ -1,5 +1,4 @@
 import { create } from "@bufbuild/protobuf";
-import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -110,14 +109,23 @@ const CoverStorageSection = () => {
     <SettingSection>
       <SettingGroup title={t("setting.cover-storage.title")}>
         <SettingRow label={t("setting.cover-storage.directory-path")} vertical>
-          <Input className="w-full" value={coverStorageSetting.directoryPath} onChange={handleDirectoryPathChanged} placeholder="/var/www/images" />
+          <Input
+            className="w-full"
+            value={coverStorageSetting.directoryPath}
+            onChange={handleDirectoryPathChanged}
+            placeholder="/var/www/images"
+          />
         </SettingRow>
 
         <SettingRow label={t("setting.cover-storage.enable-local")} description={t("setting.cover-storage.enable-local-desc")}>
           <Switch checked={coverStorageSetting.enableLocalServer} onCheckedChange={handleLocalServerToggled} />
         </SettingRow>
 
-        <SettingRow label={t("setting.cover-storage.url-prefix")} description={coverStorageSetting.enableLocalServer ? t("setting.cover-storage.url-prefix-disabled") : undefined} vertical>
+        <SettingRow
+          label={t("setting.cover-storage.url-prefix")}
+          description={coverStorageSetting.enableLocalServer ? t("setting.cover-storage.url-prefix-disabled") : undefined}
+          vertical
+        >
           <Input
             className="w-full"
             value={coverStorageSetting.urlPrefix}

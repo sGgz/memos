@@ -1,4 +1,3 @@
-import type { FC } from "react";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import type { FC } from "react";
 import EditableTimestamp from "@/components/EditableTimestamp";
