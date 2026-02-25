@@ -113,7 +113,14 @@ const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; o
   const layout = getGridLayout(attachments.length);
 
   return (
-    <div className={cn("grid gap-2", layout.containerClass, attachments.length <= 3 && "max-w-[18rem]")}>
+    <div
+      className={cn(
+        "grid gap-2",
+        layout.containerClass,
+        attachments.length <= 3 && "max-w-[18rem]",
+        attachments.length === 4 && "max-w-[12rem]",
+      )}
+    >
       {attachments.map((attachment) => (
         <div
           key={attachment.name}
