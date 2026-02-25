@@ -131,16 +131,17 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       // Clear localStorage cache on successful save
       cacheService.clear(cacheService.key(currentUser?.name ?? "", cacheKey));
 
-      // Reset active/inactive memo list queries to avoid infinite-query pagination gaps
-      // when creating memos with custom display times.
-      const invalidationPromises = [
-        queryClient.resetQueries({ queryKey: memoKeys.lists() }),
-        queryClient.invalidateQueries({ queryKey: userKeys.stats() }),
-      ];
+      const invalidationPromises = [];
 
-      // If this was a comment, also invalidate the comments query for the parent memo
       if (parentMemoName) {
+        // Comment creation should only refresh comment-related data instead of resetting all memo lists.
         invalidationPromises.push(queryClient.invalidateQueries({ queryKey: memoKeys.comments(parentMemoName) }));
+        invalidationPromises.push(queryClient.invalidateQueries({ queryKey: memoKeys.detail(parentMemoName) }));
+      } else {
+        // Reset active/inactive memo list queries to avoid infinite-query pagination gaps
+        // when creating memos with custom display times.
+        invalidationPromises.push(queryClient.resetQueries({ queryKey: memoKeys.lists() }));
+        invalidationPromises.push(queryClient.invalidateQueries({ queryKey: userKeys.stats() }));
       }
 
       await Promise.all(invalidationPromises);
