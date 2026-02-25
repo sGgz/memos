@@ -1,5 +1,4 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { MessageCircleIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import MemoEditor from "@/components/MemoEditor";
 import UserAvatar from "@/components/UserAvatar";
@@ -17,6 +16,9 @@ interface MemoInlineCommentsProps {
   onForceEditorClose?: () => void;
 }
 
+const COLLAPSED_COMMENT_COUNT = 3;
+const COLLAPSED_CONTENT_LENGTH = 140;
+
 const MemoInlineComments = ({ memoName, forceEditorOpen, onForceEditorClose }: MemoInlineCommentsProps) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
@@ -30,7 +32,7 @@ const MemoInlineComments = ({ memoName, forceEditorOpen, onForceEditorClose }: M
   });
   const comments = commentsResponse?.memos ?? [];
   const displayCount = comments.length;
-  const needsExpand = displayCount > 3;
+  const needsExpand = displayCount > COLLAPSED_COMMENT_COUNT;
 
   const handleToggleExpanded = () => {
     setExpanded((prev) => !prev);
@@ -55,7 +57,7 @@ const MemoInlineComments = ({ memoName, forceEditorOpen, onForceEditorClose }: M
     const bTime = (b.createTime ? timestampDate(b.createTime) : b.displayTime ? timestampDate(b.displayTime) : undefined)?.getTime() ?? 0;
     return aTime - bTime;
   });
-  const visibleComments = expanded || !needsExpand ? sortedComments : sortedComments.slice(-3);
+  const visibleComments = expanded || !needsExpand ? sortedComments : sortedComments.slice(0, COLLAPSED_COMMENT_COUNT);
   const currentUserName = currentUser?.displayName || currentUser?.username || t("common.user");
   const replyPrefix = replyTarget ? `${currentUserName}回复${replyTarget.authorName}：` : undefined;
 
@@ -84,28 +86,6 @@ const MemoInlineComments = ({ memoName, forceEditorOpen, onForceEditorClose }: M
 
   return (
     <section className={cn("mt-4 w-full border-0 bg-transparent px-0 py-0 shadow-none")}>
-      {hasComments && (
-        <div className="flex items-center gap-2">
-          {needsExpand ? (
-            <button
-              type="button"
-              className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground/80 hover:text-primary transition-colors"
-              onClick={handleToggleExpanded}
-            >
-              <MessageCircleIcon className="w-4 h-4" />
-              {expanded ? t("common.collapse") : t("memo.comment.toggle-comments")}
-              {displayCount > 0 && <span className="text-[0.65rem] text-muted-foreground/70">({displayCount})</span>}
-            </button>
-          ) : (
-            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground/80">
-              <MessageCircleIcon className="w-4 h-4" />
-              {t("memo.comment.self")}
-              {displayCount > 0 && <span className="text-[0.65rem] text-muted-foreground/70">({displayCount})</span>}
-            </div>
-          )}
-        </div>
-      )}
-
       {showEditor && (
         <div className="mt-3">
           <MemoEditor
@@ -132,10 +112,20 @@ const MemoInlineComments = ({ memoName, forceEditorOpen, onForceEditorClose }: M
         {visibleComments.map((comment) => (
           <InlineCommentItem key={`${comment.name}-${comment.updateTime}`} memo={comment} onReply={handleReply} />
         ))}
+        {needsExpand && !expanded && (
+          <button
+            type="button"
+            className="self-start text-xs text-muted-foreground/80 hover:text-primary transition-colors"
+            onClick={handleToggleExpanded}
+          >
+            {t("memo.comment.toggle-comments")}
+            {displayCount > 0 && <span className="ml-1">({displayCount})</span>}
+          </button>
+        )}
         {needsExpand && expanded && (
           <button
             type="button"
-            className="self-start text-xs uppercase tracking-[0.3em] text-muted-foreground/80 hover:text-primary transition-colors"
+            className="self-start text-xs text-muted-foreground/80 hover:text-primary transition-colors"
             onClick={handleToggleExpanded}
           >
             {t("common.collapse")}
@@ -152,17 +142,43 @@ const InlineCommentItem = ({ memo, onReply }: { memo: Memo; onReply?: (memo: Mem
   const content = memo.content?.trim();
   const creatorName = creator?.displayName || creator?.username || t("common.user");
   const canReply = Boolean(onReply);
+  const commentTime = memo.createTime ? timestampDate(memo.createTime) : memo.displayTime ? timestampDate(memo.displayTime) : undefined;
+  const [contentExpanded, setContentExpanded] = useState(false);
+  const needsContentExpand = Boolean(content && (content.length > COLLAPSED_CONTENT_LENGTH || content.includes("\n")));
 
   return (
     <div
       className={cn(
-        "flex items-start gap-3 rounded-xl border border-border/50 bg-background/80 px-3 py-1.5 text-sm transition-colors",
-        canReply && "cursor-pointer hover:border-primary/40 hover:bg-accent/10",
+        "rounded-xl border border-border/60 bg-muted/25 px-3 py-2 text-sm transition-colors",
+        canReply && "cursor-pointer hover:border-primary/40 hover:bg-muted/40",
       )}
       onClick={canReply ? () => onReply?.(memo, creatorName) : undefined}
     >
-      <UserAvatar className="h-7 w-7" avatarUrl={creator?.avatarUrl} />
-      <div className="min-w-0 flex-1 pt-1">{content && <p className="whitespace-pre-wrap text-sm text-foreground/90">{content}</p>}</div>
+      <div className="flex items-center gap-2 text-xs text-muted-foreground/80">
+        <UserAvatar className="h-4 w-4" avatarUrl={creator?.avatarUrl} />
+        {commentTime && <span>{commentTime.toLocaleString()}</span>}
+      </div>
+      {content && (
+        <>
+          <p
+            className={cn("mt-1 whitespace-pre-wrap text-sm text-foreground/90", !contentExpanded && needsContentExpand && "line-clamp-2")}
+          >
+            {content}
+          </p>
+          {needsContentExpand && (
+            <button
+              type="button"
+              className="mt-1 text-xs text-muted-foreground/80 hover:text-primary transition-colors"
+              onClick={(event) => {
+                event.stopPropagation();
+                setContentExpanded((prev) => !prev);
+              }}
+            >
+              {contentExpanded ? t("common.collapse") : "查看全部"}
+            </button>
+          )}
+        </>
+      )}
     </div>
   );
 };
