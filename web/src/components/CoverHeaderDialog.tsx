@@ -113,11 +113,7 @@ const CoverHeaderDialog = () => {
             <div className="flex items-center justify-between">
               <Label>{t("memo.cover-history")}</Label>
               <Button variant="outline" size="icon" onClick={() => coverUploadRef.current?.click()} disabled={isCoverUploading}>
-                {isCoverUploading ? (
-                  <span className="text-xs">...</span>
-                ) : (
-                  <span className="text-sm">+</span>
-                )}
+                {isCoverUploading ? <span className="text-xs">...</span> : <span className="text-sm">+</span>}
               </Button>
             </div>
             {coverError ? (

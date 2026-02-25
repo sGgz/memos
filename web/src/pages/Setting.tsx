@@ -101,11 +101,11 @@ const Setting = () => {
     }
 
     // Initial fetch for instance settings.
-      (async () => {
-        [InstanceSetting_Key.MEMO_RELATED, InstanceSetting_Key.STORAGE, InstanceSetting_Key.COVER_STORAGE].forEach(async (key) => {
-          await fetchSetting(key);
-        });
-      })();
+    (async () => {
+      [InstanceSetting_Key.MEMO_RELATED, InstanceSetting_Key.STORAGE, InstanceSetting_Key.COVER_STORAGE].forEach(async (key) => {
+        await fetchSetting(key);
+      });
+    })();
   }, [isHost, fetchSetting]);
 
   const handleSectionSelectorItemClick = useCallback((settingSection: SettingSection) => {
