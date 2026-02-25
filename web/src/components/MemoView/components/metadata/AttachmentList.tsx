@@ -66,7 +66,7 @@ const SingleImageCard = ({ attachment, onImageClick }: { attachment: Attachment;
     <button
       type="button"
       className={cn(
-        "w-full max-w-[18rem] rounded-lg overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer",
+        "w-full max-w-[11rem] rounded-lg overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer",
         isWideImage && "aspect-video",
         isTallImage && "aspect-[3/4]",
       )}
@@ -75,7 +75,7 @@ const SingleImageCard = ({ attachment, onImageClick }: { attachment: Attachment;
       <img
         src={sourceUrl}
         alt={attachment.filename}
-        className={cn("w-full h-full bg-muted/30", isWideImage || isTallImage ? "object-cover" : "object-contain max-h-[30rem]")}
+        className={cn("w-full h-full bg-muted/30", isWideImage || isTallImage ? "object-cover" : "object-contain max-h-[18rem]")}
         onLoad={(event) => {
           const { naturalWidth, naturalHeight } = event.currentTarget;
           if (naturalWidth > 0 && naturalHeight > 0) {
