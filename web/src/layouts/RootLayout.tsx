@@ -21,7 +21,7 @@ const RootLayout = () => {
   const prevPathname = usePrevious(pathname);
 
   useEffect(() => {
-    if (!currentUser && memoRelatedSetting.disallowPublicVisibility) {
+    if (!currentUser) {
       redirectOnAuthFailure();
     }
   }, [currentUser, memoRelatedSetting.disallowPublicVisibility]);
