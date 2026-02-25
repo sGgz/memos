@@ -47,18 +47,26 @@ const Explore = () => {
       }
     }
     return (
-      <div className="w-full flex items-start gap-3 mb-6">
-        <div className="w-12 shrink-0 flex flex-col items-end text-right text-xs text-muted-foreground/80">
-          {showYear && <div className="text-lg font-semibold text-foreground">{yearLabel}</div>}
-          {showDay && <div className={cn("font-semibold text-foreground", showYear ? "mt-0.5 text-sm" : "text-base")}>{dayLabel}</div>}
-          <div className={cn("text-[10px]", showYear || showDay ? "mt-1" : "text-sm")}>{timeLabel}</div>
+      <div className="mb-4 flex w-full items-start gap-2.5">
+        <div className="flex w-10 shrink-0 flex-col items-end text-right text-[10px] text-muted-foreground/80 leading-tight">
+          {showYear && <div className="text-sm font-semibold text-foreground">{yearLabel}</div>}
+          {showDay && <div className={cn("font-semibold text-foreground", showYear ? "mt-0.5 text-xs" : "text-sm")}>{dayLabel}</div>}
+          <div className={cn("text-[10px]", showYear || showDay ? "mt-0.5" : "text-xs")}>{timeLabel}</div>
         </div>
         <div className="flex-1">
-          <div className="rounded-2xl border border-border/60 bg-background/90 px-3 py-3">
-            <div className="flex items-start gap-3">
-              <UserAvatar className="h-8 w-8 mt-1.5" avatarUrl={creator?.avatarUrl} />
+          <div className="rounded-xl border border-border/50 bg-background/90 px-2.5 py-2">
+            <div className="flex items-start gap-2.5">
+              <UserAvatar className="mt-1 h-7 w-7" avatarUrl={creator?.avatarUrl} />
               <div className="flex-1">
-                <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showCreator showVisibility compact showHeader={false} />
+                <MemoView
+                  key={`${memo.name}-${memo.updateTime}`}
+                  className="p-0 [&_.memo-content-block]:text-[0.9rem] [&_.memo-content-block]:leading-5 [&_.memo-content-block]:tracking-normal"
+                  memo={memo}
+                  showCreator
+                  showVisibility
+                  compact
+                  showHeader={false}
+                />
               </div>
             </div>
           </div>
@@ -97,7 +105,7 @@ const Explore = () => {
         filter={memoFilter}
         showCreator
         showMemoEditor
-        containerClassName="max-w-none px-0 pt-2"
+        containerClassName="max-w-none px-0 pt-1"
       />
     </div>
   );
