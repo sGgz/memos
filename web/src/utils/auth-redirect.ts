@@ -7,6 +7,7 @@ const PUBLIC_ROUTES = [
   "/memos/", // Individual memo detail pages (dynamic)
 ] as const;
 
+const AUTH_REQUIRED_ENTRY_ROUTES = [ROUTES.ROOT, ROUTES.EXPLORE] as const;
 const PRIVATE_ROUTES = [ROUTES.HOME, ROUTES.ATTACHMENTS, ROUTES.INBOX, ROUTES.ARCHIVED, ROUTES.SETTING] as const;
 
 function isPublicRoute(path: string): boolean {
@@ -15,6 +16,10 @@ function isPublicRoute(path: string): boolean {
 
 function isPrivateRoute(path: string): boolean {
   return PRIVATE_ROUTES.includes(path as (typeof PRIVATE_ROUTES)[number]);
+}
+
+function isAuthRequiredEntryRoute(path: string): boolean {
+  return AUTH_REQUIRED_ENTRY_ROUTES.includes(path as (typeof AUTH_REQUIRED_ENTRY_ROUTES)[number]);
 }
 
 export function redirectOnAuthFailure(): void {
