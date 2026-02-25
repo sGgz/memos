@@ -3,7 +3,6 @@ import { ROUTES } from "@/router/routes";
 
 const PUBLIC_ROUTES = [
   ROUTES.AUTH, // Authentication pages
-  ROUTES.EXPLORE, // Explore page
   "/u/", // User profile pages (dynamic)
   "/memos/", // Individual memo detail pages (dynamic)
 ] as const;
@@ -20,13 +19,18 @@ function isPrivateRoute(path: string): boolean {
 
 export function redirectOnAuthFailure(): void {
   const currentPath = window.location.pathname;
+  const disallowPublicVisibility = getInstanceConfig().memoRelatedSetting.disallowPublicVisibility;
+
+  // Explore page is only public when public visibility is allowed.
+  if (!disallowPublicVisibility && currentPath.startsWith(ROUTES.EXPLORE)) {
+    return;
+  }
 
   // Don't redirect if it's a public route
   if (isPublicRoute(currentPath)) {
     return;
   }
 
-  const disallowPublicVisibility = getInstanceConfig().memoRelatedSetting.disallowPublicVisibility;
   const target = disallowPublicVisibility ? ROUTES.AUTH : ROUTES.EXPLORE;
 
   // Only redirect if it's a private route or disallowPublicVisibility is enabled
