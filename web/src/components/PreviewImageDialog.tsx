@@ -15,7 +15,7 @@ const SWIPE_TRANSITION = "transform 320ms cubic-bezier(0.22, 1, 0.36, 1)";
 const EDGE_RESISTANCE = 0.35;
 const PREVIEW_ENTER_DURATION_MS = 420;
 const IMAGE_TRANSITION_DURATION_MS = 460;
-const OVERLAY_EXIT_DURATION_MS = PREVIEW_ENTER_DURATION_MS;
+const OVERLAY_EXIT_DURATION_MS = 220;
 
 interface ZoomAnimationState {
   phase: "enter" | "exit";
@@ -57,7 +57,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
   const isPointerSwipingRef = useRef(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const naturalSizeMapRef = useRef(new Map<string, { width: number; height: number }>());
-  const imageElementMapRef = useRef(new Map<string, HTMLImageElement>());
+  const imageElementMapRef = useRef(new Map<number, HTMLImageElement>());
   const closeTimerRef = useRef<number | null>(null);
   const animationTimerRef = useRef<number | null>(null);
   const contentReadyTimerRef = useRef<number | null>(null);
@@ -125,12 +125,12 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     const viewportW = typeof window !== "undefined" ? window.innerWidth : 0;
     const viewportH = typeof window !== "undefined" ? window.innerHeight : 0;
     const imageUrl = imgUrls[safeIndex] ?? "";
-    const renderedImageRect = imageElementMapRef.current.get(imageUrl)?.getBoundingClientRect();
+    const renderedImageRect = imageElementMapRef.current.get(safeIndex)?.getBoundingClientRect();
     const hasRenderedImage = Boolean(renderedImageRect && renderedImageRect.width > 0 && renderedImageRect.height > 0);
     const fromRect = hasRenderedImage ? (renderedImageRect as DOMRect) : getTargetRect(imageUrl);
     const toRect = sourceRects[safeIndex] ?? createFallbackRect(viewportW, viewportH);
 
-    const isQuickClosing = !isContentReady || zoomAnimation?.phase === "enter";
+    const isQuickClosing = !isContentReady;
     const shouldSkipExitZoom = isQuickClosing || (!hasRenderedImage && !naturalSizeMapRef.current.has(imageUrl));
 
     if (!shouldSkipExitZoom) {
@@ -380,6 +380,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     return Boolean(zoomAnimation) || !isContentReady || isClosing;
   }, [zoomAnimation, isContentReady, isClosing]);
 
+  const isEnterAnimating = zoomAnimation?.phase === "enter";
+
   const trackTranslate = useMemo(() => {
     return -safeIndex * viewportWidth + dragOffsetX;
   }, [safeIndex, viewportWidth, dragOffsetX]);
@@ -422,6 +424,9 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
           onClick={() => {
             if (isPointerSwipingRef.current) {
               isPointerSwipingRef.current = false;
+              return;
+            }
+            if (isEnterAnimating) {
               return;
             }
             startExitAnimation();
@@ -467,13 +472,13 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
                     if (naturalWidth > 0 && naturalHeight > 0) {
                       naturalSizeMapRef.current.set(url, { width: naturalWidth, height: naturalHeight });
                     }
-                    imageElementMapRef.current.set(url, event.currentTarget);
+                    imageElementMapRef.current.set(index, event.currentTarget);
                   }}
                   ref={(element) => {
                     if (element) {
-                      imageElementMapRef.current.set(url, element);
+                      imageElementMapRef.current.set(index, element);
                     } else {
-                      imageElementMapRef.current.delete(url);
+                      imageElementMapRef.current.delete(index);
                     }
                   }}
                 />
