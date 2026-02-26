@@ -131,7 +131,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     const toRect = sourceRects[safeIndex] ?? createFallbackRect(viewportW, viewportH);
 
     const isQuickClosing = !isContentReady;
-    const shouldSkipExitZoom = isQuickClosing || (!hasRenderedImage && !naturalSizeMapRef.current.has(imageUrl));
+    const shouldSkipExitZoom = isQuickClosing;
 
     if (!shouldSkipExitZoom) {
       setZoomReady(false);
