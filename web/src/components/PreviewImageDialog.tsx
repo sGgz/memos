@@ -16,7 +16,7 @@ const EDGE_RESISTANCE = 0.35;
 const PREVIEW_ENTER_DURATION_MS = 420;
 const IMAGE_TRANSITION_DURATION_MS = 460;
 const OVERLAY_EXIT_DURATION_MS = 180;
-const EXIT_IMAGE_START_DELAY_MS = 60;
+const EXIT_IMAGE_START_DELAY_MS = 140;
 
 interface ZoomAnimationState {
   phase: "enter" | "exit";
@@ -131,7 +131,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     const fromRect = hasRenderedImage ? (renderedImageRect as DOMRect) : getTargetRect(imageUrl);
     const toRect = sourceRects[safeIndex] ?? createFallbackRect(viewportW, viewportH);
 
-    const shouldSkipExitZoom = !hasRenderedImage && !naturalSizeMapRef.current.has(imageUrl);
+    const isQuickClosing = !isContentReady || zoomAnimation?.phase === "enter";
+    const shouldSkipExitZoom = isQuickClosing || (!hasRenderedImage && !naturalSizeMapRef.current.has(imageUrl));
 
     if (!shouldSkipExitZoom) {
       setZoomReady(false);
@@ -172,7 +173,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
       },
       OVERLAY_EXIT_DURATION_MS + (shouldSkipExitZoom ? 0 : IMAGE_TRANSITION_DURATION_MS),
     );
-  }, [visible, isClosing, imgUrls, safeIndex, getTargetRect, sourceRects, onOpenChange]);
+  }, [visible, isClosing, imgUrls, safeIndex, getTargetRect, sourceRects, onOpenChange, isContentReady, zoomAnimation]);
 
   useEffect(() => {
     return () => {
@@ -370,8 +371,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
   };
 
   const shouldHideTrack = useMemo(() => {
-    return Boolean(zoomAnimation) || !isContentReady;
-  }, [zoomAnimation, isContentReady]);
+    return Boolean(zoomAnimation) || !isContentReady || isClosing;
+  }, [zoomAnimation, isContentReady, isClosing]);
 
   const trackTranslate = useMemo(() => {
     return -safeIndex * viewportWidth + dragOffsetX;
