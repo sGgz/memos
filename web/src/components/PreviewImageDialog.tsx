@@ -49,6 +49,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
   const [zoomAnimation, setZoomAnimation] = useState<ZoomAnimationState | null>(null);
   const [zoomReady, setZoomReady] = useState(false);
   const [isIndexResetting, setIsIndexResetting] = useState(false);
+  const [isContentReady, setIsContentReady] = useState(!open);
 
   const startXRef = useRef<number | null>(null);
   const lastDeltaXRef = useRef(0);
@@ -158,6 +159,15 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     };
   }, []);
 
+  useEffect(() => {
+    if (!visible) {
+      setCurrentIndex(clampIndex(initialIndex));
+      setDragOffsetX(0);
+      setIsDragging(false);
+      setIsContentReady(true);
+    }
+  }, [visible, initialIndex, clampIndex]);
+
   useLayoutEffect(() => {
     const wasOpen = previousOpenRef.current;
 
@@ -171,6 +181,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
 
       const nextIndex = clampIndex(initialIndex);
       setIsIndexResetting(true);
+      setIsContentReady(false);
       setCurrentIndex(nextIndex);
       setVisible(true);
       setIsClosing(false);
@@ -182,6 +193,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
 
       window.requestAnimationFrame(() => {
         setIsIndexResetting(false);
+        setIsContentReady(true);
       });
 
       const viewportW = typeof window !== "undefined" ? window.innerWidth : 0;
@@ -369,8 +381,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
             style={{
               width: `${imgUrls.length * viewportWidth}px`,
               transform: `translate3d(${trackTranslate}px, 0, 0)`,
-              transition: isDragging || isIndexResetting ? "none" : SWIPE_TRANSITION,
-              opacity: zoomAnimation ? 0 : 1,
+              transition: isDragging || isIndexResetting || !isContentReady ? "none" : SWIPE_TRANSITION,
+              opacity: zoomAnimation || !isContentReady ? 0 : 1,
               animation: isClosing
                 ? `image-preview-content-out ${IMAGE_TRANSITION_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards`
                 : `image-preview-content-in ${PREVIEW_ENTER_DURATION_MS}ms cubic-bezier(0.2, 0.8, 0.2, 1)`,
