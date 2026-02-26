@@ -16,6 +16,7 @@ const EDGE_RESISTANCE = 0.35;
 const PREVIEW_ENTER_DURATION_MS = 420;
 const IMAGE_TRANSITION_DURATION_MS = 460;
 const OVERLAY_EXIT_DURATION_MS = 180;
+const EXIT_IMAGE_START_DELAY_MS = 60;
 
 interface ZoomAnimationState {
   phase: "enter" | "exit";
@@ -57,6 +58,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
   const isPointerSwipingRef = useRef(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const naturalSizeMapRef = useRef(new Map<string, { width: number; height: number }>());
+  const imageElementMapRef = useRef(new Map<string, HTMLImageElement>());
   const closeTimerRef = useRef<number | null>(null);
   const animationTimerRef = useRef<number | null>(null);
   const contentReadyTimerRef = useRef<number | null>(null);
@@ -124,37 +126,52 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     const viewportW = typeof window !== "undefined" ? window.innerWidth : 0;
     const viewportH = typeof window !== "undefined" ? window.innerHeight : 0;
     const imageUrl = imgUrls[safeIndex] ?? "";
-    const fromRect = getTargetRect(imageUrl);
+    const renderedImageRect = imageElementMapRef.current.get(imageUrl)?.getBoundingClientRect();
+    const hasRenderedImage = Boolean(renderedImageRect && renderedImageRect.width > 0 && renderedImageRect.height > 0);
+    const fromRect = hasRenderedImage ? (renderedImageRect as DOMRect) : getTargetRect(imageUrl);
     const toRect = sourceRects[safeIndex] ?? createFallbackRect(viewportW, viewportH);
 
-    setZoomReady(false);
-    setZoomAnimation({
-      phase: "exit",
-      from: fromRect,
-      to: toRect,
-      imageUrl,
-    });
+    const shouldSkipExitZoom = !hasRenderedImage && !naturalSizeMapRef.current.has(imageUrl);
+
+    if (!shouldSkipExitZoom) {
+      setZoomReady(false);
+      setZoomAnimation({
+        phase: "exit",
+        from: fromRect,
+        to: toRect,
+        imageUrl,
+      });
+    } else {
+      setZoomReady(false);
+      setZoomAnimation(null);
+    }
 
     if (zoomStartTimerRef.current) {
       window.clearTimeout(zoomStartTimerRef.current);
     }
     setIsClosing(true);
-    zoomStartTimerRef.current = window.setTimeout(() => {
-      window.requestAnimationFrame(() => {
-        setZoomReady(true);
-      });
-      zoomStartTimerRef.current = null;
-    }, OVERLAY_EXIT_DURATION_MS);
+    zoomStartTimerRef.current = window.setTimeout(
+      () => {
+        window.requestAnimationFrame(() => {
+          setZoomReady(true);
+        });
+        zoomStartTimerRef.current = null;
+      },
+      shouldSkipExitZoom ? OVERLAY_EXIT_DURATION_MS : EXIT_IMAGE_START_DELAY_MS,
+    );
 
-    closeTimerRef.current = window.setTimeout(() => {
-      setVisible(false);
-      setIsClosing(false);
-      setIsDragging(false);
-      setDragOffsetX(0);
-      isPointerSwipingRef.current = false;
-      onOpenChange(false);
-      closeTimerRef.current = null;
-    }, OVERLAY_EXIT_DURATION_MS + IMAGE_TRANSITION_DURATION_MS);
+    closeTimerRef.current = window.setTimeout(
+      () => {
+        setVisible(false);
+        setIsClosing(false);
+        setIsDragging(false);
+        setDragOffsetX(0);
+        isPointerSwipingRef.current = false;
+        onOpenChange(false);
+        closeTimerRef.current = null;
+      },
+      OVERLAY_EXIT_DURATION_MS + (shouldSkipExitZoom ? 0 : IMAGE_TRANSITION_DURATION_MS),
+    );
   }, [visible, isClosing, imgUrls, safeIndex, getTargetRect, sourceRects, onOpenChange]);
 
   useEffect(() => {
@@ -442,6 +459,14 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
                     const { naturalWidth, naturalHeight } = event.currentTarget;
                     if (naturalWidth > 0 && naturalHeight > 0) {
                       naturalSizeMapRef.current.set(url, { width: naturalWidth, height: naturalHeight });
+                    }
+                    imageElementMapRef.current.set(url, event.currentTarget);
+                  }}
+                  ref={(element) => {
+                    if (element) {
+                      imageElementMapRef.current.set(url, element);
+                    } else {
+                      imageElementMapRef.current.delete(url);
                     }
                   }}
                 />
