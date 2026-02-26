@@ -26,10 +26,6 @@ const App = () => {
   const normalizedPath = location.pathname.replace(/\/+$/, "") || "/";
   const isEntryRoute = normalizedPath === "/" || normalizedPath === "/explore";
 
-  if (!currentUser && isEntryRoute) {
-    return <Navigate to="/auth" replace />;
-  }
-
   // Redirect to sign up page if instance not initialized (no admin account exists yet)
   useEffect(() => {
     if (!instanceProfile.initialized) {
@@ -64,6 +60,10 @@ const App = () => {
     const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
     link.href = instanceGeneralSetting.customProfile.logoUrl || "/logo.webp";
   }, [instanceGeneralSetting.customProfile]);
+
+  if (!currentUser && isEntryRoute) {
+    return <Navigate to="/auth" replace />;
+  }
 
   return (
     <MemoFilterProvider>
