@@ -19,15 +19,17 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
   const [visible, setVisible] = useState(open);
   const [dragOffsetX, setDragOffsetX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(0);
 
   const startXRef = useRef<number | null>(null);
   const lastDeltaXRef = useRef(0);
   const isPointerSwipingRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const safeIndex = Math.max(0, Math.min(currentIndex, Math.max(imgUrls.length - 1, 0)));
   const hasMultipleImages = imgUrls.length > 1;
 
-  const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 0;
+  const viewportWidth = containerWidth || (typeof window !== "undefined" ? window.innerWidth : 0);
 
   const clampIndex = useCallback(
     (nextIndex: number) => {
@@ -81,6 +83,24 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
     setIsDragging(false);
     setDragOffsetX(0);
   }, [open]);
+
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
+    const updateContainerWidth = () => {
+      const width = containerRef.current?.getBoundingClientRect().width ?? window.innerWidth;
+      setContainerWidth(width);
+    };
+
+    updateContainerWidth();
+    window.addEventListener("resize", updateContainerWidth);
+
+    return () => {
+      window.removeEventListener("resize", updateContainerWidth);
+    };
+  }, [visible]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -187,6 +207,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
         aria-describedby="image-preview-description"
       >
         <div
+          ref={containerRef}
           className="fixed inset-0 touch-pan-y bg-black"
           onClick={() => {
             if (isPointerSwipingRef.current) {
@@ -199,7 +220,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
           <div
             className="h-full flex"
             style={{
-              width: `${imgUrls.length * 100}vw`,
+              width: `${imgUrls.length * viewportWidth}px`,
               transform: `translate3d(${trackTranslate}px, 0, 0)`,
               transition: isDragging ? "none" : SWIPE_TRANSITION,
             }}
@@ -214,12 +235,13 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
             {imgUrls.map((url, index) => (
               <div
                 key={`${url}-${index}`}
-                className="w-screen h-screen flex-shrink-0 flex items-center justify-center overflow-hidden bg-black"
+                className="h-screen flex-shrink-0 flex items-center justify-center overflow-hidden bg-black"
+                style={{ width: `${viewportWidth}px` }}
               >
                 <img
                   src={url}
                   alt={`Preview image ${index + 1} of ${imgUrls.length}`}
-                  className="w-screen h-auto max-h-screen object-contain select-none"
+                  className="w-full h-auto max-h-full object-contain select-none"
                   draggable={false}
                   loading={index === safeIndex ? "eager" : "lazy"}
                   decoding="async"
