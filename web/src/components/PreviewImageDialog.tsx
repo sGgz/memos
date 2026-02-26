@@ -58,6 +58,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
   const naturalSizeMapRef = useRef(new Map<string, { width: number; height: number }>());
   const closeTimerRef = useRef<number | null>(null);
   const animationTimerRef = useRef<number | null>(null);
+  const contentReadyTimerRef = useRef<number | null>(null);
   const previousOpenRef = useRef(open);
 
   const safeIndex = Math.max(0, Math.min(currentIndex, Math.max(imgUrls.length - 1, 0)));
@@ -156,6 +157,9 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
       if (animationTimerRef.current) {
         window.clearTimeout(animationTimerRef.current);
       }
+      if (contentReadyTimerRef.current) {
+        window.clearTimeout(contentReadyTimerRef.current);
+      }
     };
   }, []);
 
@@ -193,8 +197,12 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
 
       window.requestAnimationFrame(() => {
         setIsIndexResetting(false);
-        setIsContentReady(true);
       });
+
+      contentReadyTimerRef.current = window.setTimeout(() => {
+        setIsContentReady(true);
+        contentReadyTimerRef.current = null;
+      }, IMAGE_TRANSITION_DURATION_MS);
 
       const viewportW = typeof window !== "undefined" ? window.innerWidth : 0;
       const viewportH = typeof window !== "undefined" ? window.innerHeight : 0;
@@ -392,7 +400,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
                 ? "none"
                 : isClosing
                   ? `image-preview-content-out ${IMAGE_TRANSITION_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards`
-                  : `image-preview-content-in ${PREVIEW_ENTER_DURATION_MS}ms cubic-bezier(0.2, 0.8, 0.2, 1)`,
+                  : "none",
             }}
             onMouseDown={(event) => handlePointerDown(event.clientX)}
             onMouseMove={(event) => handlePointerMove(event.clientX)}
