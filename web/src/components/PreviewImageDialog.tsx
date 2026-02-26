@@ -13,6 +13,8 @@ interface Props {
 const SWIPE_THRESHOLD_RATIO = 0.18;
 const SWIPE_TRANSITION = "transform 320ms cubic-bezier(0.22, 1, 0.36, 1)";
 const EDGE_RESISTANCE = 0.35;
+const PREVIEW_ENTER_DURATION_MS = 420;
+const PREVIEW_EXIT_DURATION_MS = 500;
 
 function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: Props) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -20,6 +22,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
   const [dragOffsetX, setDragOffsetX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [isClosing, setIsClosing] = useState(false);
 
   const startXRef = useRef<number | null>(null);
   const lastDeltaXRef = useRef(0);
@@ -77,12 +80,28 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
   useEffect(() => {
     if (open) {
       setVisible(true);
+      setIsClosing(false);
       return;
     }
-    setVisible(false);
-    setIsDragging(false);
-    setDragOffsetX(0);
-  }, [open]);
+
+    if (!visible) {
+      setIsDragging(false);
+      setDragOffsetX(0);
+      return;
+    }
+
+    setIsClosing(true);
+    const timer = window.setTimeout(() => {
+      setVisible(false);
+      setIsClosing(false);
+      setIsDragging(false);
+      setDragOffsetX(0);
+    }, PREVIEW_EXIT_DURATION_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [open, visible]);
 
   useEffect(() => {
     if (!visible) {
@@ -210,6 +229,11 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
         <div
           ref={containerRef}
           className="fixed inset-0 touch-pan-y bg-black"
+          style={{
+            animation: isClosing
+              ? `image-preview-overlay-out ${PREVIEW_EXIT_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1) forwards`
+              : `image-preview-overlay-in ${PREVIEW_ENTER_DURATION_MS}ms cubic-bezier(0.16, 1, 0.3, 1)`,
+          }}
           onClick={() => {
             if (isPointerSwipingRef.current) {
               isPointerSwipingRef.current = false;
@@ -224,6 +248,9 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
               width: `${imgUrls.length * viewportWidth}px`,
               transform: `translate3d(${trackTranslate}px, 0, 0)`,
               transition: isDragging ? "none" : SWIPE_TRANSITION,
+              animation: isClosing
+                ? `image-preview-content-out ${PREVIEW_EXIT_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards`
+                : `image-preview-content-in ${PREVIEW_ENTER_DURATION_MS}ms cubic-bezier(0.2, 0.8, 0.2, 1)`,
             }}
             onMouseDown={(event) => handlePointerDown(event.clientX)}
             onMouseMove={(event) => handlePointerMove(event.clientX)}
