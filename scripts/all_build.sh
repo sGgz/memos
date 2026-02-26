@@ -72,7 +72,7 @@ if [ "$run_frontend" = true ]; then
   echo "[all_build] 开始编译前端..."
   (
     cd web
-    pnpm build && pnpm release
+    pnpm release
   )
 fi
 
