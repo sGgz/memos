@@ -61,7 +61,7 @@
     "mark": "引用",
     "memo": "笔记",
     "memos": "笔记",
-    "todo": "代办",
+    "todo": "待办",
     "loan": "贷款",
     "name": "名称",
     "new": "新建",
@@ -137,7 +137,7 @@
   },
   "inbox": {
     "memo-comment": "评论了您的笔记",
-    "todo-reminder": "代办提醒：{{title}}",
+    "todo-reminder": "待办提醒：{{title}}",
     "failed-to-load": "加载失败",
     "unread": "未读",
     "no-unread": "无未读通知",
@@ -222,9 +222,9 @@
     "user-not-found": "未找到该用户"
   },
   "todo": {
-    "title": "代办",
+    "title": "待办",
     "count": "{{count}} 条",
-    "empty": "暂无代办",
+    "empty": "暂无待办",
     "unknown-time": "未设置时间",
     "overdue": "已逾期",
     "due-today": "今天截止",
@@ -240,19 +240,19 @@
       "show-completed": "显示已完成"
     },
     "create": {
-      "title": "新增代办",
+      "title": "新增待办",
       "subtitle": "写下需要完成的事项并设置提醒时间。",
-      "submit": "添加代办"
+      "submit": "添加待办"
     },
     "sections": {
       "overdue": "已逾期",
-      "overdue-subtitle": "已超过截止时间的代办",
+      "overdue-subtitle": "已超过截止时间的待办",
       "today": "今天",
-      "today-subtitle": "今天需要完成的代办",
+      "today-subtitle": "今天需要完成的待办",
       "upcoming": "即将到期",
-      "upcoming-subtitle": "未来几天内的代办",
+      "upcoming-subtitle": "未来几天内的待办",
       "completed": "已完成",
-      "completed-subtitle": "已完成的代办"
+      "completed-subtitle": "已完成的待办"
     },
     "fields": {
       "title": "标题",
@@ -272,18 +272,18 @@
     "messages": {
       "fill-required": "请填写标题和截止时间。",
       "invalid-date": "请输入有效的时间。",
-      "created": "代办已创建",
-      "updated": "代办已更新"
+      "created": "待办已创建",
+      "updated": "待办已更新"
     },
     "settings": {
-      "title": "代办提醒",
+      "title": "待办提醒",
       "description": "设置距离截止时间的提醒天数，多个天数用逗号分隔。",
       "placeholder": "例如：1,3",
       "invalid": "请输入有效的提醒天数。",
-      "saved": "代办提醒设置已更新"
+      "saved": "待办提醒设置已更新"
     },
     "notification": {
-      "title": "代办提醒",
+      "title": "待办提醒",
       "due": "截止：{{time}}",
       "due-relative": "截止：{{time}}（{{relative}}）"
     }
