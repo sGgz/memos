@@ -1,6 +1,4 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
@@ -12,173 +10,107 @@ interface Props {
   sourceRects?: (DOMRect | null)[];
 }
 
-const ANIMATION_DURATION_MS = 260;
+const SWIPE_THRESHOLD_RATIO = 0.18;
+const SWIPE_TRANSITION = "transform 320ms cubic-bezier(0.22, 1, 0.36, 1)";
+const EDGE_RESISTANCE = 0.35;
 
-const getContainRect = (naturalSize: { width: number; height: number } | null) => {
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-  const sidePadding = 24;
-  const verticalPadding = 84;
-
-  const maxWidth = Math.max(0, viewportWidth - sidePadding * 2);
-  const maxHeight = Math.max(0, viewportHeight - verticalPadding * 2);
-
-  if (!naturalSize?.width || !naturalSize?.height) {
-    return {
-      left: sidePadding,
-      top: verticalPadding,
-      width: maxWidth,
-      height: maxHeight,
-    };
-  }
-
-  const ratio = Math.min(maxWidth / naturalSize.width, maxHeight / naturalSize.height);
-  const width = naturalSize.width * ratio;
-  const height = naturalSize.height * ratio;
-
-  return {
-    left: (viewportWidth - width) / 2,
-    top: (viewportHeight - height) / 2,
-    width,
-    height,
-  };
-};
-
-function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sourceRects = [] }: Props) {
+function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: Props) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [visible, setVisible] = useState(open);
-  const [isClosing, setIsClosing] = useState(false);
-  const [naturalSizes, setNaturalSizes] = useState<Record<string, { width: number; height: number }>>({});
-  const [imageStyle, setImageStyle] = useState<React.CSSProperties | undefined>(undefined);
-  const dragStartXRef = useRef<number | null>(null);
-  const isSwipingRef = useRef(false);
+  const [dragOffsetX, setDragOffsetX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(0);
 
-  const safeIndex = Math.max(0, Math.min(currentIndex, imgUrls.length - 1));
+  const startXRef = useRef<number | null>(null);
+  const lastDeltaXRef = useRef(0);
+  const isPointerSwipingRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const safeIndex = Math.max(0, Math.min(currentIndex, Math.max(imgUrls.length - 1, 0)));
   const hasMultipleImages = imgUrls.length > 1;
 
-  const currentSourceRect = sourceRects[safeIndex] ?? null;
-  const currentImageUrl = imgUrls[safeIndex];
+  const viewportWidth = containerWidth || (typeof window !== "undefined" ? window.innerWidth : 0);
+
+  const clampIndex = useCallback(
+    (nextIndex: number) => {
+      if (!imgUrls.length) {
+        return 0;
+      }
+      return Math.max(0, Math.min(nextIndex, imgUrls.length - 1));
+    },
+    [imgUrls.length],
+  );
+
+  const applyEdgeResistance = useCallback(
+    (deltaX: number) => {
+      const atFirstImage = safeIndex === 0;
+      const atLastImage = safeIndex === imgUrls.length - 1;
+
+      if ((atFirstImage && deltaX > 0) || (atLastImage && deltaX < 0)) {
+        return deltaX * EDGE_RESISTANCE;
+      }
+
+      return deltaX;
+    },
+    [safeIndex, imgUrls.length],
+  );
 
   const showPrevImage = useCallback(() => {
-    if (!hasMultipleImages) {
+    if (!hasMultipleImages || safeIndex === 0) {
       return;
     }
-    setCurrentIndex((prev) => (prev - 1 + imgUrls.length) % imgUrls.length);
-  }, [hasMultipleImages, imgUrls.length]);
+    setCurrentIndex((prev) => clampIndex(prev - 1));
+  }, [hasMultipleImages, safeIndex, clampIndex]);
 
   const showNextImage = useCallback(() => {
-    if (!hasMultipleImages) {
+    if (!hasMultipleImages || safeIndex >= imgUrls.length - 1) {
       return;
     }
-    setCurrentIndex((prev) => (prev + 1) % imgUrls.length);
-  }, [hasMultipleImages, imgUrls.length]);
-
-  const animateOpenFromSource = useCallback(() => {
-    if (!currentImageUrl) {
-      return;
-    }
-
-    const containRect = getContainRect(naturalSizes[currentImageUrl] ?? null);
-
-    if (!currentSourceRect) {
-      setImageStyle({
-        left: containRect.left,
-        top: containRect.top,
-        width: containRect.width,
-        height: containRect.height,
-      });
-      return;
-    }
-
-    setImageStyle({
-      left: currentSourceRect.left,
-      top: currentSourceRect.top,
-      width: currentSourceRect.width,
-      height: currentSourceRect.height,
-      transition: "none",
-    });
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setImageStyle({
-          left: containRect.left,
-          top: containRect.top,
-          width: containRect.width,
-          height: containRect.height,
-          transition: `all ${ANIMATION_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`,
-        });
-      });
-    });
-  }, [currentImageUrl, currentSourceRect, naturalSizes]);
-
-  const animateCloseToSource = useCallback(() => {
-    if (!currentImageUrl) {
-      onOpenChange(false);
-      setVisible(false);
-      return;
-    }
-
-    const containRect = getContainRect(naturalSizes[currentImageUrl] ?? null);
-    const targetRect = currentSourceRect;
-
-    if (!targetRect) {
-      onOpenChange(false);
-      setVisible(false);
-      return;
-    }
-
-    setIsClosing(true);
-    setImageStyle({
-      left: containRect.left,
-      top: containRect.top,
-      width: containRect.width,
-      height: containRect.height,
-      transition: `all ${ANIMATION_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`,
-    });
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setImageStyle({
-          left: targetRect.left,
-          top: targetRect.top,
-          width: targetRect.width,
-          height: targetRect.height,
-          transition: `all ${ANIMATION_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`,
-        });
-      });
-    });
-
-    window.setTimeout(() => {
-      setIsClosing(false);
-      setVisible(false);
-      onOpenChange(false);
-    }, ANIMATION_DURATION_MS);
-  }, [currentImageUrl, currentSourceRect, naturalSizes, onOpenChange]);
+    setCurrentIndex((prev) => clampIndex(prev + 1));
+  }, [hasMultipleImages, safeIndex, imgUrls.length, clampIndex]);
 
   useEffect(() => {
-    setCurrentIndex(initialIndex);
-  }, [initialIndex]);
+    setCurrentIndex(clampIndex(initialIndex));
+    setDragOffsetX(0);
+  }, [initialIndex, clampIndex]);
 
   useEffect(() => {
     if (open) {
       setVisible(true);
+      return;
     }
+    setVisible(false);
+    setIsDragging(false);
+    setDragOffsetX(0);
   }, [open]);
 
   useEffect(() => {
-    if (!visible || !open || !imgUrls.length) {
+    if (!visible) {
       return;
     }
-    animateOpenFromSource();
-  }, [visible, open, safeIndex, imgUrls.length, animateOpenFromSource]);
+
+    const updateContainerWidth = () => {
+      const width = containerRef.current?.getBoundingClientRect().width ?? window.innerWidth;
+      setContainerWidth(width);
+    };
+
+    updateContainerWidth();
+    window.addEventListener("resize", updateContainerWidth);
+
+    return () => {
+      window.removeEventListener("resize", updateContainerWidth);
+    };
+  }, [visible]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!visible) return;
+      if (!visible) {
+        return;
+      }
 
       switch (event.key) {
         case "Escape":
-          animateCloseToSource();
+          onOpenChange(false);
           break;
         case "ArrowLeft":
           showPrevImage();
@@ -193,28 +125,60 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [visible, showNextImage, showPrevImage, animateCloseToSource]);
+  }, [visible, onOpenChange, showNextImage, showPrevImage]);
 
-  const finishSwipe = (clientX: number) => {
-    if (!hasMultipleImages || dragStartXRef.current === null) {
-      dragStartXRef.current = null;
+  const handlePointerDown = (clientX: number) => {
+    if (!hasMultipleImages) {
+      return;
+    }
+    startXRef.current = clientX;
+    lastDeltaXRef.current = 0;
+    setIsDragging(true);
+  };
+
+  const handlePointerMove = (clientX: number) => {
+    if (!hasMultipleImages || startXRef.current === null) {
       return;
     }
 
-    const deltaX = clientX - dragStartXRef.current;
-    const swipeThreshold = 40;
+    const deltaX = clientX - startXRef.current;
+    lastDeltaXRef.current = deltaX;
+    if (Math.abs(deltaX) > 4) {
+      isPointerSwipingRef.current = true;
+    }
 
-    if (Math.abs(deltaX) > swipeThreshold) {
-      isSwipingRef.current = true;
-      if (deltaX < 0) {
-        showNextImage();
-      } else {
-        showPrevImage();
+    setDragOffsetX(applyEdgeResistance(deltaX));
+  };
+
+  const handlePointerUp = () => {
+    if (!hasMultipleImages || startXRef.current === null) {
+      startXRef.current = null;
+      setIsDragging(false);
+      setDragOffsetX(0);
+      return;
+    }
+
+    const deltaX = lastDeltaXRef.current;
+    const threshold = viewportWidth * SWIPE_THRESHOLD_RATIO;
+    const canMoveNext = safeIndex < imgUrls.length - 1;
+    const canMovePrev = safeIndex > 0;
+
+    if (Math.abs(deltaX) > threshold) {
+      if (deltaX < 0 && canMoveNext) {
+        setCurrentIndex((prev) => clampIndex(prev + 1));
+      } else if (deltaX > 0 && canMovePrev) {
+        setCurrentIndex((prev) => clampIndex(prev - 1));
       }
     }
 
-    dragStartXRef.current = null;
+    startXRef.current = null;
+    setIsDragging(false);
+    setDragOffsetX(0);
   };
+
+  const trackTranslate = useMemo(() => {
+    return -safeIndex * viewportWidth + dragOffsetX;
+  }, [safeIndex, viewportWidth, dragOffsetX]);
 
   const dots = useMemo(
     () =>
@@ -235,94 +199,59 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     <Dialog
       open={visible}
       onOpenChange={(nextOpen) => {
-        if (!nextOpen) {
-          animateCloseToSource();
-          return;
-        }
-        setVisible(true);
+        onOpenChange(nextOpen);
       }}
     >
       <DialogContent
-        className="!w-[100vw] !h-[100vh] !max-w-[100vw] !max-h-[100vh] p-0 border-0 shadow-none bg-black/98 [&>button]:hidden"
+        className="!fixed !inset-0 !w-screen !h-screen !max-w-none !max-h-none !rounded-none p-0 border-0 shadow-none bg-black [&>button]:hidden"
         aria-describedby="image-preview-description"
-        onInteractOutside={(event) => event.preventDefault()}
       >
-        {hasMultipleImages && (
-          <>
-            <div className="fixed top-1/2 left-3 -translate-y-1/2 z-50">
-              <Button
-                onClick={showPrevImage}
-                variant="secondary"
-                size="icon"
-                className="rounded-full bg-black/35 hover:bg-black/55 border border-white/10 text-white"
-                aria-label="Show previous image"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-            </div>
-            <div className="fixed top-1/2 right-3 -translate-y-1/2 z-50">
-              <Button
-                onClick={showNextImage}
-                variant="secondary"
-                size="icon"
-                className="rounded-full bg-black/35 hover:bg-black/55 border border-white/10 text-white"
-                aria-label="Show next image"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </Button>
-            </div>
-          </>
-        )}
-
         <div
-          className={cn("fixed inset-0 bg-black transition-opacity duration-200", isClosing ? "opacity-70" : "opacity-100")}
+          ref={containerRef}
+          className="fixed inset-0 touch-pan-y bg-black"
           onClick={() => {
-            if (isSwipingRef.current) {
-              isSwipingRef.current = false;
+            if (isPointerSwipingRef.current) {
+              isPointerSwipingRef.current = false;
               return;
             }
-            animateCloseToSource();
+            onOpenChange(false);
           }}
-        />
+        >
+          <div
+            className="h-full flex"
+            style={{
+              width: `${imgUrls.length * viewportWidth}px`,
+              transform: `translate3d(${trackTranslate}px, 0, 0)`,
+              transition: isDragging ? "none" : SWIPE_TRANSITION,
+            }}
+            onMouseDown={(event) => handlePointerDown(event.clientX)}
+            onMouseMove={(event) => handlePointerMove(event.clientX)}
+            onMouseUp={handlePointerUp}
+            onMouseLeave={handlePointerUp}
+            onTouchStart={(event) => handlePointerDown(event.touches[0]?.clientX ?? 0)}
+            onTouchMove={(event) => handlePointerMove(event.touches[0]?.clientX ?? 0)}
+            onTouchEnd={handlePointerUp}
+          >
+            {imgUrls.map((url, index) => (
+              <div
+                key={`${url}-${index}`}
+                className="h-screen flex-shrink-0 flex items-center justify-center overflow-hidden bg-black"
+                style={{ width: `${viewportWidth}px` }}
+              >
+                <img
+                  src={url}
+                  alt={`Preview image ${index + 1} of ${imgUrls.length}`}
+                  className="w-full h-auto max-h-full object-contain select-none"
+                  draggable={false}
+                  loading={index === safeIndex ? "eager" : "lazy"}
+                  decoding="async"
+                />
+              </div>
+            ))}
+          </div>
 
-        <img
-          src={currentImageUrl}
-          alt={`Preview image ${safeIndex + 1} of ${imgUrls.length}`}
-          className="fixed object-contain select-none cursor-zoom-out"
-          style={imageStyle}
-          draggable={false}
-          loading="eager"
-          decoding="async"
-          onMouseDown={(event) => {
-            dragStartXRef.current = event.clientX;
-          }}
-          onMouseUp={(event) => finishSwipe(event.clientX)}
-          onMouseLeave={(event) => {
-            if (dragStartXRef.current !== null) {
-              finishSwipe(event.clientX);
-            }
-          }}
-          onTouchStart={(event) => {
-            dragStartXRef.current = event.touches[0]?.clientX ?? null;
-          }}
-          onTouchEnd={(event) => {
-            const touch = event.changedTouches[0];
-            if (touch) {
-              finishSwipe(touch.clientX);
-            }
-          }}
-          onLoad={(event) => {
-            const { naturalWidth, naturalHeight } = event.currentTarget;
-            if (naturalWidth > 0 && naturalHeight > 0) {
-              setNaturalSizes((prev) => ({
-                ...prev,
-                [currentImageUrl]: { width: naturalWidth, height: naturalHeight },
-              }));
-            }
-          }}
-        />
-
-        {hasMultipleImages && <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2">{dots}</div>}
+          {hasMultipleImages && <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2">{dots}</div>}
+        </div>
 
         <div id="image-preview-description" className="sr-only">
           Image preview dialog. Press Escape to close. Use left/right arrow keys or swipe to switch images.
