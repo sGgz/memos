@@ -14,6 +14,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({
   onContentClick,
   onContentDoubleClick,
   onToggleNsfwVisibility,
+  onAttachmentImageClick,
   onCommentClick,
   showActionBar,
   onEdit,
@@ -40,7 +41,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({
           onDoubleClick={onContentDoubleClick}
           compact={memo.pinned ? false : compact} // Always show full content when pinned
         />
-        <AttachmentList attachments={memo.attachments} />
+        <AttachmentList attachments={memo.attachments} onImagePreviewOpen={onAttachmentImageClick} />
         <RelationList relations={referencedMemos} currentMemoName={memo.name} parentPage={parentPage} />
         {memo.location && <LocationDisplay location={memo.location} />}
         <div className="w-full flex items-start gap-2">

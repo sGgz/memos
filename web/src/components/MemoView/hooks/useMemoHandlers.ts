@@ -7,7 +7,7 @@ interface UseMemoHandlersOptions {
   parentPage: string;
   readonly: boolean;
   openEditor: () => void;
-  openPreview: (url: string) => void;
+  openPreview: (options: { urls: string[]; index: number; sourceRects: (DOMRect | null)[] }) => void;
 }
 
 export const useMemoHandlers = (options: UseMemoHandlersOptions) => {
@@ -25,8 +25,14 @@ export const useMemoHandlers = (options: UseMemoHandlersOptions) => {
       if (targetEl.tagName === "IMG") {
         const linkElement = targetEl.closest("a");
         if (linkElement) return; // If image is inside a link, don't show preview
-        const imgUrl = targetEl.getAttribute("src");
-        if (imgUrl) openPreview(imgUrl);
+        const currentTarget = e.currentTarget as HTMLDivElement;
+        const imgElements = Array.from(currentTarget.querySelectorAll("img"));
+        const urls = imgElements.map((img) => img.getAttribute("src") ?? "").filter((src) => !!src);
+        const sourceRects = imgElements.map((img) => img.getBoundingClientRect());
+        const index = imgElements.indexOf(targetEl as HTMLImageElement);
+        if (urls.length && index >= 0) {
+          openPreview({ urls, index, sourceRects });
+        }
       }
     },
     [openPreview],

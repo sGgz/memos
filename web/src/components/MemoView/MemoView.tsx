@@ -89,6 +89,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
           compact={props.compact}
           onContentClick={handleMemoContentClick}
           onContentDoubleClick={handleMemoContentDoubleClick}
+          onAttachmentImageClick={openPreview}
           onToggleNsfwVisibility={toggleNsfwVisibility}
           onCommentClick={() => setForceCommentEditor(true)}
           showActionBar={currentUser && !isArchived}
@@ -107,6 +108,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
           onOpenChange={setPreviewOpen}
           imgUrls={previewState.urls}
           initialIndex={previewState.index}
+          sourceRects={previewState.sourceRects}
         />
       </article>
     </MemoViewContext.Provider>

@@ -29,6 +29,7 @@ export interface MemoBodyProps {
   onContentClick: (e: React.MouseEvent) => void;
   onContentDoubleClick: (e: React.MouseEvent) => void;
   onToggleNsfwVisibility: () => void;
+  onAttachmentImageClick?: (options: { urls: string[]; index: number; sourceRects: (DOMRect | null)[] }) => void;
   onCommentClick?: () => void;
   showActionBar?: boolean;
   onEdit?: () => void;

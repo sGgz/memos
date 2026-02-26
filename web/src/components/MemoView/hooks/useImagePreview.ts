@@ -4,22 +4,29 @@ export interface ImagePreviewState {
   open: boolean;
   urls: string[];
   index: number;
+  sourceRects: (DOMRect | null)[];
+}
+
+interface OpenPreviewOptions {
+  urls: string[];
+  index: number;
+  sourceRects?: (DOMRect | null)[];
 }
 
 export interface UseImagePreviewReturn {
   previewState: ImagePreviewState;
-  openPreview: (url: string) => void;
+  openPreview: (options: OpenPreviewOptions) => void;
   closePreview: () => void;
   setPreviewOpen: (open: boolean) => void;
 }
 
 export const useImagePreview = (): UseImagePreviewReturn => {
-  const [previewState, setPreviewState] = useState<ImagePreviewState>({ open: false, urls: [], index: 0 });
+  const [previewState, setPreviewState] = useState<ImagePreviewState>({ open: false, urls: [], index: 0, sourceRects: [] });
 
   return {
     previewState,
-    openPreview: (url: string) => setPreviewState({ open: true, urls: [url], index: 0 }),
-    closePreview: () => setPreviewState({ open: false, urls: [], index: 0 }),
+    openPreview: ({ urls, index, sourceRects = [] }) => setPreviewState({ open: true, urls, index, sourceRects }),
+    closePreview: () => setPreviewState({ open: false, urls: [], index: 0, sourceRects: [] }),
     setPreviewOpen: (open: boolean) => setPreviewState((prev) => ({ ...prev, open })),
   };
 };

@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
-import PreviewImageDialog from "../../../PreviewImageDialog";
 import AttachmentCard from "./AttachmentCard";
 
 interface AttachmentListProps {
   attachments: Attachment[];
+  onImagePreviewOpen?: (options: { urls: string[]; index: number; sourceRects: (DOMRect | null)[] }) => void;
 }
 
 const separateMediaAndDocs = (attachments: Attachment[]): { media: Attachment[]; docs: Attachment[] } => {
@@ -55,7 +55,13 @@ const DocumentItem = ({ attachment }: { attachment: Attachment }) => {
   );
 };
 
-const SingleImageCard = ({ attachment, onImageClick }: { attachment: Attachment; onImageClick: (url: string) => void }) => {
+const SingleImageCard = ({
+  attachment,
+  onImageClick,
+}: {
+  attachment: Attachment;
+  onImageClick: (url: string, sourceRect: DOMRect | null) => void;
+}) => {
   const [ratio, setRatio] = useState<number | null>(null);
   const sourceUrl = getAttachmentUrl(attachment);
 
@@ -70,7 +76,7 @@ const SingleImageCard = ({ attachment, onImageClick }: { attachment: Attachment;
         isWideImage && "aspect-video",
         isTallImage && "aspect-[3/4]",
       )}
-      onClick={() => onImageClick(sourceUrl)}
+      onClick={(event) => onImageClick(sourceUrl, event.currentTarget.getBoundingClientRect())}
     >
       <img
         src={sourceUrl}
@@ -109,7 +115,13 @@ const getGridLayout = (count: number) => {
   }
 };
 
-const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => {
+const MediaGrid = ({
+  attachments,
+  onImageClick,
+}: {
+  attachments: Attachment[];
+  onImageClick: (url: string, sourceRect: DOMRect | null) => void;
+}) => {
   const layout = getGridLayout(attachments.length);
 
   return (
@@ -128,7 +140,7 @@ const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; o
             layout.itemClass,
             "rounded-lg overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer group",
           )}
-          onClick={() => onImageClick(getAttachmentUrl(attachment))}
+          onClick={(event) => onImageClick(getAttachmentUrl(attachment), event.currentTarget.getBoundingClientRect())}
         >
           <div className="w-full h-full relative">
             <AttachmentCard attachment={attachment} className="rounded-none" />
@@ -158,14 +170,7 @@ const DocsList = ({ attachments }: { attachments: Attachment[] }) => (
   </div>
 );
 
-const AttachmentList = ({ attachments }: AttachmentListProps) => {
-  const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number; mimeType?: string }>({
-    open: false,
-    urls: [],
-    index: 0,
-    mimeType: undefined,
-  });
-
+const AttachmentList = ({ attachments, onImagePreviewOpen }: AttachmentListProps) => {
   const { media: mediaItems, docs: docItems } = separateMediaAndDocs(attachments);
   const imageOnlyMedia = mediaItems.filter((item) => getAttachmentType(item) === "image/*");
   const allImages = imageOnlyMedia.length === mediaItems.length && mediaItems.length > 0;
@@ -174,35 +179,28 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
     return null;
   }
 
-  const handleImageClick = (imgUrl: string) => {
+  const handleImageClick = (imgUrl: string, sourceRect: DOMRect | null) => {
     const imageAttachments = mediaItems.filter((a) => getAttachmentType(a) === "image/*");
     const imgUrls = imageAttachments.map((a) => getAttachmentUrl(a));
     const index = imgUrls.findIndex((url) => url === imgUrl);
-    const mimeType = imageAttachments[index]?.type;
-    setPreviewImage({ open: true, urls: imgUrls, index, mimeType });
+    const sourceRects = imgUrls.map((_, i) => (i === index ? sourceRect : null));
+    if (index >= 0) {
+      onImagePreviewOpen?.({ urls: imgUrls, index, sourceRects });
+    }
   };
 
   return (
-    <>
-      <div className="w-full rounded-lg border-0 bg-transparent overflow-hidden">
-        <div className="p-0 flex flex-col gap-1">
-          {mediaItems.length > 0 && !allImages && <MediaGrid attachments={mediaItems} onImageClick={handleImageClick} />}
-          {allImages && imageOnlyMedia.length === 1 && <SingleImageCard attachment={imageOnlyMedia[0]} onImageClick={handleImageClick} />}
-          {allImages && imageOnlyMedia.length > 1 && <MediaGrid attachments={imageOnlyMedia} onImageClick={handleImageClick} />}
+    <div className="w-full rounded-lg border-0 bg-transparent overflow-hidden">
+      <div className="p-0 flex flex-col gap-1">
+        {mediaItems.length > 0 && !allImages && <MediaGrid attachments={mediaItems} onImageClick={handleImageClick} />}
+        {allImages && imageOnlyMedia.length === 1 && <SingleImageCard attachment={imageOnlyMedia[0]} onImageClick={handleImageClick} />}
+        {allImages && imageOnlyMedia.length > 1 && <MediaGrid attachments={imageOnlyMedia} onImageClick={handleImageClick} />}
 
-          {mediaItems.length > 0 && docItems.length > 0 && <div className="border-t mt-1 border-border opacity-60" />}
+        {mediaItems.length > 0 && docItems.length > 0 && <div className="border-t mt-1 border-border opacity-60" />}
 
-          {docItems.length > 0 && <DocsList attachments={docItems} />}
-        </div>
+        {docItems.length > 0 && <DocsList attachments={docItems} />}
       </div>
-
-      <PreviewImageDialog
-        open={previewImage.open}
-        onOpenChange={(open: boolean) => setPreviewImage((prev) => ({ ...prev, open }))}
-        imgUrls={previewImage.urls}
-        initialIndex={previewImage.index}
-      />
-    </>
+    </div>
   );
 };
 
