@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { matchPath } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
+import { useInstance } from "@/contexts/InstanceContext";
 import { useView } from "@/contexts/ViewContext";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
@@ -87,7 +88,9 @@ function useAutoFetchWhenNotScrollable({
 const PagedMemoList = (props: Props) => {
   const t = useTranslate();
   const { layout } = useView();
+  const { generalSetting } = useInstance();
   const queryClient = useQueryClient();
+  const coverUrl = generalSetting.customProfile?.coverUrl;
 
   // Show memo editor only on the root route by default
   const showMemoEditor = props.showMemoEditor ?? Boolean(matchPath(Routes.HOME, window.location.pathname));
@@ -166,14 +169,24 @@ const PagedMemoList = (props: Props) => {
             prefixElement={
               <>
                 {showMemoEditor ? (
-                  <div className="mb-6 -mt-16">
-                    <MemoEditor
-                      className="mx-auto w-[90%] relative z-30"
-                      cacheKey="home-memo-editor"
-                      placeholder={t("editor.any-thoughts")}
-                      minimal
-                      variant="publish"
-                    />
+                  <div className="mb-6 -mt-14">
+                    <div className="relative mx-auto w-full max-w-3xl">
+                      <div className="h-48 w-full overflow-hidden rounded-[28px] border border-border/40 bg-muted/40 shadow-[0_20px_48px_rgba(15,23,42,0.18)]">
+                        {coverUrl ? (
+                          <img src={coverUrl} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="h-full w-full bg-gradient-to-br from-emerald-200/70 via-emerald-100/40 to-background" />
+                        )}
+                      </div>
+
+                      <MemoEditor
+                        className="relative z-30 mx-auto -mt-14 w-[92%]"
+                        cacheKey="home-memo-editor"
+                        placeholder={t("editor.any-thoughts")}
+                        minimal
+                        variant="publish"
+                      />
+                    </div>
                   </div>
                 ) : undefined}
                 <MemoFilters />
