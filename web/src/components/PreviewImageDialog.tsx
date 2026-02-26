@@ -12,6 +12,7 @@ interface Props {
 
 const SWIPE_THRESHOLD_RATIO = 0.18;
 const SWIPE_TRANSITION = "transform 320ms cubic-bezier(0.22, 1, 0.36, 1)";
+const EDGE_RESISTANCE = 0.35;
 
 function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: Props) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -33,29 +34,43 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
       if (!imgUrls.length) {
         return 0;
       }
-      return (nextIndex + imgUrls.length) % imgUrls.length;
+      return Math.max(0, Math.min(nextIndex, imgUrls.length - 1));
     },
     [imgUrls.length],
   );
 
+  const applyEdgeResistance = useCallback(
+    (deltaX: number) => {
+      const atFirstImage = safeIndex === 0;
+      const atLastImage = safeIndex === imgUrls.length - 1;
+
+      if ((atFirstImage && deltaX > 0) || (atLastImage && deltaX < 0)) {
+        return deltaX * EDGE_RESISTANCE;
+      }
+
+      return deltaX;
+    },
+    [safeIndex, imgUrls.length],
+  );
+
   const showPrevImage = useCallback(() => {
-    if (!hasMultipleImages) {
+    if (!hasMultipleImages || safeIndex === 0) {
       return;
     }
     setCurrentIndex((prev) => clampIndex(prev - 1));
-  }, [hasMultipleImages, clampIndex]);
+  }, [hasMultipleImages, safeIndex, clampIndex]);
 
   const showNextImage = useCallback(() => {
-    if (!hasMultipleImages) {
+    if (!hasMultipleImages || safeIndex >= imgUrls.length - 1) {
       return;
     }
     setCurrentIndex((prev) => clampIndex(prev + 1));
-  }, [hasMultipleImages, clampIndex]);
+  }, [hasMultipleImages, safeIndex, imgUrls.length, clampIndex]);
 
   useEffect(() => {
-    setCurrentIndex(initialIndex);
+    setCurrentIndex(clampIndex(initialIndex));
     setDragOffsetX(0);
-  }, [initialIndex]);
+  }, [initialIndex, clampIndex]);
 
   useEffect(() => {
     if (open) {
@@ -111,7 +126,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
     if (Math.abs(deltaX) > 4) {
       isPointerSwipingRef.current = true;
     }
-    setDragOffsetX(deltaX);
+
+    setDragOffsetX(applyEdgeResistance(deltaX));
   };
 
   const handlePointerUp = () => {
@@ -124,11 +140,13 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
 
     const deltaX = lastDeltaXRef.current;
     const threshold = viewportWidth * SWIPE_THRESHOLD_RATIO;
+    const canMoveNext = safeIndex < imgUrls.length - 1;
+    const canMovePrev = safeIndex > 0;
 
     if (Math.abs(deltaX) > threshold) {
-      if (deltaX < 0) {
+      if (deltaX < 0 && canMoveNext) {
         setCurrentIndex((prev) => clampIndex(prev + 1));
-      } else {
+      } else if (deltaX > 0 && canMovePrev) {
         setCurrentIndex((prev) => clampIndex(prev - 1));
       }
     }
@@ -165,11 +183,11 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
       }}
     >
       <DialogContent
-        className="!w-[100vw] !h-[100vh] !max-w-[100vw] !max-h-[100vh] p-0 border-0 shadow-none bg-black/98 [&>button]:hidden"
+        className="!fixed !inset-0 !w-screen !h-screen !max-w-none !max-h-none !rounded-none p-0 border-0 shadow-none bg-black [&>button]:hidden"
         aria-describedby="image-preview-description"
       >
         <div
-          className="fixed inset-0 touch-pan-y"
+          className="fixed inset-0 touch-pan-y bg-black"
           onClick={() => {
             if (isPointerSwipingRef.current) {
               isPointerSwipingRef.current = false;
@@ -192,10 +210,12 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
             onTouchStart={(event) => handlePointerDown(event.touches[0]?.clientX ?? 0)}
             onTouchMove={(event) => handlePointerMove(event.touches[0]?.clientX ?? 0)}
             onTouchEnd={handlePointerUp}
-            onClick={(event) => event.stopPropagation()}
           >
             {imgUrls.map((url, index) => (
-              <div key={`${url}-${index}`} className="w-screen h-screen flex-shrink-0 flex items-center justify-center overflow-hidden">
+              <div
+                key={`${url}-${index}`}
+                className="w-screen h-screen flex-shrink-0 flex items-center justify-center overflow-hidden bg-black"
+              >
                 <img
                   src={url}
                   alt={`Preview image ${index + 1} of ${imgUrls.length}`}
