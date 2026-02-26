@@ -150,6 +150,14 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     if (zoomStartTimerRef.current) {
       window.clearTimeout(zoomStartTimerRef.current);
     }
+    if (animationTimerRef.current) {
+      window.clearTimeout(animationTimerRef.current);
+      animationTimerRef.current = null;
+    }
+    if (contentReadyTimerRef.current) {
+      window.clearTimeout(contentReadyTimerRef.current);
+      contentReadyTimerRef.current = null;
+    }
     setIsClosing(true);
     zoomStartTimerRef.current = window.setTimeout(
       () => {
