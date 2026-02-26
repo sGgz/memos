@@ -400,7 +400,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
                 ? "none"
                 : isClosing
                   ? `image-preview-content-out ${IMAGE_TRANSITION_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards`
-                  : `image-preview-content-in ${PREVIEW_ENTER_DURATION_MS}ms cubic-bezier(0.2, 0.8, 0.2, 1)`,
+                  : "none",
             }}
             onMouseDown={(event) => handlePointerDown(event.clientX)}
             onMouseMove={(event) => handlePointerMove(event.clientX)}
