@@ -203,7 +203,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
       }}
     >
       <DialogContent
-        className="!fixed !inset-0 !w-screen !h-screen !max-w-none !max-h-none !rounded-none p-0 border-0 shadow-none bg-black [&>button]:hidden"
+        showCloseButton={false}
+        className="!fixed !inset-0 !top-0 !left-0 !w-screen !h-screen !max-w-none !max-h-none !translate-x-0 !translate-y-0 !rounded-none p-0 border-0 shadow-none bg-black [&>div]:!h-full [&>div]:!overflow-hidden"
         aria-describedby="image-preview-description"
       >
         <div
