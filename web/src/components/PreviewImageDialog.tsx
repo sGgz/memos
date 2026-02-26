@@ -14,7 +14,6 @@ const SWIPE_THRESHOLD_RATIO = 0.18;
 const SWIPE_TRANSITION = "transform 320ms cubic-bezier(0.22, 1, 0.36, 1)";
 const EDGE_RESISTANCE = 0.35;
 const PREVIEW_ENTER_DURATION_MS = 420;
-const PREVIEW_EXIT_DURATION_MS = 500;
 const IMAGE_TRANSITION_DURATION_MS = 460;
 
 interface ZoomAnimationState {
@@ -55,6 +54,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
   const isPointerSwipingRef = useRef(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const naturalSizeMapRef = useRef(new Map<string, { width: number; height: number }>());
+  const closeTimerRef = useRef<number | null>(null);
+  const animationTimerRef = useRef<number | null>(null);
 
   const safeIndex = Math.max(0, Math.min(currentIndex, Math.max(imgUrls.length - 1, 0)));
   const hasMultipleImages = imgUrls.length > 1;
@@ -138,18 +139,49 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     });
 
     setIsClosing(true);
-    window.setTimeout(() => onOpenChange(false), IMAGE_TRANSITION_DURATION_MS);
+    closeTimerRef.current = window.setTimeout(() => {
+      setVisible(false);
+      setIsClosing(false);
+      setIsDragging(false);
+      setDragOffsetX(0);
+      isPointerSwipingRef.current = false;
+      onOpenChange(false);
+      closeTimerRef.current = null;
+    }, IMAGE_TRANSITION_DURATION_MS);
   }, [visible, isClosing, imgUrls, safeIndex, getTargetRect, sourceRects, onOpenChange]);
 
   useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) {
+        window.clearTimeout(closeTimerRef.current);
+      }
+      if (animationTimerRef.current) {
+        window.clearTimeout(animationTimerRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (open) {
+      if (closeTimerRef.current) {
+        window.clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = null;
+      }
+
+      const nextIndex = clampIndex(initialIndex);
+      setCurrentIndex(nextIndex);
       setVisible(true);
       setIsClosing(false);
+      setIsDragging(false);
+      setDragOffsetX(0);
+      startXRef.current = null;
+      lastDeltaXRef.current = 0;
+      isPointerSwipingRef.current = false;
 
       const viewportW = typeof window !== "undefined" ? window.innerWidth : 0;
       const viewportH = typeof window !== "undefined" ? window.innerHeight : 0;
-      const imageUrl = imgUrls[clampIndex(initialIndex)] ?? "";
-      const fromRect = sourceRects[clampIndex(initialIndex)] ?? createFallbackRect(viewportW, viewportH);
+      const imageUrl = imgUrls[nextIndex] ?? "";
+      const fromRect = sourceRects[nextIndex] ?? createFallbackRect(viewportW, viewportH);
       const toRect = getTargetRect(imageUrl);
 
       setZoomReady(false);
@@ -164,32 +196,25 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
         setZoomReady(true);
       });
 
-      const timer = window.setTimeout(() => setZoomAnimation(null), IMAGE_TRANSITION_DURATION_MS + 30);
-      return () => window.clearTimeout(timer);
+      if (animationTimerRef.current) {
+        window.clearTimeout(animationTimerRef.current);
+      }
+      animationTimerRef.current = window.setTimeout(() => {
+        setZoomAnimation(null);
+        animationTimerRef.current = null;
+      }, IMAGE_TRANSITION_DURATION_MS + 30);
+      return () => {
+        if (animationTimerRef.current) {
+          window.clearTimeout(animationTimerRef.current);
+          animationTimerRef.current = null;
+        }
+      };
     }
 
     if (visible && !isClosing) {
       startExitAnimation();
       return;
     }
-
-    if (!visible) {
-      setIsDragging(false);
-      setDragOffsetX(0);
-      return;
-    }
-
-    setIsClosing(true);
-    const timer = window.setTimeout(() => {
-      setVisible(false);
-      setIsClosing(false);
-      setIsDragging(false);
-      setDragOffsetX(0);
-    }, PREVIEW_EXIT_DURATION_MS);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
   }, [open, visible, imgUrls, initialIndex, sourceRects, clampIndex, getTargetRect, isClosing, startExitAnimation]);
 
   useEffect(() => {
@@ -320,7 +345,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
           className="fixed inset-0 touch-pan-y bg-black"
           style={{
             animation: isClosing
-              ? `image-preview-overlay-out ${PREVIEW_EXIT_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1) forwards`
+              ? `image-preview-overlay-out ${IMAGE_TRANSITION_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1) forwards`
               : `image-preview-overlay-in ${PREVIEW_ENTER_DURATION_MS}ms cubic-bezier(0.16, 1, 0.3, 1)`,
           }}
           onClick={() => {
@@ -339,7 +364,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
               transition: isDragging ? "none" : SWIPE_TRANSITION,
               opacity: zoomAnimation ? 0 : 1,
               animation: isClosing
-                ? `image-preview-content-out ${PREVIEW_EXIT_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards`
+                ? `image-preview-content-out ${IMAGE_TRANSITION_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards`
                 : `image-preview-content-in ${PREVIEW_ENTER_DURATION_MS}ms cubic-bezier(0.2, 0.8, 0.2, 1)`,
             }}
             onMouseDown={(event) => handlePointerDown(event.clientX)}
