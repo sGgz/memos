@@ -56,6 +56,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
   const naturalSizeMapRef = useRef(new Map<string, { width: number; height: number }>());
   const closeTimerRef = useRef<number | null>(null);
   const animationTimerRef = useRef<number | null>(null);
+  const previousOpenRef = useRef(open);
 
   const safeIndex = Math.max(0, Math.min(currentIndex, Math.max(imgUrls.length - 1, 0)));
   const hasMultipleImages = imgUrls.length > 1;
@@ -99,11 +100,6 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     }
     setCurrentIndex((prev) => clampIndex(prev + 1));
   }, [hasMultipleImages, safeIndex, imgUrls.length, clampIndex]);
-
-  useEffect(() => {
-    setCurrentIndex(clampIndex(initialIndex));
-    setDragOffsetX(0);
-  }, [initialIndex, clampIndex]);
 
   const getTargetRect = useCallback((imageUrl: string): DOMRect => {
     const viewportW = typeof window !== "undefined" ? window.innerWidth : 0;
@@ -162,7 +158,10 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
   }, []);
 
   useEffect(() => {
-    if (open) {
+    const wasOpen = previousOpenRef.current;
+    previousOpenRef.current = open;
+
+    if (open && !wasOpen) {
       if (closeTimerRef.current) {
         window.clearTimeout(closeTimerRef.current);
         closeTimerRef.current = null;
@@ -203,17 +202,11 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
         setZoomAnimation(null);
         animationTimerRef.current = null;
       }, IMAGE_TRANSITION_DURATION_MS + 30);
-      return () => {
-        if (animationTimerRef.current) {
-          window.clearTimeout(animationTimerRef.current);
-          animationTimerRef.current = null;
-        }
-      };
+      return;
     }
 
-    if (visible && !isClosing) {
+    if (!open && wasOpen && visible && !isClosing) {
       startExitAnimation();
-      return;
     }
   }, [open, visible, imgUrls, initialIndex, sourceRects, clampIndex, getTargetRect, isClosing, startExitAnimation]);
 
@@ -307,6 +300,9 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     startXRef.current = null;
     setIsDragging(false);
     setDragOffsetX(0);
+    window.setTimeout(() => {
+      isPointerSwipingRef.current = false;
+    }, 0);
   };
 
   const trackTranslate = useMemo(() => {
