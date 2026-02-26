@@ -183,7 +183,14 @@ const AttachmentList = ({ attachments, onImagePreviewOpen }: AttachmentListProps
     const imageAttachments = mediaItems.filter((a) => getAttachmentType(a) === "image/*");
     const imgUrls = imageAttachments.map((a) => getAttachmentUrl(a));
     const index = imgUrls.findIndex((url) => url === imgUrl);
-    const sourceRects = imgUrls.map((_, i) => (i === index ? sourceRect : null));
+    const sourceRects = imgUrls.map((url, i) => {
+      if (i === index) {
+        return sourceRect;
+      }
+      const escapedUrl = typeof CSS !== "undefined" && CSS.escape ? CSS.escape(url) : url.replace(/"/g, '\\"');
+      const img = document.querySelector(`img[src="${escapedUrl}"]`);
+      return img?.getBoundingClientRect() ?? null;
+    });
     if (index >= 0) {
       onImagePreviewOpen?.({ urls: imgUrls, index, sourceRects });
     }
