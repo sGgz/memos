@@ -54,10 +54,11 @@ const DialogContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> &
     VariantProps<typeof dialogContentVariants> & {
       showCloseButton?: boolean;
+      overlayClassName?: string;
     }
->(({ className, children, showCloseButton = true, size, ...props }, ref) => (
+>(({ className, children, showCloseButton = true, size, overlayClassName, ...props }, ref) => (
   <DialogPortal>
-    <DialogOverlay />
+    <DialogOverlay className={overlayClassName} />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(dialogContentVariants({ size }), className)}
