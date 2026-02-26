@@ -172,19 +172,16 @@
   @keyframes image-preview-content-in {
     0% {
       opacity: 0;
-      transform: scale(0.92);
       filter: blur(10px);
     }
 
     62% {
       opacity: 1;
-      transform: scale(1.02);
       filter: blur(0);
     }
 
     100% {
       opacity: 1;
-      transform: scale(1);
       filter: blur(0);
     }
   }
@@ -192,19 +189,16 @@
   @keyframes image-preview-content-out {
     0% {
       opacity: 1;
-      transform: scale(1);
       filter: blur(0);
     }
 
     55% {
       opacity: 1;
-      transform: scale(1.02);
       filter: blur(0);
     }
 
     100% {
       opacity: 0;
-      transform: scale(0.9);
       filter: blur(8px);
     }
   }
