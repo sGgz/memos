@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +48,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
   const [isClosing, setIsClosing] = useState(false);
   const [zoomAnimation, setZoomAnimation] = useState<ZoomAnimationState | null>(null);
   const [zoomReady, setZoomReady] = useState(false);
+  const [isIndexResetting, setIsIndexResetting] = useState(false);
 
   const startXRef = useRef<number | null>(null);
   const lastDeltaXRef = useRef(0);
@@ -157,17 +158,19 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const wasOpen = previousOpenRef.current;
-    previousOpenRef.current = open;
 
     if (open && !wasOpen) {
+      previousOpenRef.current = true;
+
       if (closeTimerRef.current) {
         window.clearTimeout(closeTimerRef.current);
         closeTimerRef.current = null;
       }
 
       const nextIndex = clampIndex(initialIndex);
+      setIsIndexResetting(true);
       setCurrentIndex(nextIndex);
       setVisible(true);
       setIsClosing(false);
@@ -176,6 +179,10 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
       startXRef.current = null;
       lastDeltaXRef.current = 0;
       isPointerSwipingRef.current = false;
+
+      window.requestAnimationFrame(() => {
+        setIsIndexResetting(false);
+      });
 
       const viewportW = typeof window !== "undefined" ? window.innerWidth : 0;
       const viewportH = typeof window !== "undefined" ? window.innerHeight : 0;
@@ -202,13 +209,18 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
         setZoomAnimation(null);
         animationTimerRef.current = null;
       }, IMAGE_TRANSITION_DURATION_MS + 30);
-      return;
     }
+  }, [open, imgUrls, initialIndex, sourceRects, clampIndex, getTargetRect]);
 
-    if (!open && wasOpen && visible && !isClosing) {
-      startExitAnimation();
+  useEffect(() => {
+    const wasOpen = previousOpenRef.current;
+    if (!open && wasOpen) {
+      previousOpenRef.current = false;
+      if (visible && !isClosing) {
+        startExitAnimation();
+      }
     }
-  }, [open, visible, imgUrls, initialIndex, sourceRects, clampIndex, getTargetRect, isClosing, startExitAnimation]);
+  }, [open, visible, isClosing, startExitAnimation]);
 
   useEffect(() => {
     if (!visible) {
@@ -357,7 +369,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
             style={{
               width: `${imgUrls.length * viewportWidth}px`,
               transform: `translate3d(${trackTranslate}px, 0, 0)`,
-              transition: isDragging ? "none" : SWIPE_TRANSITION,
+              transition: isDragging || isIndexResetting ? "none" : SWIPE_TRANSITION,
               opacity: zoomAnimation ? 0 : 1,
               animation: isClosing
                 ? `image-preview-content-out ${IMAGE_TRANSITION_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards`
