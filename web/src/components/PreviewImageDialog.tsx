@@ -15,8 +15,7 @@ const SWIPE_TRANSITION = "transform 320ms cubic-bezier(0.22, 1, 0.36, 1)";
 const EDGE_RESISTANCE = 0.35;
 const PREVIEW_ENTER_DURATION_MS = 420;
 const IMAGE_TRANSITION_DURATION_MS = 460;
-const OVERLAY_EXIT_DURATION_MS = 180;
-const EXIT_IMAGE_START_DELAY_MS = 140;
+const OVERLAY_EXIT_DURATION_MS = PREVIEW_ENTER_DURATION_MS;
 
 interface ZoomAnimationState {
   phase: "enter" | "exit";
@@ -159,15 +158,14 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
       contentReadyTimerRef.current = null;
     }
     setIsClosing(true);
-    zoomStartTimerRef.current = window.setTimeout(
-      () => {
+    if (!shouldSkipExitZoom) {
+      zoomStartTimerRef.current = window.setTimeout(() => {
         window.requestAnimationFrame(() => {
           setZoomReady(true);
         });
         zoomStartTimerRef.current = null;
-      },
-      shouldSkipExitZoom ? OVERLAY_EXIT_DURATION_MS : EXIT_IMAGE_START_DELAY_MS,
-    );
+      }, 0);
+    }
 
     closeTimerRef.current = window.setTimeout(
       () => {
@@ -179,7 +177,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
         onOpenChange(false);
         closeTimerRef.current = null;
       },
-      OVERLAY_EXIT_DURATION_MS + (shouldSkipExitZoom ? 0 : IMAGE_TRANSITION_DURATION_MS),
+      shouldSkipExitZoom ? OVERLAY_EXIT_DURATION_MS : Math.max(OVERLAY_EXIT_DURATION_MS, IMAGE_TRANSITION_DURATION_MS),
     );
   }, [visible, isClosing, imgUrls, safeIndex, getTargetRect, sourceRects, onOpenChange, isContentReady, zoomAnimation]);
 
@@ -500,8 +498,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
               top: `${zoomReady ? zoomAnimation.to.y : zoomAnimation.from.y}px`,
               width: `${zoomReady ? zoomAnimation.to.width : zoomAnimation.from.width}px`,
               height: `${zoomReady ? zoomAnimation.to.height : zoomAnimation.from.height}px`,
-              opacity: zoomAnimation.phase === "enter" ? (zoomReady ? 1 : 0.55) : zoomReady ? 0.6 : 0,
-              visibility: zoomAnimation.phase === "exit" && !zoomReady ? "hidden" : "visible",
+              opacity: zoomAnimation.phase === "enter" ? (zoomReady ? 1 : 0.55) : zoomReady ? 0.55 : 1,
+              visibility: "visible",
               transition: `all ${IMAGE_TRANSITION_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1), opacity ${IMAGE_TRANSITION_DURATION_MS}ms ease`,
             }}
           />
