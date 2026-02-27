@@ -15,7 +15,7 @@ const SWIPE_TRANSITION = "transform 320ms cubic-bezier(0.22, 1, 0.36, 1)";
 const EDGE_RESISTANCE = 0.35;
 const PREVIEW_ENTER_DURATION_MS = 420;
 const IMAGE_TRANSITION_DURATION_MS = 460;
-const OVERLAY_EXIT_DURATION_MS = 180;
+const OVERLAY_EXIT_DURATION_MS = 220;
 
 interface ZoomAnimationState {
   phase: "enter" | "exit";
@@ -57,6 +57,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
   const isPointerSwipingRef = useRef(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const naturalSizeMapRef = useRef(new Map<string, { width: number; height: number }>());
+  const imageElementMapRef = useRef(new Map<number, HTMLImageElement>());
   const closeTimerRef = useRef<number | null>(null);
   const animationTimerRef = useRef<number | null>(null);
   const contentReadyTimerRef = useRef<number | null>(null);
@@ -124,38 +125,61 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     const viewportW = typeof window !== "undefined" ? window.innerWidth : 0;
     const viewportH = typeof window !== "undefined" ? window.innerHeight : 0;
     const imageUrl = imgUrls[safeIndex] ?? "";
-    const fromRect = getTargetRect(imageUrl);
+    const renderedImageRect = imageElementMapRef.current.get(safeIndex)?.getBoundingClientRect();
+    const hasRenderedImage = Boolean(renderedImageRect && renderedImageRect.width > 0 && renderedImageRect.height > 0);
+    const fromRect = hasRenderedImage ? (renderedImageRect as DOMRect) : getTargetRect(imageUrl);
     const toRect = sourceRects[safeIndex] ?? createFallbackRect(viewportW, viewportH);
 
-    setZoomReady(false);
-    setZoomAnimation({
-      phase: "exit",
-      from: fromRect,
-      to: toRect,
-      imageUrl,
-    });
+    const isQuickClosing = !isContentReady;
+    const shouldSkipExitZoom = isQuickClosing;
+
+    if (!shouldSkipExitZoom) {
+      setZoomReady(false);
+      setZoomAnimation({
+        phase: "exit",
+        from: fromRect,
+        to: toRect,
+        imageUrl,
+      });
+    } else {
+      setZoomReady(false);
+      setZoomAnimation(null);
+    }
 
     if (zoomStartTimerRef.current) {
       window.clearTimeout(zoomStartTimerRef.current);
     }
+    if (animationTimerRef.current) {
+      window.clearTimeout(animationTimerRef.current);
+      animationTimerRef.current = null;
+    }
+    if (contentReadyTimerRef.current) {
+      window.clearTimeout(contentReadyTimerRef.current);
+      contentReadyTimerRef.current = null;
+    }
     setIsClosing(true);
-    zoomStartTimerRef.current = window.setTimeout(() => {
-      window.requestAnimationFrame(() => {
-        setZoomReady(true);
-      });
-      zoomStartTimerRef.current = null;
-    }, OVERLAY_EXIT_DURATION_MS);
+    if (!shouldSkipExitZoom) {
+      zoomStartTimerRef.current = window.setTimeout(() => {
+        window.requestAnimationFrame(() => {
+          setZoomReady(true);
+        });
+        zoomStartTimerRef.current = null;
+      }, 0);
+    }
 
-    closeTimerRef.current = window.setTimeout(() => {
-      setVisible(false);
-      setIsClosing(false);
-      setIsDragging(false);
-      setDragOffsetX(0);
-      isPointerSwipingRef.current = false;
-      onOpenChange(false);
-      closeTimerRef.current = null;
-    }, OVERLAY_EXIT_DURATION_MS + IMAGE_TRANSITION_DURATION_MS);
-  }, [visible, isClosing, imgUrls, safeIndex, getTargetRect, sourceRects, onOpenChange]);
+    closeTimerRef.current = window.setTimeout(
+      () => {
+        setVisible(false);
+        setIsClosing(false);
+        setIsDragging(false);
+        setDragOffsetX(0);
+        isPointerSwipingRef.current = false;
+        onOpenChange(false);
+        closeTimerRef.current = null;
+      },
+      shouldSkipExitZoom ? OVERLAY_EXIT_DURATION_MS : Math.max(OVERLAY_EXIT_DURATION_MS, IMAGE_TRANSITION_DURATION_MS),
+    );
+  }, [visible, isClosing, imgUrls, safeIndex, getTargetRect, sourceRects, onOpenChange, isContentReady, zoomAnimation]);
 
   useEffect(() => {
     return () => {
@@ -353,8 +377,10 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
   };
 
   const shouldHideTrack = useMemo(() => {
-    return Boolean(zoomAnimation) || !isContentReady;
-  }, [zoomAnimation, isContentReady]);
+    return Boolean(zoomAnimation) || !isContentReady || isClosing;
+  }, [zoomAnimation, isContentReady, isClosing]);
+
+  const isEnterAnimating = zoomAnimation?.phase === "enter";
 
   const trackTranslate = useMemo(() => {
     return -safeIndex * viewportWidth + dragOffsetX;
@@ -384,6 +410,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
     >
       <DialogContent
         showCloseButton={false}
+        overlayClassName="bg-transparent"
         className="!fixed !inset-0 !top-0 !left-0 !w-screen !h-screen !max-w-none !max-h-none !translate-x-0 !translate-y-0 !rounded-none p-0 border-0 shadow-none bg-transparent [&>div]:!h-full [&>div]:!overflow-hidden"
         aria-describedby="image-preview-description"
       >
@@ -398,6 +425,9 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
           onClick={() => {
             if (isPointerSwipingRef.current) {
               isPointerSwipingRef.current = false;
+              return;
+            }
+            if (isEnterAnimating) {
               return;
             }
             startExitAnimation();
@@ -443,6 +473,14 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
                     if (naturalWidth > 0 && naturalHeight > 0) {
                       naturalSizeMapRef.current.set(url, { width: naturalWidth, height: naturalHeight });
                     }
+                    imageElementMapRef.current.set(index, event.currentTarget);
+                  }}
+                  ref={(element) => {
+                    if (element) {
+                      imageElementMapRef.current.set(index, element);
+                    } else {
+                      imageElementMapRef.current.delete(index);
+                    }
                   }}
                 />
               </div>
@@ -466,8 +504,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, sou
               top: `${zoomReady ? zoomAnimation.to.y : zoomAnimation.from.y}px`,
               width: `${zoomReady ? zoomAnimation.to.width : zoomAnimation.from.width}px`,
               height: `${zoomReady ? zoomAnimation.to.height : zoomAnimation.from.height}px`,
-              opacity: zoomAnimation.phase === "enter" ? (zoomReady ? 1 : 0.55) : zoomReady ? 0.6 : 0,
-              visibility: zoomAnimation.phase === "exit" && !zoomReady ? "hidden" : "visible",
+              opacity: zoomAnimation.phase === "enter" ? (zoomReady ? 1 : 0.55) : zoomReady ? 0.55 : 1,
+              visibility: "visible",
               transition: `all ${IMAGE_TRANSITION_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1), opacity ${IMAGE_TRANSITION_DURATION_MS}ms ease`,
             }}
           />
