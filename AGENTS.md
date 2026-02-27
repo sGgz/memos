@@ -599,3 +599,59 @@ Each plugin has its own README with usage examples.
 - CORS enabled for all origins (configure for production)
 - Input validation at service layer
 - SQL injection prevention via parameterized queries
+
+## Long-running Agent Harness Notes (2025-11-26)
+
+These notes capture practical patterns for keeping multi-session agent work stable and incremental.
+
+### Core takeaways
+
+- Use a **two-phase setup**:
+  - Initializer agent (first run only) creates scaffolding and rules.
+  - Coding agent (all later runs) delivers one incremental slice and leaves traceable artifacts.
+- Context compaction alone is not enough; rely on **persistent artifacts** (`feature_list.json`, progress log, git history).
+- End each session in a merge-ready state: runnable code, clear records, and no hidden breakage.
+
+### Recommended artifacts
+
+- `init.sh`: one-command project bootstrap + basic smoke path.
+- `feature_list.json`: structured requirements with fields like `category`, `description`, `steps`, `passes`.
+- Progress log (for example `claude-progress.txt`): goals, actions, verification, blockers.
+- Git commits: at least one meaningful commit per session, with rollback-friendly history.
+
+### Session start checklist
+
+1. Run `pwd` to confirm working directory.
+2. Read the progress file and recent commits (`git log --oneline -20`).
+3. Read `feature_list.json` and pick **one** highest-priority failing feature.
+4. Run `init.sh` (or equivalent startup flow).
+5. Execute a minimal E2E smoke check before writing new code.
+
+### Coding constraints
+
+- Work on one feature at a time; avoid one-shot implementation attempts.
+- Do not edit/remove feature descriptions in the list; only update `passes` status.
+- Mark `passes=true` only after end-to-end verification.
+- If baseline is already broken, fix baseline first before adding functionality.
+
+### End-of-session constraints
+
+- Update progress notes with:
+  - What was changed,
+  - How it was verified,
+  - Risks and next actions.
+- Leave a clean handoff state so the next session can start immediately.
+- Use clear commit messages; avoid vague messages like `misc` or `fix stuff`.
+
+### Common failure modes and mitigations
+
+- Premature “done” claims → enforce visible failing items in `feature_list.json`.
+- Session handoff loss → rely on progress logs + git history.
+- Premature pass marking → require browser/E2E validation, not only unit/API checks.
+- New work on top of broken baseline → smoke test first, then implement.
+
+### Memos-specific execution guidance
+
+- For frontend validation, prefer mobile viewport and the `root/123` account flow when environment allows.
+- For UI-facing changes, include reproducible automation checks and screenshot artifacts.
+- Run at least minimal subsystem checks after each change (`go test` scoped packages or `web` lint).
