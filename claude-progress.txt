@@ -40,3 +40,4 @@
 - 本轮旧用例处理：`TC-FE-001` 因直接命中 `Explore` 列表样式先跳过旧预期；`TC-FE-002` 在发布版 `http://192.168.1.38:12345` 回归通过。
 - 新验证结果：在发布版 `http://192.168.1.38:12346/explore` 中，`Explore` 列表项外层类名为 `mb-2.5 flex w-full items-start gap-2`，相邻两条笔记实际纵向间距约 `10px`；封面滚动和正文不遮挡仍成立。
 - 用例维护：新增 `testcases/frontend/TC-FE-003-memo-list-spacing.md`，作为后续列表密度回归基线。
+- 维护：执行 `pnpm lint:fix` 自动修复前端格式问题 20 处，随后 `pnpm lint` 通过。
