@@ -18,6 +18,8 @@
 - **Format:** `pnpm format`
 - **Build:** `pnpm build`
 - **Bundle for backend release:** `pnpm release`
+- **Release validation order for shipped UI changes:** run `pnpm release` in `web/`, then `scripts/build.sh` from repo root, then restart `build/memos.exe` before browser verification.
+- **Regression testcase workflow:** maintain reusable cases under `testcases/`; after each change run all unaffected existing cases first, skip cases whose covered area is being changed until their expectations are updated, then verify the new behavior, update/add the testcase, and rerun it.
 
 ### Protocol Buffers (buf)
 - `cd proto && buf generate` (Go + TypeScript stubs)
@@ -42,4 +44,6 @@
 - **Styling/imports:** Tailwind CSS v4 via `@tailwindcss/vite`, `clsx`, and `tailwind-merge`. Absolute imports use the `@/` alias. Biome controls linting + formatting (line width 140, always semicolons).
 - **Testing strategy:** `store/test` harness spins up SQLite/MySQL/Postgres via Testcontainers; leave `DRIVER` unset to test all drivers, or set `DRIVER=sqlite` for faster local runs. Server/plugins use `go test -race` where possible.
 - **CI expectations:** Changes touching Go code must keep `go mod tidy` clean and pass golangci-lint + matrix tests; frontend changes must pass `pnpm lint` and `pnpm build`; proto changes must keep `buf lint`/`buf breaking` happy.
+- **Frontend manual verification:** use mobile viewport first, prefer `root / 123`, and for release-page issues confirm the asset hash from `curl http://127.0.0.1:<port>` before trusting a browser page that may still hold stale assets.
+- **Persistent memory:** record verification facts, testcase updates, and pitfalls in `claude-progress.txt` so the next session can resume without chat context.
 

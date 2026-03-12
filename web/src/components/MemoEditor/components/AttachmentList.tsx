@@ -38,7 +38,7 @@ const AttachmentList: FC<AttachmentListProps> = ({ attachments, localFiles = [],
     <div className="w-full">
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         {items.map((item) => (
-          <div key={item.id} className="relative aspect-square rounded-lg overflow-hidden bg-muted/30 border border-border/40">
+          <div key={item.id} className="relative aspect-square overflow-hidden bg-muted/30 border border-border/40">
             {item.category === "image" && item.thumbnailUrl ? (
               <img src={item.thumbnailUrl} alt="" className="w-full h-full object-cover" />
             ) : (

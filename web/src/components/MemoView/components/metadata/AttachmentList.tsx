@@ -72,7 +72,7 @@ const SingleImageCard = ({
     <button
       type="button"
       className={cn(
-        "w-full max-w-[11rem] rounded-lg overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer",
+        "w-full max-w-[11rem] overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer",
         isWideImage && "aspect-video",
         isTallImage && "aspect-[3/4]",
       )}
@@ -138,7 +138,7 @@ const MediaGrid = ({
           key={attachment.name}
           className={cn(
             layout.itemClass,
-            "rounded-lg overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer group",
+            "overflow-hidden bg-muted/30 border border-border/30 hover:border-primary/30 transition-all cursor-pointer group",
           )}
           onClick={(event) => onImageClick(getAttachmentUrl(attachment), event.currentTarget.getBoundingClientRect())}
         >
@@ -197,7 +197,7 @@ const AttachmentList = ({ attachments, onImagePreviewOpen }: AttachmentListProps
   };
 
   return (
-    <div className="w-full rounded-lg border-0 bg-transparent overflow-hidden">
+    <div className="w-full border-0 bg-transparent overflow-hidden">
       <div className="p-0 flex flex-col gap-1">
         {mediaItems.length > 0 && !allImages && <MediaGrid attachments={mediaItems} onImageClick={handleImageClick} />}
         {allImages && imageOnlyMedia.length === 1 && <SingleImageCard attachment={imageOnlyMedia[0]} onImageClick={handleImageClick} />}

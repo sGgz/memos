@@ -173,7 +173,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       */}
       <div
         className={cn(
-          "memo-editor-container group relative w-full flex flex-col justify-between items-start bg-background/95 px-5 pt-4 pb-1 rounded-2xl border border-border/60 gap-3 shadow-[0_18px_40px_rgba(15,23,42,0.12)] transition-all duration-300 hover:border-primary/30",
+          "memo-editor-container group relative w-full flex flex-col justify-between items-start bg-background/95 px-5 pt-4 pb-1 border border-border/60 gap-3 shadow-[0_18px_40px_rgba(15,23,42,0.12)] transition-all duration-300 hover:border-primary/30",
           FOCUS_MODE_STYLES.transition,
           state.ui.isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
           variant === "publish" && "min-h-[160px] pt-3 pb-5 bg-background/85 backdrop-blur-sm shadow-[0_18px_40px_rgba(15,23,42,0.16)]",
@@ -181,7 +181,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         )}
       >
         {variant === "publish" && (
-          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-2xl">
+          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
             <div className="h-[30%] w-full bg-gradient-to-br from-emerald-50/70 via-muted/30 to-transparent" />
           </div>
         )}

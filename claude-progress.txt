@@ -1,0 +1,43 @@
+Session memory for future coding runs.
+
+Date: 2026-03-12
+Topic: Frontend verification and release-build validation for UI changes.
+
+Persistent rules:
+- After any frontend UI/style/interaction change, automatically run validation instead of stopping at code inspection.
+- Read relevant files in `testcases/` before testing, and treat them as the regression source of truth.
+- After each change, run all existing unaffected test cases first; if a case covers an area changed in this task, skip it temporarily, verify the new behavior, then update/add the case and rerun that case.
+- Default validation order:
+  1. Run `pnpm lint` in `web/`.
+  2. If the change affects the shipped UI, run `pnpm release` in `web/`.
+  3. Run `scripts/build.sh` from repo root.
+  4. Restart the built server from `build/memos.exe`.
+  5. Verify in browser with mobile viewport `390x844`.
+- Frontend browser verification account: `root / 123`.
+- Browser verification must check both visual result and computed styles when relevant.
+- Record verification outcome here after finishing the task.
+
+Known pitfalls:
+- Memos serves frontend assets embedded from `server/router/frontend/dist` into the Go binary.
+- For release verification, `pnpm release` must happen before `scripts/build.sh`.
+- If browser shows old assets but `curl http://127.0.0.1:<port>` shows new hashes, suspect stale browser context instead of code failure.
+- For release pages, confirm asset hash from server HTML first, then verify browser-loaded asset hash if something looks wrong.
+
+2026-03-12 note:
+- Task: Change published memo background cards to square corners.
+- Source change confirmed in `web/src/pages/Explore.tsx` by removing `rounded-xl` from the published memo outer card wrapper.
+- Added persistent testcase directory `testcases/` and first testcase `testcases/frontend/TC-FE-001-explore-published-memo-square-corners.md`.
+- Added reusable testcase template `testcases/TEMPLATE.md` for future cases.
+- Release validation path that worked:
+  - `pnpm lint`
+  - `pnpm release`
+  - `scripts/build.sh`
+  - start `build/memos.exe` on `127.0.0.1:12345`
+  - open `/explore` in mobile viewport
+  - login with `root / 123`
+  - inspect target card computed style
+- Existing testcase regression status in this round:
+  - No prior testcase existed before this task, so there was nothing to replay first.
+  - After the feature change was verified, the new testcase `TC-FE-001` was created as the first baseline case.
+  - `TC-FE-001` was then executed against the release build and passed.
+- Final verified result: published memo outer wrapper class became `border border-border/50 bg-background/90 px-2.5 py-2`, and computed `border-radius` was `0px`.

@@ -8,7 +8,7 @@ interface SkeletonProps {
 const skeletonBase = "bg-gradient-to-r from-card/15 via-card/30 to-card/15 rounded-full animate-pulse";
 
 const MemoCardSkeleton = ({ showCreator, index }: { showCreator?: boolean; index: number }) => (
-  <div className="relative flex flex-col bg-gradient-to-br from-card/80 via-card/60 to-card/80 w-full px-5 py-4 mb-4 gap-3 rounded-2xl border border-border/50 shadow-[0_30px_60px_rgba(0,0,0,0.2)] backdrop-blur-xl">
+  <div className="relative flex flex-col bg-gradient-to-br from-card/80 via-card/60 to-card/80 w-full px-5 py-4 mb-4 gap-3 border border-border/50 shadow-[0_30px_60px_rgba(0,0,0,0.2)] backdrop-blur-xl">
     <div className="w-full flex justify-between items-center gap-2">
       <div className="grow flex items-center max-w-[calc(100%-8rem)]">
         {showCreator ? (

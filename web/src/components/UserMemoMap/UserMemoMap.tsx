@@ -71,7 +71,7 @@ const UserMemoMap = ({ creator, className }: Props) => {
     <div className={cn("relative z-0 w-full h-[380px] rounded-xl overflow-hidden border border-border shadow-sm", className)}>
       {memosWithLocation.length === 0 && (
         <div className="absolute inset-0 z-[1000] flex items-center justify-center pointer-events-none">
-          <div className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-background/70 px-4 py-2 shadow-sm backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-1 border border-border bg-background/70 px-4 py-2 shadow-sm backdrop-blur-sm">
             <MapPinIcon className="h-5 w-5 text-muted-foreground opacity-60" />
             <p className="text-xs font-medium text-muted-foreground">No location data found</p>
           </div>

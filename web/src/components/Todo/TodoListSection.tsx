@@ -55,12 +55,7 @@ const TodoListItem = ({ todo, variant, onToggle, onDelete }: TodoListItemProps) 
   const isOverdue = dueTime ? isTodoOverdue(dueTime) : false;
 
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-2 rounded-xl border border-border/60 bg-background px-4 py-3 transition-all",
-        isDone && "opacity-70",
-      )}
-    >
+    <div className={cn("flex flex-col gap-2 border border-border/60 bg-background px-4 py-3 transition-all", isDone && "opacity-70")}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
           <button
@@ -186,7 +181,7 @@ const TodoListSection = ({
           : "border-border bg-background";
 
   return (
-    <section className={cn("w-full rounded-2xl border px-5 py-4 sm:px-6", sectionTone)}>
+    <section className={cn("w-full border px-5 py-4 sm:px-6", sectionTone)}>
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-base font-semibold">{title}</h3>

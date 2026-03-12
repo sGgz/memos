@@ -70,7 +70,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({
       {/* NSFW content overlay */}
       {nsfw && !showNSFWContent && (
         <>
-          <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/40 to-transparent rounded-2xl backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/40 to-transparent backdrop-blur-sm" />
           <button
             type="button"
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 py-2.5 px-5 text-xs font-semibold tracking-[0.3em] text-muted-foreground uppercase border border-foreground/20 rounded-full bg-card/70 hover:bg-card/90 hover:text-foreground transition-all"

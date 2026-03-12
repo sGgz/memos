@@ -15,7 +15,7 @@ const RelationCard = ({ memo, parentPage, className }: RelationCardProps) => {
   return (
     <Link
       className={cn(
-        "flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-muted-foreground/80 hover:text-foreground hover:bg-card/50 border border-border/60 hover:border-primary/40 transition-all group shadow-[0_10px_25px_rgba(0,0,0,0.2)]",
+        "flex items-center gap-2 px-3 py-2 text-xs text-muted-foreground/80 hover:text-foreground hover:bg-card/50 border border-border/60 hover:border-primary/40 transition-all group shadow-[0_10px_25px_rgba(0,0,0,0.2)]",
         className,
       )}
       to={`/${memo.name}`}

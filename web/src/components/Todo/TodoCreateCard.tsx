@@ -53,7 +53,7 @@ const TodoCreateCard = () => {
   };
 
   return (
-    <div className="w-full rounded-2xl border border-border bg-card/80 backdrop-blur-sm shadow-[0_18px_45px_rgba(27,62,39,0.12)] p-5 sm:p-6 space-y-4">
+    <div className="w-full border border-border bg-card/80 backdrop-blur-sm shadow-[0_18px_45px_rgba(27,62,39,0.12)] p-5 sm:p-6 space-y-4">
       <div className="space-y-1">
         <h2 className="text-lg font-semibold">{t("todo.create.title")}</h2>
         <p className="text-sm text-muted-foreground">{t("todo.create.subtitle")}</p>

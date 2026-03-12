@@ -65,7 +65,7 @@ const Home = () => {
           <div className={cn("text-[10px]", showYear || showDay ? "mt-1" : "text-sm")}>{timeLabel}</div>
         </div>
         <div className="flex-1">
-          <div className="rounded-2xl border border-border/60 bg-background/90 px-3 py-3">
+          <div className="border border-border/60 bg-background/90 px-3 py-3">
             <div className="flex items-start gap-3">
               <UserAvatar className="h-8 w-8 mt-1.5" avatarUrl={creator?.avatarUrl} />
               <div className="flex-1">

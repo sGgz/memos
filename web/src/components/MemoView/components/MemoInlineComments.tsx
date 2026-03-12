@@ -90,7 +90,7 @@ const MemoInlineComments = ({ memoName, forceEditorOpen, onForceEditorClose }: M
       {showEditor && (
         <div className="mt-2">
           <MemoEditor
-            className="border border-border/60 rounded-2xl bg-background/80 shadow-none"
+            className="border border-border/60 bg-background/80 shadow-none"
             cacheKey={replyTarget ? `${memoName}-inline-comment-reply-${replyTarget.memo.name}` : `${memoName}-inline-comment`}
             placeholder={t("editor.add-your-comment-here")}
             initialContent={replyPrefix}
@@ -154,7 +154,7 @@ const InlineCommentItem = ({ memo, onReply }: { memo: Memo; onReply?: (memo: Mem
   return (
     <div
       className={cn(
-        "rounded-xl border border-border/50 bg-muted/20 px-3 py-1.5 text-sm transition-colors",
+        "border border-border/50 bg-muted/20 px-3 py-1.5 text-sm transition-colors",
         canReply && "cursor-pointer hover:border-primary/35 hover:bg-muted/35",
       )}
       onClick={canReply ? () => onReply?.(memo, creatorName) : undefined}

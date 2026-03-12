@@ -54,7 +54,7 @@ const Explore = () => {
           <div className={cn("text-[10px]", showYear || showDay ? "mt-0.5" : "text-xs")}>{timeLabel}</div>
         </div>
         <div className="flex-1">
-          <div className="rounded-xl border border-border/50 bg-background/90 px-2.5 py-2">
+          <div className="border border-border/50 bg-background/90 px-2.5 py-2">
             <div className="flex items-start gap-2.5">
               <UserAvatar className="mt-1 h-7 w-7" avatarUrl={creator?.avatarUrl} />
               <div className="flex-1">
