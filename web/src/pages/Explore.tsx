@@ -98,15 +98,17 @@ const Explore = () => {
     <div className="w-full">
       <CoverHeaderDialog />
 
-      <PagedMemoList
-        renderer={(memo: Memo, context) => <MemoRow memo={memo} context={context} />}
-        listSort={listSort}
-        orderBy={orderBy}
-        filter={memoFilter}
-        showCreator
-        showMemoEditor
-        containerClassName="max-w-none px-0 pt-1"
-      />
+      <div className="relative">
+        <PagedMemoList
+          renderer={(memo: Memo, context) => <MemoRow memo={memo} context={context} />}
+          listSort={listSort}
+          orderBy={orderBy}
+          filter={memoFilter}
+          showCreator
+          showMemoEditor
+          containerClassName="max-w-none px-0 pt-1"
+        />
+      </div>
     </div>
   );
 };

@@ -84,7 +84,7 @@ const CoverHeaderDialog = () => {
 
   return (
     <>
-      <div className="fixed inset-x-0 top-0 z-10 h-60 overflow-hidden bg-muted/30">
+      <div className="relative h-60 overflow-hidden bg-muted/30">
         <button
           type="button"
           className="group relative h-full w-full overflow-hidden bg-muted/30 pointer-events-auto"
@@ -101,8 +101,6 @@ const CoverHeaderDialog = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
         </button>
       </div>
-      <div className="h-60" />
-
       <Dialog open={coverOpen} onOpenChange={handleCoverOpenChange}>
         <DialogContent>
           <DialogHeader>
