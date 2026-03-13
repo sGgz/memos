@@ -16,6 +16,7 @@ import type { EditorRefActions } from "./Editor";
 import { useAutoSave, useFocusMode, useKeyboard, useMemoInit } from "./hooks";
 import { cacheService, errorService, memoService, validationService } from "./services";
 import { EditorProvider, useEditorContext } from "./state";
+import InsertMenu from "./Toolbar/InsertMenu";
 import type { MemoEditorProps } from "./types";
 
 const MemoEditor = (props: MemoEditorProps) => {
@@ -173,16 +174,17 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       */}
       <div
         className={cn(
-          "memo-editor-container group relative w-full flex flex-col justify-between items-start bg-background/95 px-5 pt-4 pb-1 border border-border/60 gap-3 shadow-[0_18px_40px_rgba(15,23,42,0.12)] transition-all duration-300 hover:border-primary/30",
+          "memo-editor-container group relative flex w-full flex-col items-start justify-between border border-border/60 bg-background/95 px-5 pt-4 pb-1 gap-3 shadow-[0_18px_40px_rgba(15,23,42,0.12)] transition-all duration-300 hover:border-primary/30",
           FOCUS_MODE_STYLES.transition,
           state.ui.isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
-          variant === "publish" && "min-h-[160px] pt-3 pb-5 bg-background/85 backdrop-blur-sm shadow-[0_18px_40px_rgba(15,23,42,0.16)]",
+          variant === "publish" &&
+            "min-h-[270px] overflow-hidden rounded-[28px] border-white/70 bg-background px-5 pt-4 pb-5 shadow-[0_22px_48px_rgba(15,23,42,0.18)] hover:border-white/90 hover:shadow-[0_26px_56px_rgba(15,23,42,0.2)]",
           className,
         )}
       >
         {variant === "publish" && (
           <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-            <div className="h-[30%] w-full bg-gradient-to-br from-emerald-50/70 via-muted/30 to-transparent" />
+            <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-slate-100/80 via-white/30 to-transparent" />
           </div>
         )}
         {/* Exit button is absolutely positioned in top-right corner when active */}
@@ -205,6 +207,28 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2 z-10">
           <EditorMetadata memoName={memoName} minimal={minimal} variant={variant} />
+          {variant === "publish" && (
+            <div className="flex w-full items-center justify-start gap-3 pt-1">
+              <InsertMenu
+                isUploading={state.ui.isLoading.uploading}
+                location={state.metadata.location}
+                onLocationChange={(location) => dispatch(actions.setMetadata({ location }))}
+                onToggleFocusMode={handleToggleFocusMode}
+                memoName={memoName}
+                compact
+                compactMode="upload"
+              />
+              <InsertMenu
+                isUploading={state.ui.isLoading.uploading}
+                location={state.metadata.location}
+                onLocationChange={(location) => dispatch(actions.setMetadata({ location }))}
+                onToggleFocusMode={handleToggleFocusMode}
+                memoName={memoName}
+                compact
+                compactMode="menu"
+              />
+            </div>
+          )}
           {variant !== "publish" && (
             <EditorToolbar
               onSave={handleSave}

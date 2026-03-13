@@ -9,7 +9,7 @@
 - 已完成前端改动代码提交到工作区
 - 已在 `web/` 运行 `pnpm lint`
 - 若验证发布版：已按顺序执行 `pnpm release` -> 仓库根目录 `scripts/build.sh`
-- 已启动发布版服务，例如：`build/memos.exe --addr 192.168.1.38 --port 12345 --data ..\\run`
+- 已按 `scripts/all_build.sh` 约定启动发布版服务，例如：仓库根目录执行 `bash scripts/all_build.sh -s`；其等价手动命令是在 `build/` 目录执行 `./memos --addr 192.168.1.38 --port 12345 --data ..\\run`（Windows 下对应 `memos.exe`）
 - 准备浏览器手机视口 `390x844`
 - 测试账号：`root / 123`
 

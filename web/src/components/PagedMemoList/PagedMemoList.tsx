@@ -166,9 +166,9 @@ const PagedMemoList = (props: Props) => {
             prefixElement={
               <>
                 {showMemoEditor ? (
-                  <div className="mb-6 -mt-16">
+                  <div className="mb-7 -mt-20 px-3 sm:px-0">
                     <MemoEditor
-                      className="mx-auto w-[90%] relative z-30"
+                      className="relative z-30 mx-auto w-full max-w-2xl"
                       cacheKey="home-memo-editor"
                       placeholder={t("editor.any-thoughts")}
                       minimal

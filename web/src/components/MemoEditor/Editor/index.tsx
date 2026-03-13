@@ -193,9 +193,13 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     >
       <textarea
         className={cn(
-          "w-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none placeholder:opacity-70 whitespace-pre-wrap break-words border-0",
+          "w-full my-1 resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none placeholder:opacity-70 whitespace-pre-wrap break-words border-0",
           // Focus mode: flex-1 h-0 to grow within flex container; Normal: h-full to fill wrapper
-          isFocusMode ? "flex-1 h-0" : variant === "publish" ? "min-h-[4.8em] h-auto" : "h-full",
+          isFocusMode
+            ? "flex-1 h-0 text-base"
+            : variant === "publish"
+              ? "h-auto min-h-[8.5rem] text-[15px] leading-7 placeholder:text-muted-foreground/70"
+              : "h-full text-base",
         )}
         rows={1}
         placeholder={placeholder}

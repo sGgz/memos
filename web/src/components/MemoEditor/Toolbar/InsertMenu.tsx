@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
   useDropdownMenuSubHoverDelay,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { LinkMemoDialog, LocationDialog } from "../components";
@@ -96,6 +97,11 @@ const InsertMenu = (props: InsertMenuProps) => {
   }, [displayName]);
 
   const isUploading = selectingFlag || selectingImages || props.isUploading;
+  const compactMode = props.compactMode ?? "upload";
+  const compactButtonClassName = cn(
+    "h-12 w-12 rounded-2xl border border-border/40 bg-muted/35 text-muted-foreground shadow-none hover:bg-muted/55 hover:text-foreground",
+    props.className,
+  );
 
   const handleLocationClick = () => {
     setLocationDialogOpen(true);
@@ -133,15 +139,43 @@ const InsertMenu = (props: InsertMenuProps) => {
   return (
     <>
       {props.compact ? (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9 rounded-full border border-border/60 bg-muted/20 hover:bg-muted/30"
-          disabled={isUploading}
-          onClick={() => imageOnlyInputRef.current?.click()}
-        >
-          {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <ImageIcon className="size-5" />}
-        </Button>
+        compactMode === "menu" ? (
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className={compactButtonClassName} disabled={isUploading}>
+                {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <MoreHorizontalIcon className="size-5" />}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={handleUploadClick}>
+                <ImageIcon className="w-4 h-4" />
+                {t("common.upload")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLinkDialogOpen(true)}>
+                <LinkIcon className="w-4 h-4" />
+                {t("tooltip.link-memo")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLocationClick}>
+                <MapPinIcon className="w-4 h-4" />
+                {t("tooltip.select-location")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => props.onToggleFocusMode?.()}>
+                <Maximize2Icon className="w-4 h-4" />
+                {t("editor.focus-mode")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            className={compactButtonClassName}
+            disabled={isUploading}
+            onClick={() => imageOnlyInputRef.current?.click()}
+          >
+            {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <ImageIcon className="size-5" />}
+          </Button>
+        )
       ) : (
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>

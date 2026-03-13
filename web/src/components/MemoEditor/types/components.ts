@@ -77,6 +77,8 @@ export interface InsertMenuProps {
   isUploading?: boolean;
   location?: Location;
   compact?: boolean;
+  compactMode?: "upload" | "menu";
+  className?: string;
   onLocationChange: (location?: Location) => void;
   onToggleFocusMode?: () => void;
   memoName?: string;

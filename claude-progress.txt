@@ -5,7 +5,7 @@
 - 测试前先读 `testcases/` 里的相关用例，并以其为回归基线。
 - 每次改动后，先回归所有未受影响的旧用例；若旧用例正好覆盖本次改动区域，则先跳过，等新内容验证完、用例更新后再补测。
 - 默认验证顺序：`pnpm lint` -> 如影响发布页则执行 `pnpm release` -> 仅在确实需要新的发布版后端二进制时才运行 `scripts/build.sh` -> 启动发布版服务 -> 浏览器验证。
-- 发布版后端测试默认启动方式：`build/memos.exe --addr 192.168.1.38 --port 12345 --data ..\\run`。
+- 发布版后端测试默认启动方式优先参考 `scripts/all_build.sh`：仓库根目录执行 `bash scripts/all_build.sh -s`；其等价手动命令是在 `build/` 目录执行 `./memos --addr 192.168.1.38 --port 12345 --data ..\\run`（Windows 下对应 `memos.exe`）。
 - 发布版验证优先复用同一个端口；若必须换新端口，先尽量停掉旧端口上的旧进程。
 - 浏览器验证默认使用接近手机环境的设备仿真，至少覆盖 `390x844` 级别视口，账号优先 `root / 123`。
 - 样式类验证除看界面外，还要记录关键计算样式，例如 `border-radius`。
@@ -41,3 +41,21 @@
 - 新验证结果：在发布版 `http://192.168.1.38:12346/explore` 中，`Explore` 列表项外层类名为 `mb-2.5 flex w-full items-start gap-2`，相邻两条笔记实际纵向间距约 `10px`；封面滚动和正文不遮挡仍成立。
 - 用例维护：新增 `testcases/frontend/TC-FE-003-memo-list-spacing.md`，作为后续列表密度回归基线。
 - 维护：执行 `pnpm lint:fix` 自动修复前端格式问题 20 处，随后 `pnpm lint` 通过。
+
+2026-03-13
+- 调整：按示例图重做 `Explore` 顶部发布编辑器 UI，改成大圆角白色卡片、左上大号日期、右上蓝色发布按钮、底部双快捷操作块。
+- 改动：`web/src/components/MemoEditor/index.tsx` 调整 `publish` 变体卡片外观与底部快捷区；`web/src/components/MemoEditor/components/EditorToolbar.tsx` 重排日期/发布按钮；`web/src/components/MemoEditor/Toolbar/InsertMenu.tsx` 为紧凑模式补充 `menu` 变体；`web/src/components/MemoEditor/Editor/index.tsx` 拉高发布输入区；`web/src/components/EditableTimestamp.tsx` 支持自定义展示文案；`web/src/components/PagedMemoList/PagedMemoList.tsx` 调整编辑器挂载宽度与上移量。
+- 用例维护：新增 `testcases/frontend/TC-FE-004-publish-editor-mobile-card.md`，覆盖发布编辑器移动端卡片样式与快捷按钮交互。
+- 本轮旧用例处理：`TC-FE-002`、`TC-FE-003` 回归通过；`TC-FE-001` 的卡片直角与封面随滚动上移仍成立，但顶部命中点因新增编辑器占位需要改采样点验证，未沿用旧坐标硬测。
+- 验证：`web/` 下执行 `pnpm lint`、`pnpm release` 通过；仓库根目录执行 `bash scripts/build.sh` 通过；发布版首页 hash 确认为 `index-iZjCfvZ9.js` / `index-BLF9nZS6.css`。
+- 发布版实测：使用 `build/memos.exe --addr 192.168.1.38 --port 12345 --data .\\run` 启动，创建 `root / 123`，并在 `390x844` 视口下验证 `Explore` 页面。发布编辑器外层类名包含 `rounded-[28px]`、`min-h-[270px]`、`max-w-2xl`，计算样式 `border-radius = 28px`；日期显示 `2026/03/13`、字体 `28px`；发布按钮背景色 `rgb(76, 141, 255)`、高度 `40px`；输入区 `min-height = 136px`；底部两个快捷按钮为 `48x48`、`border-radius = 16px` 的浅灰块；更多按钮菜单可正常展开，包含“上传 / 链接笔记 / 位置 / 聚焦模式”。
+- 限制与坑：当前 Playwright 工具仅可靠设置视口为 `390x844`，未切到真实移动 UA / touch 上下文，因此本轮结论属于“手机尺寸视口验证”，不是完整真机仿真；另外新初始化站点时浏览器上下文里残留旧 refresh token 会报 `invalid refresh token`，重开页面上下文后恢复。
+- 文档维护：按 `scripts/all_build.sh` 的真实逻辑，统一把发布版后端启动说明改为“优先从仓库根执行 `bash scripts/all_build.sh -s`；等价手动命令是在 `build/` 目录执行 `./memos --addr 192.168.1.38 --port 12345 --data ..\\run`（Windows 下对应 `memos.exe`）”，避免仓库根目录与 `build/` 目录的相对路径写混。
+- 文档补齐：继续把 `AGENTS.md` 中两处发布版后端启动说明也统一为 `scripts/all_build.sh` 口径，避免规范文件和测试文档各说各话。
+- 复测：文档调整后重新在发布版 `http://192.168.1.38:12345/explore` 的 `390x844` 视口下回归此前 UI 修改；发布编辑器仍为 `rounded-[28px]`，日期仍显示 `2026/03/13`，发布按钮仍为 `rgb(76, 141, 255)` 且高度 `40px`，底部两个快捷按钮仍为 `48x48 / border-radius 16px`，输入区 `min-height = 136px`；同时 `Explore` 已发布卡片仍为直角 `0px`，列表项间距仍约 `10px`，封面滚动后 `top` 从 `0` 变为 `-50`，正文命中元素仍是笔记内容段落。
+- 重启验证：按新文档从仓库根目录执行 `bash scripts/all_build.sh` 重新编译前后端并尝试启动；首次因 `12345` 端口残留旧监听进程而启动失败，清掉旧进程后再按 `bash scripts/all_build.sh -s` 后台启动成功，新的监听进程实际占用 `192.168.1.38:12345`。
+- 重启后复测：服务端首页仍返回 `index-iZjCfvZ9.js` / `index-BLF9nZS6.css`；重新登录 `root / 123` 后，在 `390x844` 视口下复测 `Explore` 页面，发布编辑器仍保持 `border-radius = 28px`、日期 `2026/03/13`、发布按钮高度 `40px`、输入区 `min-height = 136px`、底部快捷按钮 `48x48 / border-radius 16px`；`Explore` 已发布卡片仍为直角 `0px`，列表项间距仍约 `10px`，封面滚动上移后正文命中仍为内容段落。
+
+- 微调：继续按示意图收紧发布编辑器顶部视觉，`web/src/components/MemoEditor/components/EditorToolbar.tsx` 将日期字号从约 `28px` 下调到约 `19.2px`（`text-[1.2rem]`），并将发布按钮从更夸张的满胶囊样式收紧为 `h-9 / rounded-[18px] / text-[13px] / px-4`，避免字体和圆角过头。
+- 验证：`pnpm lint`、`pnpm release`、`bash scripts/build.sh` 通过，并按新文档重启发布版服务；服务端 `curl http://192.168.1.38:12345/` 与 `curl http://192.168.1.38:12345/explore` 均确认已切到新资源 `index-C9yXJwbW.js` / `index-CmR0WEqy.css`。
+- 限制：本轮 Playwright 浏览器上下文在服务端已返回新 hash 的前提下，网络请求仍持续命中旧资源 `index-iZjCfvZ9.js` / `index-BLF9nZS6.css`，即使关闭标签、清缓存、清 service worker 后仍复现；因此本轮浏览器实测无法可信反映新样式，只能以服务端 hash、源码修改和已完成构建重启作为主依据，后续若继续卡住，建议更换全新浏览器上下文或真实设备补测。

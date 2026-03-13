@@ -10,15 +10,16 @@ interface Props {
   className?: string;
   showSeconds?: boolean;
   mode?: "date" | "datetime";
+  displayValue?: string;
 }
 
-const EditableTimestamp = ({ timestamp, onChange, className, showSeconds = true, mode = "datetime" }: Props) => {
+const EditableTimestamp = ({ timestamp, onChange, className, showSeconds = true, mode = "datetime", displayValue }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const date = timestamp ? timestampDate(timestamp) : new Date();
-  const displayValue =
+  const formattedDisplayValue =
     mode === "date"
       ? date.toLocaleDateString()
       : showSeconds
@@ -108,7 +109,7 @@ const EditableTimestamp = ({ timestamp, onChange, className, showSeconds = true,
         className,
       )}
     >
-      <span className="font-normal">{displayValue}</span>
+      <span className="font-normal">{displayValue ?? formattedDisplayValue}</span>
       <PencilIcon className="w-3.5 h-3.5 opacity-0 group-hover:opacity-40 transition-opacity shrink-0 text-muted-foreground" />
     </button>
   );

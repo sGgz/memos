@@ -1,4 +1,5 @@
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
+import dayjs from "dayjs";
 import type { FC } from "react";
 import EditableTimestamp from "@/components/EditableTimestamp";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
   const showInsertMenuButton = showInsertMenu ?? true;
   const showVisibilitySelector = !minimal;
   const displayTime = state.timestamps.displayTime ?? new Date();
+  const publishDateLabel = dayjs(displayTime).format("YYYY/MM/DD");
 
   return (
     <div className={cn("w-full flex flex-col gap-2 lg:flex-row lg:items-center mb-0", minimal ? "lg:justify-end" : "lg:justify-between")}>
@@ -84,7 +86,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
       </div>
 
       {variant === "publish" && (
-        <div className="w-full flex items-center justify-between px-0 pt-0">
+        <div className="relative z-10 w-full flex items-center justify-between gap-3 px-0 pt-0">
           <EditableTimestamp
             timestamp={timestampFromDate(displayTime)}
             onChange={(date) => {
@@ -93,25 +95,16 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
             }}
             showSeconds={false}
             mode={state.timestamps.displayTimeIsManual ? "datetime" : "date"}
-            className="w-auto px-0 py-0 text-xl font-bold leading-none text-foreground"
+            displayValue={publishDateLabel}
+            className="w-auto min-w-0 border-0 bg-transparent px-0 py-0 text-[1.2rem] font-semibold leading-none text-foreground hover:bg-transparent"
           />
-          <div className="flex items-center gap-2">
-            <InsertMenu
-              isUploading={state.ui.isLoading.uploading}
-              location={state.metadata.location}
-              onLocationChange={handleLocationChange}
-              onToggleFocusMode={handleToggleFocusMode}
-              memoName={memoName}
-              compact={true}
-            />
-            <Button
-              onClick={onSave}
-              disabled={!valid || isSaving}
-              className="rounded-full px-4 py-1.5 text-xs font-semibold bg-[#3B82F6] text-white hover:bg-[#2563EB]"
-            >
-              {isSaving ? t("editor.saving") : t("editor.publish")}
-            </Button>
-          </div>
+          <Button
+            onClick={onSave}
+            disabled={!valid || isSaving}
+            className="h-9 rounded-[18px] bg-[#4C8DFF] px-4 text-[13px] font-semibold text-white shadow-[0_6px_16px_rgba(76,141,255,0.26)] hover:bg-[#377CF7]"
+          >
+            {isSaving ? t("editor.saving") : t("editor.publish")}
+          </Button>
         </div>
       )}
     </div>
