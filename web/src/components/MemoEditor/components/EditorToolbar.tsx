@@ -53,7 +53,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
       )}
 
       <div className={cn("flex flex-row justify-end items-center gap-2", variant === "publish" && "hidden")}>
-        {minimal && showInsertMenuButton && (
+        {minimal && showInsertMenuButton && variant !== "publish" && (
           <InsertMenu
             isUploading={state.ui.isLoading.uploading}
             location={state.metadata.location}

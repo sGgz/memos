@@ -208,7 +208,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         <div className="w-full flex flex-col gap-2 z-10">
           <EditorMetadata memoName={memoName} minimal={minimal} variant={variant} />
           {variant === "publish" && (
-            <div className="flex w-full items-center justify-start gap-3 pt-1">
+            <div className="flex w-full items-center justify-start pt-1">
               <InsertMenu
                 isUploading={state.ui.isLoading.uploading}
                 location={state.metadata.location}
@@ -217,15 +217,6 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
                 memoName={memoName}
                 compact
                 compactMode="upload"
-              />
-              <InsertMenu
-                isUploading={state.ui.isLoading.uploading}
-                location={state.metadata.location}
-                onLocationChange={(location) => dispatch(actions.setMetadata({ location }))}
-                onToggleFocusMode={handleToggleFocusMode}
-                memoName={memoName}
-                compact
-                compactMode="menu"
               />
             </div>
           )}
